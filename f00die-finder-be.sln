@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "f00die-finder-be", "f00die-finder-be.csproj", "{77597549-8E91-48A5-A86B-5B6E099A3C8E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{77597549-8E91-48A5-A86B-5B6E099A3C8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77597549-8E91-48A5-A86B-5B6E099A3C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77597549-8E91-48A5-A86B-5B6E099A3C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77597549-8E91-48A5-A86B-5B6E099A3C8E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FCEFBE9F-7C1E-4AB7-BD5D-CC89B1D7CD96}
+	EndGlobalSection
+EndGlobal
