@@ -14,11 +14,6 @@ namespace f00die_finder_be.Repositories.UserRepository
             _context = context;
         }
 
-        public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
-
         public async Task<Guid> AddAsync(User user)
         {
             try

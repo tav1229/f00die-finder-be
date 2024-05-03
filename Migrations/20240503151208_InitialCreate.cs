@@ -128,7 +128,7 @@ namespace f00die_finder_be.Migrations
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     ReservationCount = table.Column<int>(type: "int", nullable: false),
                     SpecialDishes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Introduction = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -367,6 +367,7 @@ namespace f00die_finder_be.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    WardOrCommuneId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     WardId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     RestaurantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -382,8 +383,8 @@ namespace f00die_finder_be.Migrations
                         principalTable: "Restaurants",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Locations_WardOrCommunes_WardId",
-                        column: x => x.WardId,
+                        name: "FK_Locations_WardOrCommunes_WardOrCommuneId",
+                        column: x => x.WardOrCommuneId,
                         principalTable: "WardOrCommunes",
                         principalColumn: "Id");
                 });
@@ -406,9 +407,9 @@ namespace f00die_finder_be.Migrations
                 filter: "[RestaurantId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Locations_WardId",
+                name: "IX_Locations_WardOrCommuneId",
                 table: "Locations",
-                column: "WardId");
+                column: "WardOrCommuneId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_RestaurantId",

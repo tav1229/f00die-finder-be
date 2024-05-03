@@ -2,7 +2,7 @@ using f00die_finder_be.Dtos.Auth;
 using f00die_finder_be.Services.AuthService;
 using Microsoft.AspNetCore.Mvc;
 
-namespace backend.Controllers.Identity
+namespace f00die_finder_be.Controllers.Auth
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -13,7 +13,7 @@ namespace backend.Controllers.Identity
         public AuthController(IAuthService authService)
         {
             _authService = authService;
-            
+
         }
 
         [HttpPost("register")]

@@ -12,7 +12,7 @@ using f00die_finder_be.Data;
 namespace f00die_finder_be.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240421125932_InitialCreate")]
+    [Migration("20240503151208_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -163,13 +163,16 @@ namespace f00die_finder_be.Migrations
                     b.Property<Guid?>("WardId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("WardOrCommuneId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RestaurantId")
                         .IsUnique()
                         .HasFilter("[RestaurantId] IS NOT NULL");
 
-                    b.HasIndex("WardId");
+                    b.HasIndex("WardOrCommuneId");
 
                     b.ToTable("Locations");
                 });
@@ -266,7 +269,7 @@ namespace f00die_finder_be.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Introduction")
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
@@ -594,13 +597,13 @@ namespace f00die_finder_be.Migrations
                         .WithOne("Location")
                         .HasForeignKey("f00die_finder_be.Models.Location", "RestaurantId");
 
-                    b.HasOne("f00die_finder_be.Models.WardOrCommune", "Ward")
+                    b.HasOne("f00die_finder_be.Models.WardOrCommune", "WardOrCommune")
                         .WithMany("Locations")
-                        .HasForeignKey("WardId");
+                        .HasForeignKey("WardOrCommuneId");
 
                     b.Navigation("Restaurant");
 
-                    b.Navigation("Ward");
+                    b.Navigation("WardOrCommune");
                 });
 
             modelBuilder.Entity("f00die_finder_be.Models.Reservation", b =>

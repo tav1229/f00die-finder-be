@@ -47,4 +47,10 @@ namespace f00die_finder_be.Common
         public InvalidTokenException()
             : base($"InvalidToken", (int)HttpStatusCode.Unauthorized) { }
     }
+
+    public class NotFoundException : CustomException
+    {
+        public NotFoundException()
+            : base($"Not found", (int)HttpStatusCode.NotFound) { }
+    }
 }

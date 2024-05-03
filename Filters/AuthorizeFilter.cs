@@ -5,7 +5,7 @@ using f00die_finder_be.Common;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 
-namespace backend.Filter
+namespace f00die_finder_be.Filters
 {
     [AttributeUsage(AttributeTargets.All)]
     public class AuthorizeFilter : Attribute, IAsyncAuthorizationFilter

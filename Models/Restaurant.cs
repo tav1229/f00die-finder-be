@@ -18,7 +18,7 @@ namespace f00die_finder_be.Models
 
         public string? SpecialDishes { get; set; }
 
-        public string? Introduction { get; set; }
+        public string? Description { get; set; }
 
         public string? Note { get; set; }
 

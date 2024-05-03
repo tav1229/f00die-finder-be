@@ -2,9 +2,8 @@
 using f00die_finder_be.Dtos.Auth;
 using f00die_finder_be.Models;
 using f00die_finder_be.Repositories.UserRepository;
-using f00die_finder_be.Services.AuthService;
 
-namespace backend.Services.UserService
+namespace f00die_finder_be.Services.AuthService
 {
     public class AuthService : IAuthService
     {
@@ -25,7 +24,7 @@ namespace backend.Services.UserService
             {
                 throw new InvalidCredentialsException();
             }
-            
+
             var hashedPassword = SecurityFunction.HashPassword(loginDto.Password, currentUser.PasswordSalt);
             if (currentUser.HashedPassword != hashedPassword || currentUser.Role != loginDto.Role)
             {
@@ -74,7 +73,6 @@ namespace backend.Services.UserService
             };
 
             await _userRepository.AddAsync(newUser);
-            await _userRepository.SaveChangesAsync();
 
             return SecurityFunction.GenerateToken(new ClaimData()
             {

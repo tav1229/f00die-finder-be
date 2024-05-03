@@ -9,7 +9,8 @@ namespace f00die_finder_be.Common
     public enum RestaurantStatus
     {
         Active,
-        Inactive
+        Inactive,
+        Pending
     }
     public enum ReservationStatus
     {

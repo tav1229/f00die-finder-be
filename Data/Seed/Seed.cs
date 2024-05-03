@@ -141,7 +141,7 @@ namespace f00die_finder_be.Data.Seed
                     PriceRange = priceRanges[random.Next(priceRanges.Length)],
                     Capacity = 50,
                     SpecialDishes = "Special dishes for Restaurant " + i,
-                    Introduction = "Introduction for Restaurant " + i,
+                    Description = "Description for Restaurant " + i,
                     Note = "Note for Restaurant " + i,
                     Images = new List<RestaurantImage>()
             {
