@@ -3,13 +3,13 @@ using f00die_finder_be.Data;
 using f00die_finder_be.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace f00die_finder_be.Repositories.UserRepository
+namespace f00die_finder_be.Services.UserService
 {
-    public class UserRepository : IUserRepository
+    public class UserService : IUserService
     {
         private readonly DataContext _context;
 
-        public UserRepository(DataContext context)
+        public UserService(DataContext context)
         {
             _context = context;
         }

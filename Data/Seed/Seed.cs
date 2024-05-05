@@ -120,7 +120,7 @@ namespace f00die_finder_be.Data.Seed
             Random random = new Random();
             PriceRangePerPerson[] priceRanges = (PriceRangePerPerson[])Enum.GetValues(typeof(PriceRangePerPerson));
 
-            for (int i = 10; i < 11; i++)
+            for (int i = 10; i < 15; i++)
             {
                 var passwordSalt = SecurityFunction.GenerateRandomString();
                 var hashedPassword = SecurityFunction.HashPassword("seed", passwordSalt);
@@ -138,7 +138,7 @@ namespace f00die_finder_be.Data.Seed
                 {
                     Name = "Restaurant " + i,
                     Phone = "123-456-7890",
-                    PriceRange = priceRanges[random.Next(priceRanges.Length)],
+                    PriceRangePerPerson = priceRanges[random.Next(priceRanges.Length)],
                     Capacity = 50,
                     SpecialDishes = "Special dishes for Restaurant " + i,
                     Description = "Description for Restaurant " + i,
@@ -269,13 +269,13 @@ namespace f00die_finder_be.Data.Seed
 
             List<Guid> restaurantIds = context.Restaurants.Select(r => r.Id).ToList();
             var locationList = new List<Location>();
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 5; i++)
             {
                 var location = new Location
                 {
                     Id = Guid.NewGuid(),
                     Address = "Address for Location " + i,
-                    WardId = context.WardOrCommunes.Where(w => w.Code == 1).Select(w => w.Id).FirstOrDefault(),
+                    WardOrCommuneId = context.WardOrCommunes.Where(w => w.Code == 1).Select(w => w.Id).FirstOrDefault(),
                     RestaurantId = restaurantIds[i]
                 };
 

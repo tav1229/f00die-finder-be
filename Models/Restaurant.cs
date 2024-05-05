@@ -10,7 +10,7 @@ namespace f00die_finder_be.Models
 
         public RestaurantStatus Status { get; set; }
 
-        public PriceRangePerPerson PriceRange { get; set; }
+        public PriceRangePerPerson PriceRangePerPerson { get; set; }
 
         public int Capacity { get; set; }
 

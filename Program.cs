@@ -3,7 +3,7 @@ using f00die_finder_be.Common.CurrentUserService;
 using f00die_finder_be.Data;
 using f00die_finder_be.Data.Seed;
 using f00die_finder_be.Middlewares;
-using f00die_finder_be.Repositories.UserRepository;
+using f00die_finder_be.Services.UserService;
 using f00die_finder_be.Services.AuthService;
 using f00die_finder_be.Services.RestaurantService;
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +55,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -84,7 +84,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCustomExceptionHandler();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

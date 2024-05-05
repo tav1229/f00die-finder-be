@@ -4,6 +4,7 @@ namespace f00die_finder_be.Dtos.Restaurant
 {
     public class RestaurantUpdateDto
     {
+        public Guid Id { get; set; }
         public string? Name { get; set; }
 
         public string? Phone { get; set; }
@@ -26,7 +27,7 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public string? Address { get; set; }
 
-        public Guid? WardOrCommune { get; set; }
+        public Guid? Ward { get; set; }
 
         public List<Guid>? AdditionalServices { get; set; }
 

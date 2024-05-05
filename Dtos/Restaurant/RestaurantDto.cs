@@ -11,11 +11,11 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public LocationDto Location { get; set; }
 
-        public WardOrCommuneDto Ward { get; set; }
+        public WardOrCommuneDto WardOrCommune { get; set; }
 
         public DistrictDto District { get; set; }
 
-        public ProvinceOrCityDto City { get; set; }
+        public ProvinceOrCityDto ProvinceOrCity { get; set; }
 
         public List<CuisineTypeDto> CuisineTypes { get; set; }
 
@@ -23,6 +23,6 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public PriceRangePerPerson PriceRangePerPerson { get; set; }
 
-        public string ImageUrl { get; set; }
+        public List<string> Images { get; set; }
     }
 }

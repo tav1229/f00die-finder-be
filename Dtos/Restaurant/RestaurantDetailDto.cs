@@ -12,7 +12,7 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public LocationDto Location { get; set; }
 
-        public WardOrCommuneDto WardOrCommuneDto { get; set; }
+        public WardOrCommuneDto WardOrCommune { get; set; }
 
         public DistrictDto District { get; set; }
 
@@ -28,7 +28,7 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public string SpecialDishes { get; set; }
 
-        public string Introduction { get; set; }
+        public string Description { get; set; }
 
         public string Note { get; set; }
 
@@ -40,6 +40,6 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public List<AdditionalServiceDto>? AdditionalServices { get; set; }
 
-        public RestaurantStatus? RestaurantStatus { get; set; }
+        public RestaurantStatus? Status { get; set; }
     }
 }

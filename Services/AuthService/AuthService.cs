@@ -1,16 +1,16 @@
 ﻿using f00die_finder_be.Common;
 using f00die_finder_be.Dtos.Auth;
 using f00die_finder_be.Models;
-using f00die_finder_be.Repositories.UserRepository;
+using f00die_finder_be.Services.UserService;
 
 namespace f00die_finder_be.Services.AuthService
 {
     public class AuthService : IAuthService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userRepository;
         private readonly IConfiguration _configuration;
 
-        public AuthService(IUserRepository userRepository, IConfiguration configuration)
+        public AuthService(IUserService userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _configuration = configuration;

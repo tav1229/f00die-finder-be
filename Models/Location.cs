@@ -7,7 +7,7 @@ namespace f00die_finder_be.Models
         public string? Address { get; set; }
                 
         public WardOrCommune? WardOrCommune { get; set; }
-        public Guid? WardId { get; set; }
+        public Guid? WardOrCommuneId { get; set; }
 
         public Restaurant? Restaurant { get; set; }
         public Guid? RestaurantId { get; set; }

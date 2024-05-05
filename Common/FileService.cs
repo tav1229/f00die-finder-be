@@ -1,30 +1,41 @@
 ﻿using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
 
 namespace f00die_finder_be.Common
 {
     public static class FileService
     {
-        private const string ImgbbAPI = "0b3a1a01592a719072a36436ba3f503a";
-        public static string GetFileExtension(string fileName) => Path.GetExtension(fileName);
-
-        public static async Task<byte[]> GetBytesAsync(this IFormFile formFile)
+        public static async Task<string> UploadImageAsync(IFormFile file)
         {
-            using var memoryStream = new MemoryStream();
-            await formFile.CopyToAsync(memoryStream);
-            return memoryStream.ToArray();
-        }
-        public static async Task<string> UploadImageToImgbb(IFormFile file, Guid id)
-        {
-            var client = new HttpClient();
-            var url = $"https://api.imgbb.com/1/upload?key={ImgbbAPI}";
-            var content = new MultipartFormDataContent();
-            var b64 = Convert.ToBase64String(await GetBytesAsync(file));
+            try
+            {
+                using (var content = new MultipartFormDataContent())
+                {
+                    using (var stream = file.OpenReadStream())
+                    {
+                        var streamContent = new StreamContent(stream);
+                        streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                        content.Add(streamContent, "file", file.FileName);
 
-            content.Add(new StringContent(b64), "image");
+                        using (var httpClient = new HttpClient())
+                        {
+                            httpClient.BaseAddress = new Uri("http://104.43.108.3:8000/");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, url) { Content = content };
-            var response = await client.SendAsync(request);
-            return JObject.Parse(await response.Content.ReadAsStringAsync())["data"]["url"].ToString();
+                            var response = await httpClient.PostAsync("images", content);
+                            response.EnsureSuccessStatusCode();
+
+                            var responseContent = await response.Content.ReadAsStringAsync();
+                            dynamic responseData = JObject.Parse(responseContent);
+                            return responseData.image_url;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error uploading file: {ex.Message}");
+                throw;
+            }
         }
     }
 }

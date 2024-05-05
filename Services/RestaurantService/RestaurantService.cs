@@ -6,6 +6,7 @@ using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Restaurant;
 using f00die_finder_be.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace f00die_finder_be.Services.RestaurantService
 {
@@ -31,7 +32,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     restaurantImages.Add(new RestaurantImage()
                     {
-                        URL = image,
+                        URL = await FileService.UploadImageAsync(image),
                         ImageType = ImageType.Restaurant,
                     });
                 }
@@ -44,7 +45,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     menuImages.Add(new RestaurantImage()
                     {
-                        URL = image,
+                        URL = await FileService.UploadImageAsync(image),
                         ImageType = ImageType.Menu,
                     });
                 }
@@ -104,7 +105,7 @@ namespace f00die_finder_be.Services.RestaurantService
             {
                 Name = restaurantDto.Name,
                 Phone = restaurantDto.Phone,
-                PriceRange = restaurantDto.PriceRangePerPerson,
+                PriceRangePerPerson = restaurantDto.PriceRangePerPerson,
                 Capacity = restaurantDto.Capacity,
                 SpecialDishes = restaurantDto.SpecialDishes,
                 Description = restaurantDto.Description,
@@ -116,7 +117,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 Location = new Location()
                 {
                     Address = restaurantDto.Address,
-                    WardId = restaurantDto.Ward
+                    WardOrCommuneId = restaurantDto.Ward
                 },
                 RestaurantAdditionalServices = additionalServices,
                 BusinessHours = businessHours,
@@ -142,13 +143,18 @@ namespace f00die_finder_be.Services.RestaurantService
         public async Task<RestaurantDetailDto> GetRestaurantByIdAsync(Guid restaurantId)
         {
             var restaurant = _context.Restaurants
-                .Include(r => r.Location)
-                .ThenInclude(l => l.WardOrCommune)
-                .ThenInclude(w => w.District)
-                .ThenInclude(d => d.ProvinceOrCity)
-                .Include(r => r.RestaurantCuisineTypes)
-                .Include(r => r.RestaurantServingTypes)
-                .Include(r => r.Images)
+                    .Include(r => r.Location)
+                    .ThenInclude(l => l.WardOrCommune)
+                    .ThenInclude(w => w.District)
+                    .ThenInclude(d => d.ProvinceOrCity)
+                    .Include(r => r.RestaurantCuisineTypes)
+                    .ThenInclude(r => r.CuisineType)
+                    .Include(r => r.RestaurantServingTypes)
+                    .ThenInclude(r => r.ServingType)
+                    .Include(r => r.RestaurantAdditionalServices)
+                    .ThenInclude(r => r.AdditionalService)
+                    .Include(r => r.BusinessHours)
+                    .Include(r => r.Images)
                 .FirstOrDefault(r => r.Id == restaurantId && !r.IsDeleted);
             if (restaurant == null)
             {
@@ -159,17 +165,22 @@ namespace f00die_finder_be.Services.RestaurantService
 
         }
 
-        public async Task<RestaurantDetailDto> GetRestaurantByOwnerId(Guid userId)
+        public async Task<RestaurantDetailDto> GetRestaurantByOwnerIdAsync(Guid userId)
         {
-            var restaurant = await _context.Restaurants
-                .Include(r => r.Location)
-                .ThenInclude(l => l.WardOrCommune)
-                .ThenInclude(w => w.District)
-                .ThenInclude(d => d.ProvinceOrCity)
-                .Include(r => r.RestaurantCuisineTypes)
-                .Include(r => r.RestaurantServingTypes)
-                .Include(r => r.Images)
-                .FirstOrDefaultAsync(r => r.OwnerId == userId && !r.IsDeleted);
+            var restaurant = _context.Restaurants
+                    .Include(r => r.Location)
+                    .ThenInclude(l => l.WardOrCommune)
+                    .ThenInclude(w => w.District)
+                    .ThenInclude(d => d.ProvinceOrCity)
+                    .Include(r => r.RestaurantCuisineTypes)
+                    .ThenInclude(r => r.CuisineType)
+                    .Include(r => r.RestaurantServingTypes)
+                    .ThenInclude(r => r.ServingType)
+                    .Include(r => r.RestaurantAdditionalServices)
+                    .ThenInclude(r => r.AdditionalService)
+                    .Include(r => r.BusinessHours)
+                    .Include(r => r.Images)
+                .FirstOrDefault(r => r.OwnerId == userId && !r.IsDeleted);
             if (restaurant == null)
             {
                 throw new NotFoundException();
@@ -190,8 +201,11 @@ namespace f00die_finder_be.Services.RestaurantService
                     .ThenInclude(w => w.District)
                     .ThenInclude(d => d.ProvinceOrCity)
                     .Include(r => r.RestaurantCuisineTypes)
+                    .ThenInclude(r => r.CuisineType)
                     .Include(r => r.RestaurantServingTypes)
+                    .ThenInclude(r => r.ServingType)
                     .Include(r => r.Images)
+                    .Where(r => string.IsNullOrEmpty(searchValue) || r.Name.Contains(searchValue))
                     .AsQueryable();
 
                 if (filterRestaurantDto != null)
@@ -206,7 +220,7 @@ namespace f00die_finder_be.Services.RestaurantService
                     }
                     if (filterRestaurantDto.PriceRangePerPerson.HasValue)
                     {
-                        restaurants = restaurants.Where(r => r.PriceRange == filterRestaurantDto.PriceRangePerPerson);
+                        restaurants = restaurants.Where(r => r.PriceRangePerPerson == filterRestaurantDto.PriceRangePerPerson);
                     }
                     if (filterRestaurantDto.CuisineType.HasValue)
                     {
@@ -223,10 +237,10 @@ namespace f00die_finder_be.Services.RestaurantService
                             restaurants = restaurants.OrderByDescending(r => r.ReservationCount);
                             break;
                         case "price-increase":
-                            restaurants = restaurants.OrderBy(r => r.PriceRange);
+                            restaurants = restaurants.OrderBy(r => r.PriceRangePerPerson);
                             break;
                         case "price-decrease":
-                            restaurants = restaurants.OrderByDescending(r => r.PriceRange);
+                            restaurants = restaurants.OrderByDescending(r => r.PriceRangePerPerson);
                             break;
                         default:
                             restaurants = restaurants.OrderByDescending(r => r.ReservationCount);
@@ -242,15 +256,154 @@ namespace f00die_finder_be.Services.RestaurantService
                     Items = _mapper.Map<List<RestaurantDto>>(pagedRestaurant)
                 };
             }
-            catch
+            catch (Exception e)
             {
                 throw new InternalServerErrorException();
             }
         }
 
-        public Task UpdateAsync(RestaurantUpdateDto restaurant)
+        public async Task UpdateAsync(RestaurantUpdateDto restaurantDto)
         {
-            throw new NotImplementedException();
+            var restaurant = await _context.Restaurants
+                .Include(r => r.Images)
+                .FirstOrDefaultAsync(r => r.Id == restaurantDto.Id);
+            if (restaurant == null)
+            {
+                throw new NotFoundException();
+            }
+
+            if (restaurantDto.Name != null)
+            {
+                restaurant.Name = restaurantDto.Name;
+            }
+            if (restaurantDto.Phone != null)
+            {
+                restaurant.Phone = restaurantDto.Phone;
+            }
+            if (restaurantDto.PriceRangePerPerson.HasValue)
+            {
+                restaurant.PriceRangePerPerson = (PriceRangePerPerson)restaurantDto.PriceRangePerPerson;
+            }
+            if (restaurantDto.Capacity.HasValue)
+            {
+                restaurant.Capacity = restaurantDto.Capacity.Value;
+            }
+            if (restaurantDto.SpecialDishes != null)
+            {
+                restaurant.SpecialDishes = restaurantDto.SpecialDishes;
+            }
+            if (restaurantDto.Description != null)
+            {
+                restaurant.Description = restaurantDto.Description;
+            }
+            if (restaurantDto.Note != null)
+            {
+                restaurant.Note = restaurantDto.Note;
+            }
+            
+            if (restaurantDto.RestaurantImages != null)
+            {
+                var restaurantImages = new List<RestaurantImage>();
+                foreach (var image in restaurantDto.RestaurantImages)
+                {
+                    restaurantImages.Add(new RestaurantImage()
+                    {
+                        URL = await FileService.UploadImageAsync(image),
+                        ImageType = ImageType.Restaurant,
+                    });
+                }
+                foreach (var image in restaurant.Images.Where(i => i.ImageType == ImageType.Restaurant))
+                {
+                    _context.RestaurantImages.Remove(image);
+                }
+                restaurant.Images.AddRange(restaurantImages);
+            }
+
+            if (restaurantDto.MenuImages != null)
+            {
+                var menuImages = new List<RestaurantImage>();
+                foreach (var image in restaurantDto.MenuImages)
+                {
+                    menuImages.Add(new RestaurantImage()
+                    {
+                        URL = await FileService.UploadImageAsync(image),
+                        ImageType = ImageType.Menu,
+                    });
+                }
+                foreach (var image in restaurant.Images.Where(i => i.ImageType == ImageType.Menu))
+                {
+                    _context.RestaurantImages.Remove(image);
+                }
+                restaurant.Images.AddRange(menuImages);
+            }
+
+            if (restaurantDto.CuisineTypes != null)
+            {
+                var cuisineTypes = new List<RestaurantCuisineType>();
+                foreach (var cuisineType in restaurantDto.CuisineTypes)
+                {
+                    cuisineTypes.Add(new RestaurantCuisineType()
+                    {
+                        CuisineTypeId = cuisineType
+                    });
+                }
+                restaurant.RestaurantCuisineTypes = cuisineTypes;
+            }
+
+            if (restaurantDto.ServingTypes != null)
+            {
+                var serviceTypes = new List<RestaurantServingType>();
+                foreach (var serviceType in restaurantDto.ServingTypes)
+                {
+                    serviceTypes.Add(new RestaurantServingType()
+                    {
+                        ServingTypeId = serviceType
+                    });
+                }
+                restaurant.RestaurantServingTypes = serviceTypes;
+            }
+
+            if (restaurantDto.Address != null)
+            {
+                restaurant.Location.Address = restaurantDto.Address;
+            }
+
+            if (restaurantDto.Ward.HasValue)
+            {
+                restaurant.Location.WardOrCommuneId = restaurantDto.Ward.Value;
+            }
+
+            if (restaurantDto.AdditionalServices != null)
+            {
+                var additionalServices = new List<RestaurantAdditionalService>();
+                foreach (var additionalService in restaurantDto.AdditionalServices)
+                {
+                    additionalServices.Add(new RestaurantAdditionalService()
+                    {
+                        AdditionalServiceId = additionalService
+                    });
+                }
+                restaurant.RestaurantAdditionalServices = additionalServices;
+            }
+
+            if (restaurantDto.BusinessHours != null)
+            {
+                var businessHours = new List<BusinessHour>();
+                foreach (var businessHour in restaurantDto.BusinessHours)
+                {
+                    businessHours.Add(new BusinessHour()
+                    {
+                        DayOfWeek = (DayOfWeek)businessHour.Date,
+                        OpenTime = TimeSpan.Parse(businessHour.OpenTime),
+                        CloseTime = TimeSpan.Parse(businessHour.CloseTime)
+                    });
+                }
+                restaurant.BusinessHours = businessHours;
+            }
+
+            _context.Restaurants.Update(restaurant);
+
+            await _context.SaveChangesAsync();
         }
     }
 }

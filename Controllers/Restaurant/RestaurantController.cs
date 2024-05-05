@@ -18,7 +18,7 @@ namespace f00die_finder_be.Controllers.Restaurant
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRestaurantsAsync([FromQuery] FilterRestaurantDto? filterRestaurantDto, [FromQuery] string searchValue, [FromQuery] int pageSize, [FromQuery] int pageNumber)
+        public async Task<IActionResult> GetRestaurantsAsync([FromQuery] FilterRestaurantDto? filterRestaurantDto, [FromQuery] string? searchValue, [FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
         {
             var result = await _restaurantService.GetRestaurantsAsync(filterRestaurantDto, searchValue, pageSize, pageNumber);
             return Ok(result);
@@ -32,21 +32,21 @@ namespace f00die_finder_be.Controllers.Restaurant
         }
 
         [HttpGet("owner/{userId}")]
-        public async Task<IActionResult> GetRestaurantByOwnerId(Guid userId)
+        public async Task<IActionResult> GetRestaurantByOwnerIdAsync(Guid userId)
         {
-            var result = await _restaurantService.GetRestaurantByOwnerId(userId);
+            var result = await _restaurantService.GetRestaurantByOwnerIdAsync(userId);
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] RestaurantAddDto restaurant)
+        public async Task<IActionResult> AddAsync([FromForm] RestaurantAddDto restaurant)
         {
             var result = await _restaurantService.AddAsync(restaurant);
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] RestaurantUpdateDto restaurant)
+        public async Task<IActionResult> UpdateAsync([FromForm] RestaurantUpdateDto restaurant)
         {
             await _restaurantService.UpdateAsync(restaurant);
             return Ok();
