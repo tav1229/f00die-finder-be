@@ -114,7 +114,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 Images = restaurantImages,
                 RestaurantCuisineTypes = cuisineTypes,
                 RestaurantServingTypes = serviceTypes,
-                Location = new Location()
+                Location = new f00die_finder_be.Models.Location()
                 {
                     Address = restaurantDto.Address,
                     WardOrCommuneId = restaurantDto.Ward

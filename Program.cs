@@ -8,7 +8,12 @@ using f00die_finder_be.Services.AuthService;
 using f00die_finder_be.Services.RestaurantService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using System.Reflection;
+using f00die_finder_be.Services.Location;
+using f00die_finder_be.Services.ServingTypeService;
+using f00die_finder_be.Services.AdditionalServiceService;
+using f00die_finder_be.Services.CuisineTypeService;
+using f00die_finder_be.Services.ReservationService;
+using f00die_finder_be.Services.ReviewComment;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,6 +63,14 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IRestaurantService, RestaurantService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IServingTypeService, ServingTypeService>();
+builder.Services.AddScoped<ICuisineTypeService, CuisineTypeService>();
+builder.Services.AddScoped<IAdditionalServiceService, AdditionalServiceService>();
+builder.Services.AddScoped<IServingTypeService, ServingTypeService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<IReviewCommentService, ReviewCommentService>();
+
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 var app = builder.Build();
 

@@ -1,6 +1,5 @@
 using f00die_finder_be.Common;
 using f00die_finder_be.Dtos.Location;
-using System.ComponentModel.DataAnnotations;
 
 namespace f00die_finder_be.Dtos.Restaurant
 {

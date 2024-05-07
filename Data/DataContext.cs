@@ -41,7 +41,7 @@ namespace f00die_finder_be.Data
         private void UpdateTimestamps()
         {
             var entities = ChangeTracker.Entries()
-                .Where(x => x.Entity is User && (x.State == EntityState.Added || x.State == EntityState.Modified));
+                .Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
             var currentDateTime = DateTime.Now;
 
@@ -49,29 +49,14 @@ namespace f00die_finder_be.Data
             {
                 if (entity.State == EntityState.Added)
                 {
-                    ((User)entity.Entity).CreatedDate = currentDateTime;
+                    ((BaseEntity)entity.Entity).CreatedDate = currentDateTime;
                 }
 
-                ((User)entity.Entity).LastUpdatedDate = currentDateTime;
+                ((BaseEntity)entity.Entity).LastUpdatedDate = currentDateTime;
             }
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            //builder.Entity<RestaurantCuisineType>()
-            //    .HasKey(rc => new { rc.CuisineTypeId, rc.RestaurantId });
-
-            //builder.Entity<RestaurantServingType>()
-            //    .HasKey(rs => new { rs.RestaurantId, rs.ServingTypeId });
-
-            //builder.Entity<RestaurantAdditionalService>()
-            //    .HasKey(rs => new { rs.RestaurantId, rs.AdditionalServiceId });
-
-            //builder.Entity<Restaurant>()
-            //            .HasOne(c => c.User)
-            //            .WithMany(u => u.Restaurants)
-            //            .HasForeignKey(c => c.UserId)
-            //            .OnDelete(DeleteBehavior.ClientCascade);
-
             builder.Entity<Reservation>()
                         .HasOne(c => c.Restaurant)
                         .WithMany(u => u.Reservations)
@@ -93,7 +78,7 @@ namespace f00die_finder_be.Data
             builder.Entity<ReviewComment>()
                 .HasOne(u => u.User)
                         .WithMany(u => u.Reviews)
-                        .HasForeignKey(c => c.RestaurantId)
+                        .HasForeignKey(c => c.UserId)
                         .OnDelete(DeleteBehavior.NoAction);
         }
 

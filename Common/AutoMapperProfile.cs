@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using f00die_finder_be.Dtos.Location;
+using f00die_finder_be.Dtos.Reservation;
 using f00die_finder_be.Dtos.Restaurant;
+using f00die_finder_be.Dtos.ReviewComment;
 using f00die_finder_be.Models;
 
 namespace f00die_finder_be.Common
@@ -36,6 +38,11 @@ namespace f00die_finder_be.Common
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Where(i => i.ImageType == ImageType.Restaurant).Select(i => i.URL)))
                 .ForMember(dest => dest.CuisineTypes, opt => opt.MapFrom(src => src.RestaurantCuisineTypes.Select(rct => rct.CuisineType)))
                 .ForMember(dest => dest.ServingTypes, opt => opt.MapFrom(src => src.RestaurantServingTypes.Select(rst => rst.ServingType)));
+            CreateMap<Reservation, ReservationDto>();
+            CreateMap<Reservation, ReservationDetailDto>();
+            CreateMap<ReservationAddDto, Reservation>();
+            CreateMap<ReviewComment, ReviewCommentDto>();
+            CreateMap<ReviewCommentAddDto, ReviewComment>();
         }
     }
 }
