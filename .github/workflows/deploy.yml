@@ -33,7 +33,7 @@ jobs:
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ${{ env.DOCKER_IMAGE_NAME }}.tar
-          target: /home/${{ env.SSH_USER }}/${{ env.DOCKER_IMAGE_NAME }}.tar
+          target: /home/${{ env.SSH_USER }}
 
       - name: SSH into remote server and load Docker container
         uses: appleboy/ssh-action@v1.0.3
