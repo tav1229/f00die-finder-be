@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Build Docker image
         run: docker build -t ${{ env.DOCKER_IMAGE_NAME }} .
@@ -27,7 +27,7 @@ jobs:
         run: docker save ${{ env.DOCKER_IMAGE_NAME }} -o ${{ env.DOCKER_IMAGE_NAME }}.tar
 
       - name: Copy Docker image to remote server
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.REMOTE_HOST }}
           username: ${{ env.SSH_USER }}
@@ -36,7 +36,7 @@ jobs:
           target: /home/${{ env.SSH_USER }}/${{ env.DOCKER_IMAGE_NAME }}.tar
 
       - name: SSH into remote server and load Docker container
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ env.REMOTE_HOST }}
           username: ${{ env.SSH_USER }}
