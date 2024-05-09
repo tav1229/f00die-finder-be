@@ -20,6 +20,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Configuration["Secret"] = Environment.GetEnvironmentVariable("Secret");
+    builder.Configuration["DefaultConnection"] = Environment.GetEnvironmentVariable("DefaultConnection");
+}
+
 builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -89,11 +96,8 @@ catch (Exception ex)
 }
 
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCustomExceptionHandler();
 
