@@ -1,0 +1,54 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_IMAGE_NAME }}
+      SSH_USER: ${{ env.SSH_USER }}
+      REMOTE_HOST: ${{ env.REMOTE_HOST }}
+      SECRET_KEY: ${{ env.SECRET_KEY }}
+      CONNECTION_STRING: ${{ env.CONNECTION_STRING }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: docker build -t ${{ env.DOCKER_IMAGE_NAME }} .
+
+      - name: Save Docker image
+        run: docker save ${{ env.DOCKER_IMAGE_NAME }} -o ${{ env.DOCKER_IMAGE_NAME }}.tar
+
+      - name: Copy Docker image to remote server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.REMOTE_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ${{ env.DOCKER_IMAGE_NAME }}.tar
+          target: /home/${{ env.SSH_USER }}/${{ env.DOCKER_IMAGE_NAME }}.tar
+
+      - name: SSH into remote server and load Docker container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.REMOTE_HOST }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker ps -a --filter "ancestor=${{ env.DOCKER_IMAGE_NAME }}" -q | xargs -r docker stop >/dev/null 2>&1
+            docker ps -a --filter "ancestor=${{ env.DOCKER_IMAGE_NAME }}" -q | xargs -r docker rm >/dev/null 2>&1
+            docker load -i /home/${{ env.SSH_USER }}/${{ env.DOCKER_IMAGE_NAME }}.tar
+            docker run -d \
+              -e "SecretKey=${SECRET_KEY}" \
+              -e "ConnectionStrings__DefaultConnection=${CONNECTION_STRING}" \
+              -p 1111:8080 \
+              -p 1112:8081 \
+              ${{ env.DOCKER_IMAGE_NAME }}
+            rm /home/${{ env.SSH_USER }}/${{ env.DOCKER_IMAGE_NAME }}.tar
