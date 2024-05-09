@@ -13,8 +13,6 @@ jobs:
       DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
       SSH_USER: ${{ vars.SSH_USER }}
       REMOTE_HOST: ${{ vars.REMOTE_HOST }}
-      SECRET_KEY: ${{ vars.SECRET_KEY }}
-      CONNECTION_STRING: ${{ vars.CONNECTION_STRING }}
 
     steps:
       - name: Checkout code
@@ -24,7 +22,9 @@ jobs:
         run: docker build -t ${{ env.DOCKER_IMAGE_NAME }} .
 
       - name: Save Docker image
-        run: docker save ${{ env.DOCKER_IMAGE_NAME }} -o ${{ env.DOCKER_IMAGE_NAME }}.tar
+        run: |
+          docker save ${{ env.DOCKER_IMAGE_NAME }} -o ${{ env.DOCKER_IMAGE_NAME }}.tar
+          chmod 444 ${{ env.DOCKER_IMAGE_NAME }}.tar
 
       - name: Copy Docker image to remote server
         uses: appleboy/scp-action@v0.1.7
@@ -46,8 +46,8 @@ jobs:
             docker ps -a --filter "ancestor=${{ env.DOCKER_IMAGE_NAME }}" -q | xargs -r docker rm >/dev/null 2>&1
             docker load -i /home/${{ env.SSH_USER }}/${{ env.DOCKER_IMAGE_NAME }}.tar
             docker run -d \
-              -e "SecretKey=${SECRET_KEY}" \
-              -e "ConnectionStrings__DefaultConnection=${CONNECTION_STRING}" \
+              -e "SecretKey=${{ secrets.SECRET_KEY }}" \
+              -e "ConnectionStrings__DefaultConnection=${{ secrets.CONNECTION_STRING }}" \
               -p 1111:8080 \
               -p 1112:8081 \
               ${{ env.DOCKER_IMAGE_NAME }}
