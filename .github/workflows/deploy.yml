@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_IMAGE_NAME }}
+      DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
       SSH_USER: ${{ vars.SSH_USER }}
       REMOTE_HOST: ${{ vars.REMOTE_HOST }}
       SECRET_KEY: ${{ vars.SECRET_KEY }}
