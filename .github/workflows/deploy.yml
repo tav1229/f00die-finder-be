@@ -11,10 +11,10 @@ jobs:
 
     env:
       DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_IMAGE_NAME }}
-      SSH_USER: ${{ env.SSH_USER }}
-      REMOTE_HOST: ${{ env.REMOTE_HOST }}
-      SECRET_KEY: ${{ env.SECRET_KEY }}
-      CONNECTION_STRING: ${{ env.CONNECTION_STRING }}
+      SSH_USER: ${{ vars.SSH_USER }}
+      REMOTE_HOST: ${{ vars.REMOTE_HOST }}
+      SECRET_KEY: ${{ vars.SECRET_KEY }}
+      CONNECTION_STRING: ${{ vars.CONNECTION_STRING }}
 
     steps:
       - name: Checkout code
