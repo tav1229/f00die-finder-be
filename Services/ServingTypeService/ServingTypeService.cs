@@ -1,34 +1,37 @@
-﻿using AutoMapper;
-using f00die_finder_be.Data;
-using f00die_finder_be.Dtos.Restaurant;
+﻿using f00die_finder_be.Dtos.Restaurant;
+using f00die_finder_be.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.ServingTypeService
 {
-    public class ServingTypeService : IServingTypeService
+    public class ServingTypeService : BaseService, IServingTypeService
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-
-        public ServingTypeService(DataContext context, IMapper mapper)
+        public ServingTypeService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _context = context;
-            _mapper = mapper;
         }
 
         public async Task<List<ServingTypeDto>> GetServingTypesAsync()
         {
-            var servingTypes = await _context.ServingTypes.ToListAsync();
-            return _mapper.Map<List<ServingTypeDto>>(servingTypes);
+            return await _cacheService.GetOrCreateAsync("servingTypes", async () =>
+            {
+                var servingTypeQuery = await _unitOfWork.GetAllAsync<ServingType>();
+                var servingTypes = await servingTypeQuery.ToListAsync();
+
+                return _mapper.Map<List<ServingTypeDto>>(servingTypes);
+            });
         }
 
         public async Task<List<ServingTypeDto>> GetServingTypesByRestaurantAsync(Guid restaurantId)
         {
-            var servingTypes = await _context.RestaurantServingTypes
-                .Where(s => s.RestaurantId == restaurantId)
-                .Select(s => s.ServingType).ToListAsync();
+            return await _cacheService.GetOrCreateAsync($"servingTypes-restaurant-{restaurantId}", async () =>
+            {
+                var servingTypeQuery = await _unitOfWork.GetAllAsync<RestaurantServingType>();
+                var servingTypes = await servingTypeQuery
+                    .Where(s => s.RestaurantId == restaurantId)
+                    .Select(s => s.ServingType).ToListAsync();
 
-            return _mapper.Map<List<ServingTypeDto>>(servingTypes);
+                return _mapper.Map<List<ServingTypeDto>>(servingTypes);
+            });
         }
     }
 }

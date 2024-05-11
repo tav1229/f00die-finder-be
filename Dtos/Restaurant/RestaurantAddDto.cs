@@ -18,8 +18,6 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public string? Note { get; set; }
 
-        public List<IFormFile>? RestaurantImages { get; set; }
-
         public List<Guid>? CuisineTypes { get; set; }
 
         public List<Guid>? ServingTypes { get; set; }
@@ -31,8 +29,5 @@ namespace f00die_finder_be.Dtos.Restaurant
         public List<Guid>? AdditionalServices { get; set; }
 
         public List<AddBusinessHourDto>? BusinessHours { get; set; }
-
-        public List<IFormFile>? MenuImages { get; set; }
-
     }
 }

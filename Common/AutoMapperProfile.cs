@@ -3,7 +3,7 @@ using f00die_finder_be.Dtos.Location;
 using f00die_finder_be.Dtos.Reservation;
 using f00die_finder_be.Dtos.Restaurant;
 using f00die_finder_be.Dtos.ReviewComment;
-using f00die_finder_be.Models;
+using f00die_finder_be.Entities;
 
 namespace f00die_finder_be.Common
 {
@@ -41,7 +41,8 @@ namespace f00die_finder_be.Common
             CreateMap<Reservation, ReservationDto>();
             CreateMap<Reservation, ReservationDetailDto>();
             CreateMap<ReservationAddDto, Reservation>();
-            CreateMap<ReviewComment, ReviewCommentDto>();
+            CreateMap<ReviewComment, ReviewCommentDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName));
             CreateMap<ReviewCommentAddDto, ReviewComment>();
         }
     }

@@ -1,7 +1,7 @@
 ﻿using f00die_finder_be.Common;
 using System.ComponentModel.DataAnnotations;
 
-namespace f00die_finder_be.Models
+namespace f00die_finder_be.Entities
 {
     public class User : BaseEntity
     {

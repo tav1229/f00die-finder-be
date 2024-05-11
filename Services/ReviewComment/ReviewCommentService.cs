@@ -1,52 +1,49 @@
-﻿using AutoMapper;
-using f00die_finder_be.Common.CurrentUserService;
-using f00die_finder_be.Data;
-using f00die_finder_be.Dtos;
+﻿using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.ReviewComment;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.ReviewComment
 {
-    public class ReviewCommentService : IReviewCommentService
+    public class ReviewCommentService : BaseService, IReviewCommentService
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-        private readonly ICurrentUserService _currentUserService;
-
-        public ReviewCommentService(DataContext context, IMapper mapper, ICurrentUserService currentUserService)
+        public ReviewCommentService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _context = context;
-            _mapper = mapper;
-            _currentUserService = currentUserService;
         }
 
         public async Task<Guid> AddAsync(ReviewCommentAddDto reviewCommentAddDto)
         {
-            var review = _mapper.Map<Models.ReviewComment>(reviewCommentAddDto);
+            var review = _mapper.Map<Entities.ReviewComment>(reviewCommentAddDto);
             review.UserId = _currentUserService.UserId;
 
-            _context.ReviewComments.Add(review);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.AddAsync(review);
+            await _unitOfWork.SaveChangesAsync();
+
+            await _cacheService.RemoveByPrefixAsync("reviewComments");
             return review.Id;
         }
 
         public async Task<PagedResult<ReviewCommentDto>> GetReviewCommentsOfRestaurantAsync(Guid restaurantId, int pageSize, int pageNumber)
         {
-            var reviews = _context.ReviewComments
-                .Where(r => r.RestaurantId == restaurantId)
-                .OrderByDescending(r => r.CreatedDate)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
-
-            var listReviews = await reviews.ToListAsync();
-
-            return new PagedResult<ReviewCommentDto>
+            return await _cacheService.GetOrCreateAsync($"reviewComments-restaurant-{restaurantId}", async () =>
             {
-                PageSize = pageSize,
-                CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling(await _context.ReviewComments.CountAsync() / (double)pageSize),
-                Items = _mapper.Map<List<ReviewCommentDto>>(listReviews),
-            };
+                var reviewQuery = await _unitOfWork.GetAllAsync<Entities.ReviewComment>();
+                var reviews = reviewQuery
+                    .Include(r => r.User)
+                    .Where(r => r.RestaurantId == restaurantId);
+
+                return new PagedResult<ReviewCommentDto>
+                {
+                    PageSize = pageSize,
+                    CurrentPage = pageNumber,
+                    TotalPages = (int)Math.Ceiling(await reviews.CountAsync() / (double)pageSize),
+                    Items = await reviews
+                        .OrderByDescending(r => r.CreatedDate)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .Select(r => _mapper.Map<ReviewCommentDto>(r))
+                        .ToListAsync(),
+                };
+            });
         }
     }
 }

@@ -1,11 +1,18 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 
-namespace f00die_finder_be.Common
+namespace f00die_finder_be.Common.FileService
 {
-    public static class FileService
+    public class FileService : IFileService
     {
-        public static async Task<string> UploadImageAsync(IFormFile file)
+        protected readonly IConfiguration _configuration;
+
+        public FileService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public async Task<string> UploadImageAsync(IFormFile file)
         {
             try
             {
@@ -19,9 +26,9 @@ namespace f00die_finder_be.Common
 
                         using (var httpClient = new HttpClient())
                         {
-                            httpClient.BaseAddress = new Uri("http://104.43.108.3:8000/");
+                            httpClient.BaseAddress = new Uri(_configuration["BaseURL"]);
 
-                            var response = await httpClient.PostAsync("images", content);
+                            var response = await httpClient.PostAsync("images/", content);
                             response.EnsureSuccessStatusCode();
 
                             var responseContent = await response.Content.ReadAsStringAsync();

@@ -10,6 +10,8 @@
 
         public Guid UserId { get; set; }
 
+        public string FullName { get; set; }
+
         public DateTime CreatedDate { get; set; }
     }
 }

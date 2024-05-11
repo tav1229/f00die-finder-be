@@ -1,6 +1,4 @@
-using f00die_finder_be.Common;
-
-namespace f00die_finder_be.Models
+namespace f00die_finder_be.Entities
 {
     public class Location : BaseEntity
     {

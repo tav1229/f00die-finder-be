@@ -29,7 +29,7 @@ namespace f00die_finder_be.Middlewares
 
                     var pd = new ProblemDetails
                     {
-                        Title = isDevelopment ? message : "An error occurred on the server.",
+                        Title = message,
                         Status = response.StatusCode,
                         Detail = isDevelopment ? exception?.StackTrace : null,
                         Type = response.StatusCode == ((int)HttpStatusCode.InternalServerError) ? "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1" : "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5"

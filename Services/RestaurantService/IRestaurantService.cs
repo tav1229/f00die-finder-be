@@ -10,6 +10,7 @@ namespace f00die_finder_be.Services.RestaurantService
         Task<RestaurantDetailDto> GetRestaurantByOwnerIdAsync(Guid userId);
         Task<Guid> AddAsync(RestaurantAddDto restaurant);
         Task UpdateAsync(RestaurantUpdateDto restaurant);
+        Task UpdateImagesAsync(RestaurantUpdateImagesDto restaurant);
         Task DeleteAsync(Guid restaurantId);
     }
 }

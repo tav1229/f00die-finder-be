@@ -1,25 +1,23 @@
 ﻿using f00die_finder_be.Common;
 using f00die_finder_be.Dtos.Auth;
-using f00die_finder_be.Models;
+using f00die_finder_be.Entities;
 using f00die_finder_be.Services.UserService;
 
 namespace f00die_finder_be.Services.AuthService
 {
-    public class AuthService : IAuthService
+    public class AuthService : BaseService, IAuthService
     {
-        private readonly IUserService _userRepository;
-        private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public AuthService(IUserService userRepository, IConfiguration configuration)
+        public AuthService(IUserService userService, IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _userRepository = userRepository;
-            _configuration = configuration;
+            _userService = userService;
 
         }
 
         public async Task<string> Login(LoginDto loginDto)
         {
-            var currentUser = await _userRepository.GetUserByUsernameAsync(loginDto.Username);
+            var currentUser = await _userService.GetUserByUsernameAsync(loginDto.Username);
             if (currentUser == null)
             {
                 throw new InvalidCredentialsException();
@@ -44,7 +42,7 @@ namespace f00die_finder_be.Services.AuthService
 
         public async Task<string> Register(RegistrationDto registrationDto)
         {
-            var users = await _userRepository.GetUsersAsync();
+            var users = await _userService.GetUsersAsync();
             if (users.Any(u => u.Username == registrationDto.Username))
             {
                 throw new UsernameIsAlreadyExistedException();
@@ -72,7 +70,7 @@ namespace f00die_finder_be.Services.AuthService
                 Role = (Role)registrationDto.Role
             };
 
-            await _userRepository.AddAsync(newUser);
+            await _userService.AddAsync(newUser);
 
             return SecurityFunction.GenerateToken(new ClaimData()
             {

@@ -1,58 +1,41 @@
-using f00die_finder_be.Common;
-using f00die_finder_be.Data;
-using f00die_finder_be.Models;
+using f00die_finder_be.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.UserService
 {
-    public class UserService : IUserService
+    public class UserService : BaseService, IUserService
     {
-        private readonly DataContext _context;
-
-        public UserService(DataContext context)
+        public UserService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _context = context;
         }
 
         public async Task<Guid> AddAsync(User user)
         {
-            try
-            {
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
-                return user.Id;
-            }
-            catch
-            {
-                throw new InternalServerErrorException();
-            }
+            await _unitOfWork.AddAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            await _cacheService.RemoveAsync("users");
+            return user.Id;
         }
 
         public async Task<User> GetUserByUsernameAsync(string userName)
         {
-            try
+            return await _cacheService.GetOrCreateAsync($"user-{userName}", async () =>
             {
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == userName && !u.IsDeleted);
+                var userQuery = await _unitOfWork.GetAllAsync<User>();
+                var user = await userQuery.FirstOrDefaultAsync(u => u.Username == userName);
                 return user;
-            }
-            catch
-            {
-                throw new InternalServerErrorException();
-            }
+            });
         }
 
         public async Task<List<User>> GetUsersAsync()
         {
-            try
+            return await _cacheService.GetOrCreateAsync("users", async () =>
             {
-                var users = await _context.Users.Where(u => !u.IsDeleted).ToListAsync();
+                var userQuery = await _unitOfWork.GetAllAsync<User>();
+                var users = await userQuery.ToListAsync();
                 return users;
-            }
-            catch
-            {
-                throw new InternalServerErrorException();
-            }
+            });
         }
-
     }
 }

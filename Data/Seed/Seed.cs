@@ -1,5 +1,5 @@
 using f00die_finder_be.Common;
-using f00die_finder_be.Models;
+using f00die_finder_be.Entities;
 using System.Text.Json;
 
 namespace f00die_finder_be.Data.Seed

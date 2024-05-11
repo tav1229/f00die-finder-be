@@ -1,6 +1,4 @@
-﻿using f00die_finder_be.Common;
-using f00die_finder_be.Dtos.Auth;
-using f00die_finder_be.Models;
+﻿using f00die_finder_be.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Data
@@ -8,7 +6,6 @@ namespace f00die_finder_be.Data
     public class DataContext : DbContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
-
         public DbSet<AdditionalService> AdditionalServices { get; set; }
         public DbSet<BusinessHour> BusinessHours { get; set; }
         public DbSet<CuisineType> CuisineTypes { get; set; }
@@ -26,35 +23,6 @@ namespace f00die_finder_be.Data
         public DbSet<User> Users { get; set; }
         public DbSet<WardOrCommune> WardOrCommunes { get; set; }
 
-        public override int SaveChanges()
-        {
-            UpdateTimestamps();
-            return base.SaveChanges();
-        }
-
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            UpdateTimestamps();
-            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-        }
-
-        private void UpdateTimestamps()
-        {
-            var entities = ChangeTracker.Entries()
-                .Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
-
-            var currentDateTime = DateTime.Now;
-
-            foreach (var entity in entities)
-            {
-                if (entity.State == EntityState.Added)
-                {
-                    ((BaseEntity)entity.Entity).CreatedDate = currentDateTime;
-                }
-
-                ((BaseEntity)entity.Entity).LastUpdatedDate = currentDateTime;
-            }
-        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Reservation>()

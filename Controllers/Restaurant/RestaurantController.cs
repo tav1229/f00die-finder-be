@@ -39,16 +39,23 @@ namespace f00die_finder_be.Controllers.Restaurant
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromForm] RestaurantAddDto restaurant)
+        public async Task<IActionResult> AddAsync([FromBody] RestaurantAddDto restaurant)
         {
             var result = await _restaurantService.AddAsync(restaurant);
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromForm] RestaurantUpdateDto restaurant)
+        public async Task<IActionResult> UpdateAsync([FromBody] RestaurantUpdateDto restaurant)
         {
             await _restaurantService.UpdateAsync(restaurant);
+            return Ok();
+        }
+
+        [HttpPut("images")]
+        public async Task<IActionResult> UpdateImagesAsync([FromForm] RestaurantUpdateImagesDto restaurant)
+        {
+            await _restaurantService.UpdateImagesAsync(restaurant);
             return Ok();
         }
 

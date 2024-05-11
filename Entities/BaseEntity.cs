@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace f00die_finder_be.Common
+namespace f00die_finder_be.Entities
 {
     public class BaseEntity
     {

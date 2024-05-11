@@ -1,34 +1,39 @@
-﻿using AutoMapper;
-using f00die_finder_be.Data;
-using f00die_finder_be.Dtos.Restaurant;
+﻿using f00die_finder_be.Dtos.Restaurant;
+using f00die_finder_be.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.AdditionalServiceService
 {
-    public class AdditionalServiceService : IAdditionalServiceService
+    public class AdditionalServiceService : BaseService, IAdditionalServiceService 
     {
-        private readonly DataContext _context;
-        private readonly IMapper _mapper;
-
-        public AdditionalServiceService(DataContext context, IMapper mapper)
+        public AdditionalServiceService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _context = context;
-            _mapper = mapper;
         }
 
         public async Task<List<AdditionalServiceDto>> GetAditionalServicesAsync()
         {
-            var additionalServices = await _context.AdditionalServices.ToListAsync();
-            return _mapper.Map<List<AdditionalServiceDto>>(additionalServices);
+            return await _cacheService.GetOrCreateAsync("additionalServices", async () =>
+            {
+                var additionalServiceQuery = await _unitOfWork.GetAllAsync<AdditionalService>();
+
+                var additionalServices = await additionalServiceQuery.ToListAsync();
+
+                return _mapper.Map<List<AdditionalServiceDto>>(additionalServices);
+            });
         }
 
         public async Task<List<AdditionalServiceDto>> GetAditionalServicesByRestaurantAsync(Guid restaurantId)
         {
-            var additionalServices = await _context.RestaurantAdditionalServices
-                .Where(s => s.RestaurantId == restaurantId)
-                .Select(s => s.AdditionalService).ToListAsync();
+            return await _cacheService.GetOrCreateAsync($"additionalServices-restaurant-{restaurantId}", async () =>
+            {
+                var additionalServiceQuery = await _unitOfWork.GetAllAsync<RestaurantAdditionalService>();
 
-            return _mapper.Map<List<AdditionalServiceDto>>(additionalServices);
+                var additionalServices = await additionalServiceQuery
+                    .Where(s => s.RestaurantId == restaurantId)
+                    .Select(s => s.AdditionalService).ToListAsync();
+
+                return _mapper.Map<List<AdditionalServiceDto>>(additionalServices);
+            });
         }
     }
 }
