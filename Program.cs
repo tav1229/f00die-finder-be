@@ -34,6 +34,11 @@ if (!builder.Environment.IsDevelopment())
     builder.Configuration["Secret"] = Environment.GetEnvironmentVariable("Secret");
     builder.Configuration["DefaultConnection"] = Environment.GetEnvironmentVariable("DefaultConnection");
     builder.Configuration["Redis"] = Environment.GetEnvironmentVariable("Redis");
+    builder.Configuration["Minio:EndPoint"] = Environment.GetEnvironmentVariable("Minio:EndPoint");
+    builder.Configuration["Minio:AccessKey"] = Environment.GetEnvironmentVariable("Minio:AccessKey");
+    builder.Configuration["Minio:SecretKey"] = Environment.GetEnvironmentVariable("Minio:SecretKey");
+    builder.Configuration["Minio:BucketName"] = Environment.GetEnvironmentVariable("Minio:BucketName");
+    builder.Configuration["Minio:UseSSL"] = Environment.GetEnvironmentVariable("Minio:UseSSL");
 }
 
 builder.Services.AddDbContext<DataContext>(options =>
