@@ -25,7 +25,6 @@ jobs:
         run: |
           docker save ${{ env.DOCKER_IMAGE_NAME }} -o ${{ env.DOCKER_IMAGE_NAME }}.tar
           chmod 444 ${{ env.DOCKER_IMAGE_NAME }}.tar
-
       - name: Copy Docker image to remote server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -48,6 +47,12 @@ jobs:
             docker run -d \
               -e "SecretKey=${{ secrets.SECRET_KEY }}" \
               -e "ConnectionStrings__DefaultConnection=${{ secrets.CONNECTION_STRING }}" \
+              -e "Redis=${{ secrets.REDIS }}" \
+              -e "Minio:EndPoint=${{ vars.MINIO_ENDPOINT }}" \
+              -e "Minio:AccessKey=${{ secrets.MINIO_ACCESSKEY }}" \
+              -e "Minio:SecretKey=${{ secrets.MINIO_SECRETKEY }}" \
+              -e "Minio:BucketName=${{ vars.MINIO_BUCKETNAME }}" \
+              -e "Minio:UseSSL=${{ vars.MINIO_USESSL }}" \
               -p 1111:8080 \
               -p 1112:8081 \
               ${{ env.DOCKER_IMAGE_NAME }}
