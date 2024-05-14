@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.Concurrent;
 
@@ -7,11 +9,14 @@ namespace f00die_finder_be.Common.CacheService
     public class CacheService : ICacheService
     {
         private readonly IDistributedCache _cache;
-        private static readonly ConcurrentDictionary<string, bool> _cacheKeys = new();
+        private readonly ConcurrentDictionary<string, bool> _cacheKeys;
+        private readonly JsonSerializerSettings _jsonSettings;
 
-        public CacheService(IDistributedCache cache, IConfiguration configuration)
+        public CacheService(IDistributedCache cache, IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
         {
             _cache = cache;
+            _cacheKeys = new ConcurrentDictionary<string, bool>();
+            _jsonSettings = jsonOptions.Value.SerializerSettings;
         }
 
         public async Task<T?> GetAsync<T>(string key) where T : class
@@ -22,12 +27,12 @@ namespace f00die_finder_be.Common.CacheService
                 return null;
             }
 
-            return JsonConvert.DeserializeObject<T>(cacheValue);
+            return JsonConvert.DeserializeObject<T>(cacheValue, _jsonSettings);
         }
 
         public async Task SetAsync<T>(string key, T value) where T : class
         {
-            var cacheValue = JsonConvert.SerializeObject(value);
+            var cacheValue = JsonConvert.SerializeObject(value, _jsonSettings);
             await _cache.SetStringAsync(key, cacheValue);
 
             _cacheKeys.TryAdd(key, true);

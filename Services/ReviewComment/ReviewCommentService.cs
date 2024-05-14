@@ -18,32 +18,36 @@ namespace f00die_finder_be.Services.ReviewComment
             await _unitOfWork.AddAsync(review);
             await _unitOfWork.SaveChangesAsync();
 
-            await _cacheService.RemoveByPrefixAsync("reviewComments");
+            await _cacheService.RemoveAsync($"reviewComments-restaurant-{review.RestaurantId}");
             return review.Id;
         }
 
         public async Task<PagedResult<ReviewCommentDto>> GetReviewCommentsOfRestaurantAsync(Guid restaurantId, int pageSize, int pageNumber)
         {
-            return await _cacheService.GetOrCreateAsync($"reviewComments-restaurant-{restaurantId}", async () =>
+            var reviews = await _cacheService.GetOrCreateAsync($"reviewComments-restaurant-{restaurantId}", async () =>
             {
                 var reviewQuery = await _unitOfWork.GetAllAsync<Entities.ReviewComment>();
-                var reviews = reviewQuery
+                return await reviewQuery
                     .Include(r => r.User)
-                    .Where(r => r.RestaurantId == restaurantId);
-
-                return new PagedResult<ReviewCommentDto>
-                {
-                    PageSize = pageSize,
-                    CurrentPage = pageNumber,
-                    TotalPages = (int)Math.Ceiling(await reviews.CountAsync() / (double)pageSize),
-                    Items = await reviews
-                        .OrderByDescending(r => r.CreatedDate)
-                        .Skip((pageNumber - 1) * pageSize)
-                        .Take(pageSize)
-                        .Select(r => _mapper.Map<ReviewCommentDto>(r))
-                        .ToListAsync(),
-                };
+                    .Where(r => r.RestaurantId == restaurantId)
+                    .ToListAsync();
             });
+
+            int totalItems = reviews.Count();
+            var items = reviews
+                .OrderByDescending(r => r.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(r => _mapper.Map<ReviewCommentDto>(r))
+                .ToList();
+
+            return new PagedResult<ReviewCommentDto>
+            {
+                PageSize = pageSize,
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                Items = items
+            };
         }
     }
 }

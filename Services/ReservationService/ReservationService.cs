@@ -33,7 +33,7 @@ namespace f00die_finder_be.Services.ReservationService
 
             await _unitOfWork.SaveChangesAsync();
 
-            await _cacheService.RemoveByPrefixAsync("reservations");
+            await _cacheService.RemoveAsync($"reservations-restaurant-{reservation.RestaurantId}");
             return reservation.Id;
         }
 
@@ -51,33 +51,39 @@ namespace f00die_finder_be.Services.ReservationService
 
         public async Task<PagedResult<ReservationDto>> GetReservationsOfRestaurantAsync(Guid restaurantId, ReservationStatus? reservationStatus, DateTime? time, int pageSize, int pageNumber)
         {
-            return await _cacheService.GetOrCreateAsync($"reservations-restaurant-{restaurantId}", async () =>
+            var cacheKey = $"reservations-restaurant-{restaurantId}";
+            var restaurantReservations = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
             {
                 var reservationQuery = await _unitOfWork.GetAllAsync<Reservation>();
-                var reservations = reservationQuery
-                    .Where(r => r.RestaurantId == restaurantId);
-                if (reservationStatus != null)
-                {
-                    reservations = reservations.Where(r => r.ReservationStatus == reservationStatus);
-                }
-                if (time != null)
-                {
-                    reservations = reservations.Where(r => r.Time.Date == time.Value.Date);
-                }
-
-                return new PagedResult<ReservationDto>
-                {
-                    PageSize = pageSize,
-                    CurrentPage = pageNumber,
-                    TotalPages = (int)Math.Ceiling(await reservations.CountAsync() / (double)pageSize),
-                    Items = await reservations
-                        .OrderByDescending(r => r.CreatedDate)
-                        .Skip((pageNumber - 1) * pageSize)
-                        .Take(pageSize)
-                        .Select(r => _mapper.Map<ReservationDto>(r))
-                        .ToListAsync(),
-                };
+                return await reservationQuery
+                    .Where(r => r.RestaurantId == restaurantId)
+                    .ToListAsync();
             });
+            var restaurantReservationsQuery = restaurantReservations.AsQueryable();
+            if (reservationStatus != null)
+            {
+                restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.ReservationStatus == reservationStatus);
+            }
+            if (time != null)
+            {
+                restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.Time.Date == time.Value.Date);
+            }
+
+            int totalItems = restaurantReservationsQuery.Count();
+            var items = restaurantReservationsQuery
+                .OrderByDescending(r => r.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(r => _mapper.Map<ReservationDto>(r))
+                .ToList();
+
+            return new PagedResult<ReservationDto>
+            {
+                PageSize = pageSize,
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                Items = items
+            };
         }
 
         public async Task UpdateReservationStatusAsync(Guid reservationId, ReservationStatus reservationStatus)
@@ -93,7 +99,8 @@ namespace f00die_finder_be.Services.ReservationService
             await _unitOfWork.UpdateAsync(reservation);
             await _unitOfWork.SaveChangesAsync();
 
-            await _cacheService.RemoveByPrefixAsync($"reservation");
+            await _cacheService.RemoveAsync($"reservations-restaurant-{reservation.RestaurantId}");
+            await _cacheService.RemoveAsync($"reservation-{reservationId}");
         }
     }
 }

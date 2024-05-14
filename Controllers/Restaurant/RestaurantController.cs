@@ -31,10 +31,10 @@ namespace f00die_finder_be.Controllers.Restaurant
             return Ok(result);
         }
 
-        [HttpGet("owner/{userId}")]
-        public async Task<IActionResult> GetRestaurantByOwnerIdAsync(Guid userId)
+        [HttpGet("my-restaurant")]
+        public async Task<IActionResult> GetMyRestaurantAsync()
         {
-            var result = await _restaurantService.GetRestaurantByOwnerIdAsync(userId);
+            var result = await _restaurantService.GetMyRestaurantAsync();
             return Ok(result);
         }
 
@@ -52,17 +52,24 @@ namespace f00die_finder_be.Controllers.Restaurant
             return Ok();
         }
 
-        [HttpPut("images")]
-        public async Task<IActionResult> UpdateImagesAsync([FromForm] RestaurantUpdateImagesDto restaurant)
+        [HttpPost("images")]
+        public async Task<IActionResult> AddImagesAsync([FromForm] RestaurantAddImagesDto restaurant)
         {
-            await _restaurantService.UpdateImagesAsync(restaurant);
+            await _restaurantService.AddImagesAsync(restaurant);
             return Ok();
         }
 
-        [HttpDelete("{restaurantId}")]
-        public async Task<IActionResult> DeleteAsync(Guid restaurantId)
+        [HttpDelete("images")]
+        public async Task<IActionResult> DeleteImagesAsync([FromBody] List<Guid> imageIds)
         {
-            await _restaurantService.DeleteAsync(restaurantId);
+            await _restaurantService.DeleteImagesAsync(imageIds);
+            return Ok();
+        }
+
+        [HttpPut("deactivate")]
+        public async Task<IActionResult> DeactivateAsync()
+        {
+            await _restaurantService.DeactivateAsync();
             return Ok();
         }
     }
