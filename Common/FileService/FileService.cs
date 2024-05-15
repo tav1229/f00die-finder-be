@@ -16,7 +16,7 @@ namespace f00die_finder_be.Common.FileService
         {
             _configuration = configuration;
             _baseUrl =
-                 $"{(_configuration["Minio:UseSSL"] == "True" ? "https://" : "http://")}{_configuration["Minio:EndPoint"]}/{BucketName}/";
+                 $"{(_configuration["Minio:UseSSL"] == "TRUE" ? "https://" : "http://")}{_configuration["Minio:EndPoint"]}/{BucketName}/";
 
             _minioClient = new MinioClient()
                 .WithEndpoint(_configuration["Minio:EndPoint"])
