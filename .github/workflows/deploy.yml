@@ -47,7 +47,7 @@ jobs:
             docker run -d \
               -e "SecretKey=${{ secrets.SECRET_KEY }}" \
               -e "ConnectionStrings__DefaultConnection=${{ secrets.CONNECTION_STRING }}" \
-              -e "Redis=${{ secrets.REDIS }}" \
+              -e "ConnectionStrings__Redis=${{ secrets.REDIS }}" \
               -e "Minio:EndPoint=${{ vars.MINIO_ENDPOINT }}" \
               -e "Minio:AccessKey=${{ secrets.MINIO_ACCESSKEY }}" \
               -e "Minio:SecretKey=${{ secrets.MINIO_SECRETKEY }}" \
