@@ -16,7 +16,22 @@ namespace f00die_finder_be.Data.Seed
             SeedDistrict(context);
             SeedWard(context);
             SeedLocation(context);
+            SeedCustomerType(context);
         }
+
+        public static void SeedCustomerType(DataContext context)
+        {
+            if (context.CustomerTypes.Any()) return;
+
+            context.CustomerTypes.Add(new CustomerType { Name = "Văn phòng" });
+            context.CustomerTypes.Add(new CustomerType { Name = "Cặp đôi" });
+            context.CustomerTypes.Add(new CustomerType { Name = "Bạn bè" });
+            context.CustomerTypes.Add(new CustomerType { Name = "Gia đình" });
+            context.CustomerTypes.Add(new CustomerType { Name = "Tiệc/Sự kiện" });
+
+            context.SaveChanges();
+        }
+
         public static void SeedServingType(DataContext context)
         {
             if (context.ServingTypes.Any()) return;
@@ -116,6 +131,7 @@ namespace f00die_finder_be.Data.Seed
             var allCuisineTypes = context.CuisineTypes.ToList();
             var allServingTypes = context.ServingTypes.ToList();
             var allAdditionalServices = context.AdditionalServices.ToList();
+            var allCustomerTypes = context.CustomerTypes.ToList();
 
             Random random = new Random();
             PriceRangePerPerson[] priceRanges = (PriceRangePerPerson[])Enum.GetValues(typeof(PriceRangePerPerson));
@@ -169,6 +185,11 @@ namespace f00die_finder_be.Data.Seed
                         new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
                         new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
                         new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] }
+                    },
+                    RestaurantCustomerTypes = new List<RestaurantCustomerType>()
+                    {
+                        new RestaurantCustomerType() { CustomerType = allCustomerTypes[random.Next(allCustomerTypes.Count)] },
+                        new RestaurantCustomerType() { CustomerType = allCustomerTypes[random.Next(allCustomerTypes.Count)] }
                     },
                     BusinessHours = new List<BusinessHour>()
             {

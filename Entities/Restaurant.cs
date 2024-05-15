@@ -31,6 +31,8 @@ namespace f00die_finder_be.Entities
 
         public List<RestaurantImage>? Images { get; set; }
 
+        public List<RestaurantCustomerType>? RestaurantCustomerTypes { get; set; }
+
         public List<RestaurantCuisineType>? RestaurantCuisineTypes { get; set; }
 
         public List<RestaurantServingType>? RestaurantServingTypes { get; set; }

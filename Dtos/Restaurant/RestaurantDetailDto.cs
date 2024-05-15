@@ -21,6 +21,8 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public List<ServingTypeDto> ServingTypes { get; set; }
 
+        public List<CustomerTypeDto> CustomerTypes { get; set; }
+
         public PriceRangePerPerson PriceRangePerPerson { get; set; }
 
         public int Capacity { get; set; }

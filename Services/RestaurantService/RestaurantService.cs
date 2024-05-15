@@ -38,6 +38,18 @@ namespace f00die_finder_be.Services.RestaurantService
                 }
             }
 
+            var customerTypes = new List<RestaurantCustomerType>();
+            if (restaurantDto.CustomerTypes != null)
+            {
+                foreach (var customerType in restaurantDto.CustomerTypes)
+                {
+                    customerTypes.Add(new RestaurantCustomerType()
+                    {
+                        CustomerTypeId = customerType
+                    });
+                }
+            }
+
             var additionalServices = new List<RestaurantAdditionalService>();
             if (restaurantDto.AdditionalServices != null)
             {
@@ -75,6 +87,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 OwnerId = _currentUserService.UserId,
                 RestaurantCuisineTypes = cuisineTypes,
                 RestaurantServingTypes = serviceTypes,
+                RestaurantCustomerTypes = customerTypes,
                 Location = new f00die_finder_be.Entities.Location()
                 {
                     Address = restaurantDto.Address,
@@ -127,6 +140,8 @@ namespace f00die_finder_be.Services.RestaurantService
                     .ThenInclude(r => r.ServingType)
                     .Include(r => r.RestaurantAdditionalServices)
                     .ThenInclude(r => r.AdditionalService)
+                    .Include(r => r.RestaurantCustomerTypes)
+                    .ThenInclude(r => r.CustomerType)
                     .Include(r => r.BusinessHours)
                     .Include(r => r.Images)
                     .FirstOrDefault(r => r.Id == restaurantId);
@@ -156,6 +171,8 @@ namespace f00die_finder_be.Services.RestaurantService
                     .ThenInclude(r => r.ServingType)
                     .Include(r => r.RestaurantAdditionalServices)
                     .ThenInclude(r => r.AdditionalService)
+                    .Include(r => r.RestaurantCustomerTypes)
+                    .ThenInclude(r => r.CustomerType)
                     .Include(r => r.BusinessHours)
                     .Include(r => r.Images)
                     .FirstOrDefault(r => r.OwnerId == _currentUserService.UserId);
@@ -186,6 +203,8 @@ namespace f00die_finder_be.Services.RestaurantService
                 .ThenInclude(r => r.CuisineType)
                 .Include(r => r.RestaurantServingTypes)
                 .ThenInclude(r => r.ServingType)
+                .Include(r => r.RestaurantCustomerTypes)
+                .ThenInclude(r => r.CustomerType)
                 .Include(r => r.Images)
                 .ToListAsync();
             });
@@ -222,6 +241,10 @@ namespace f00die_finder_be.Services.RestaurantService
                 if (filterRestaurantDto.ServingType.HasValue)
                 {
                     restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantServingTypes.Any(rs => rs.ServingTypeId == filterRestaurantDto.ServingType));
+                }
+                if (filterRestaurantDto.CustomerType.HasValue)
+                {
+                    restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantCustomerTypes.Any(rc => rc.CustomerTypeId == filterRestaurantDto.CustomerType));
                 }
 
                 switch (filterRestaurantDto.Sort)
@@ -322,6 +345,19 @@ namespace f00die_finder_be.Services.RestaurantService
                     });
                 }
                 restaurant.RestaurantServingTypes = serviceTypes;
+            }
+
+            if (restaurantDto.CustomerTypes != null)
+            {
+                var customerTypes = new List<RestaurantCustomerType>();
+                foreach (var customerType in restaurantDto.CustomerTypes)
+                {
+                    customerTypes.Add(new RestaurantCustomerType()
+                    {
+                        CustomerTypeId = customerType
+                    });
+                }
+                restaurant.RestaurantCustomerTypes = customerTypes;
             }
 
             if (restaurantDto.Address != null)

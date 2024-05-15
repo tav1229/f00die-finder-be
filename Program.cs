@@ -18,6 +18,7 @@ using f00die_finder_be.Data.UnitOfWork;
 using f00die_finder_be.Common.FileService;
 using f00die_finder_be.Common.CacheService;
 using StackExchange.Redis;
+using f00die_finder_be.Services.CustomerTypeService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,6 +92,7 @@ builder.Services.AddScoped<IAdditionalServiceService, AdditionalServiceService>(
 builder.Services.AddScoped<IServingTypeService, ServingTypeService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IReviewCommentService, ReviewCommentService>();
+builder.Services.AddScoped<ICustomerTypeService, CustomerTypeService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 

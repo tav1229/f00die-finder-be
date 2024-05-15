@@ -22,6 +22,8 @@ namespace f00die_finder_be.Data
         public DbSet<ServingType> ServingTypes { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<WardOrCommune> WardOrCommunes { get; set; }
+        public DbSet<CustomerType> CustomerTypes { get; set; }
+        public DbSet<RestaurantCustomerType> RestaurantCustomerTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

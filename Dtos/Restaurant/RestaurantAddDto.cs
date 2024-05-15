@@ -22,6 +22,8 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public List<Guid>? ServingTypes { get; set; }
 
+        public List<Guid>? CustomerTypes { get; set; }
+
         public string? Address { get; set; }
 
         public Guid Ward { get; set; }

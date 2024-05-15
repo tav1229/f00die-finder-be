@@ -1,6 +1,0 @@
-@f00die_finder_be_HostAddress = http://localhost:5016
-
-GET {{f00die_finder_be_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

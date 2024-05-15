@@ -16,6 +16,8 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public Guid? ServingType { get; set; }
 
+        public Guid? CustomerType { get; set; }
+
         public string? Sort { get; set; }
 
     }
