@@ -1,5 +1,6 @@
-﻿using f00die_finder_be.Dtos.Restaurant;
-using f00die_finder_be.Entities;
+﻿using f00die_finder_be.Data.Entities;
+using f00die_finder_be.Dtos;
+using f00die_finder_be.Dtos.Restaurant;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.ServingTypeService
@@ -10,28 +11,20 @@ namespace f00die_finder_be.Services.ServingTypeService
         {
         }
 
-        public async Task<List<ServingTypeDto>> GetServingTypesAsync()
+        public async Task<CustomResponse<List<ServingTypeDto>>> GetServingTypesAsync()
         {
-            return await _cacheService.GetOrCreateAsync("servingTypes", async () =>
+            var data = await _cacheService.GetOrCreateAsync("servingTypes", async () =>
             {
-                var servingTypeQuery = await _unitOfWork.GetAllAsync<ServingType>();
+                var servingTypeQuery = await _unitOfWork.GetQueryableAsync<ServingType>();
                 var servingTypes = await servingTypeQuery.ToListAsync();
 
                 return _mapper.Map<List<ServingTypeDto>>(servingTypes);
             });
-        }
 
-        public async Task<List<ServingTypeDto>> GetServingTypesByRestaurantAsync(Guid restaurantId)
-        {
-            return await _cacheService.GetOrCreateAsync($"servingTypes-restaurant-{restaurantId}", async () =>
+            return new CustomResponse<List<ServingTypeDto>>
             {
-                var servingTypeQuery = await _unitOfWork.GetAllAsync<RestaurantServingType>();
-                var servingTypes = await servingTypeQuery
-                    .Where(s => s.RestaurantId == restaurantId)
-                    .Select(s => s.ServingType).ToListAsync();
-
-                return _mapper.Map<List<ServingTypeDto>>(servingTypes);
-            });
+                Data = data
+            };
         }
     }
 }

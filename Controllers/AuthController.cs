@@ -1,0 +1,45 @@
+using f00die_finder_be.Dtos.Auth;
+using f00die_finder_be.Services.AuthService;
+using Microsoft.AspNetCore.Mvc;
+
+namespace f00die_finder_be.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+        private readonly IAuthService _authService;
+
+        public AuthController(IAuthService authService)
+        {
+            _authService = authService;
+
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegistrationDto userRegister)
+        {
+            return Ok(await _authService.RegisterAsync(userRegister));
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto loginDto)
+        {
+            return Ok(await _authService.LoginAsync(loginDto));
+        }
+
+        [HttpPost("get-otp")]
+        public async Task<IActionResult> GetNewOtp(GetOtpDto getOtpDto)
+        {
+            await _authService.GetNewOtpAsync(getOtpDto);
+            return Ok();
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            await _authService.ForgotPasswordAsync(forgotPasswordDto);
+            return Ok();
+        }
+    }
+}

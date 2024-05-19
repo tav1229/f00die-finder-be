@@ -53,4 +53,16 @@ namespace f00die_finder_be.Common
         public NotFoundException()
             : base($"Not found", (int)HttpStatusCode.NotFound) { }
     }
+
+    public class InvalidOtpException : CustomException
+    {
+        public InvalidOtpException()
+            : base($"Invalid OTP", (int)HttpStatusCode.BadRequest) { }
+    }
+
+    public class InvalidRefreshTokenException : CustomException
+    {
+        public InvalidRefreshTokenException()
+            : base($"Invalid refresh token", (int)HttpStatusCode.BadRequest) { }
+    }
 }

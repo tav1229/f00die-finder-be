@@ -1,4 +1,4 @@
-﻿using f00die_finder_be.Entities;
+﻿using f00die_finder_be.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Data
@@ -24,6 +24,7 @@ namespace f00die_finder_be.Data
         public DbSet<WardOrCommune> WardOrCommunes { get; set; }
         public DbSet<CustomerType> CustomerTypes { get; set; }
         public DbSet<RestaurantCustomerType> RestaurantCustomerTypes { get; set; }
+        public DbSet<UserToken> UserTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

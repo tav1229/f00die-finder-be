@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos.Location;
 using f00die_finder_be.Dtos.Reservation;
 using f00die_finder_be.Dtos.Restaurant;
 using f00die_finder_be.Dtos.ReviewComment;
-using f00die_finder_be.Entities;
+using f00die_finder_be.Dtos.User;
 
 namespace f00die_finder_be.Common
 {
@@ -47,6 +48,7 @@ namespace f00die_finder_be.Common
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName));
             CreateMap<ReviewCommentAddDto, ReviewComment>();
             CreateMap<CustomerType, CustomerTypeDto>();
+            CreateMap<User, UserDetailDto>();
         }
     }
 }

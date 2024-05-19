@@ -22,20 +22,20 @@ namespace f00die_finder_be.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("f00die_finder_be.Entities.AdditionalService", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.AdditionalService", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -46,7 +46,7 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("AdditionalServices");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.BusinessHour", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.BusinessHour", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,8 +55,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<TimeSpan>("CloseTime")
                         .HasColumnType("time");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("int");
@@ -64,8 +64,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<TimeSpan>("OpenTime")
                         .HasColumnType("time");
@@ -80,20 +80,20 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("BusinessHours");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.CuisineType", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.CuisineType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -104,20 +104,20 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("CuisineTypes");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.CustomerType", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.CustomerType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -128,7 +128,7 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("CustomerTypes");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.District", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.District", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -137,14 +137,14 @@ namespace f00die_finder_be.Migrations
                     b.Property<short>("Code")
                         .HasColumnType("smallint");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -160,7 +160,7 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("Districts");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.Location", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.Location", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -169,14 +169,14 @@ namespace f00die_finder_be.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid?>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
@@ -195,7 +195,7 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.ProvinceOrCity", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.ProvinceOrCity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -204,14 +204,14 @@ namespace f00die_finder_be.Migrations
                     b.Property<short>("Code")
                         .HasColumnType("smallint");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -222,14 +222,14 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("ProvinceOrCities");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.Reservation", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.Reservation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("CustomerName")
                         .IsRequired()
@@ -242,8 +242,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
@@ -257,11 +257,11 @@ namespace f00die_finder_be.Migrations
                     b.Property<int>("ReservationStatus")
                         .HasColumnType("int");
 
+                    b.Property<DateTimeOffset>("ReservationTime")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -275,7 +275,7 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("Reservations");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.Restaurant", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.Restaurant", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -284,8 +284,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -293,8 +293,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -311,6 +311,9 @@ namespace f00die_finder_be.Migrations
 
                     b.Property<int>("PriceRangePerPerson")
                         .HasColumnType("int");
+
+                    b.Property<short>("Rating")
+                        .HasColumnType("smallint");
 
                     b.Property<int>("ReservationCount")
                         .HasColumnType("int");
@@ -329,7 +332,7 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("Restaurants");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantAdditionalService", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantAdditionalService", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -338,14 +341,14 @@ namespace f00die_finder_be.Migrations
                     b.Property<Guid>("AdditionalServiceId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
@@ -359,14 +362,14 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("RestaurantAdditionalServices");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantCuisineType", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantCuisineType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("CuisineTypeId")
                         .HasColumnType("uniqueidentifier");
@@ -374,8 +377,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
@@ -389,14 +392,14 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("RestaurantCuisineTypes");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantCustomerType", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantCustomerType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("CustomerTypeId")
                         .HasColumnType("uniqueidentifier");
@@ -404,8 +407,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
@@ -419,14 +422,14 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("RestaurantCustomerTypes");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantImage", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantImage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("ImageType")
                         .HasColumnType("int");
@@ -434,8 +437,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
@@ -451,20 +454,20 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("RestaurantImages");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantServingType", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantServingType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("RestaurantId")
                         .HasColumnType("uniqueidentifier");
@@ -481,7 +484,7 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("RestaurantServingTypes");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.ReviewComment", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.ReviewComment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -490,14 +493,14 @@ namespace f00die_finder_be.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<short>("Rating")
                         .HasColumnType("smallint");
@@ -517,20 +520,20 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("ReviewComments");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.ServingType", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.ServingType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -541,14 +544,14 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("ServingTypes");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.User", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -565,15 +568,14 @@ namespace f00die_finder_be.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("PasswordSalt")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Phone")
-                        .IsRequired()
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Role")
@@ -588,7 +590,47 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.WardOrCommune", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.UserToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("OTP")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("OTPExpiryTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("OTPType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserTokens");
+                });
+
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.WardOrCommune", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -597,8 +639,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<int>("Code")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("DistrictId")
                         .HasColumnType("uniqueidentifier");
@@ -606,8 +648,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -619,9 +661,9 @@ namespace f00die_finder_be.Migrations
                     b.ToTable("WardOrCommunes");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.BusinessHour", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.BusinessHour", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.Restaurant", "Restaurant")
+                    b.HasOne("f00die_finder_be.Data.Entities.Restaurant", "Restaurant")
                         .WithMany("BusinessHours")
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -630,9 +672,9 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.District", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.District", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.ProvinceOrCity", "ProvinceOrCity")
+                    b.HasOne("f00die_finder_be.Data.Entities.ProvinceOrCity", "ProvinceOrCity")
                         .WithMany("Districts")
                         .HasForeignKey("ProvinceOrCityId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -641,13 +683,13 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("ProvinceOrCity");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.Location", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.Location", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.Restaurant", "Restaurant")
+                    b.HasOne("f00die_finder_be.Data.Entities.Restaurant", "Restaurant")
                         .WithOne("Location")
-                        .HasForeignKey("f00die_finder_be.Entities.Location", "RestaurantId");
+                        .HasForeignKey("f00die_finder_be.Data.Entities.Location", "RestaurantId");
 
-                    b.HasOne("f00die_finder_be.Entities.WardOrCommune", "WardOrCommune")
+                    b.HasOne("f00die_finder_be.Data.Entities.WardOrCommune", "WardOrCommune")
                         .WithMany("Locations")
                         .HasForeignKey("WardOrCommuneId");
 
@@ -656,15 +698,15 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("WardOrCommune");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.Reservation", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.Reservation", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.Restaurant", "Restaurant")
+                    b.HasOne("f00die_finder_be.Data.Entities.Restaurant", "Restaurant")
                         .WithMany("Reservations")
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("f00die_finder_be.Entities.User", "User")
+                    b.HasOne("f00die_finder_be.Data.Entities.User", "User")
                         .WithMany("Reservations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -675,26 +717,26 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.Restaurant", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.Restaurant", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.User", "Owner")
+                    b.HasOne("f00die_finder_be.Data.Entities.User", "Owner")
                         .WithOne("Restaurant")
-                        .HasForeignKey("f00die_finder_be.Entities.Restaurant", "OwnerId")
+                        .HasForeignKey("f00die_finder_be.Data.Entities.Restaurant", "OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantAdditionalService", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantAdditionalService", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.AdditionalService", "AdditionalService")
+                    b.HasOne("f00die_finder_be.Data.Entities.AdditionalService", "AdditionalService")
                         .WithMany()
                         .HasForeignKey("AdditionalServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("f00die_finder_be.Entities.Restaurant", "Restaurant")
+                    b.HasOne("f00die_finder_be.Data.Entities.Restaurant", "Restaurant")
                         .WithMany("RestaurantAdditionalServices")
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -705,15 +747,15 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantCuisineType", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantCuisineType", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.CuisineType", "CuisineType")
+                    b.HasOne("f00die_finder_be.Data.Entities.CuisineType", "CuisineType")
                         .WithMany()
                         .HasForeignKey("CuisineTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("f00die_finder_be.Entities.Restaurant", "Restaurant")
+                    b.HasOne("f00die_finder_be.Data.Entities.Restaurant", "Restaurant")
                         .WithMany("RestaurantCuisineTypes")
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -724,15 +766,15 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantCustomerType", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantCustomerType", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.CustomerType", "CustomerType")
+                    b.HasOne("f00die_finder_be.Data.Entities.CustomerType", "CustomerType")
                         .WithMany()
                         .HasForeignKey("CustomerTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("f00die_finder_be.Entities.Restaurant", "Restaurant")
+                    b.HasOne("f00die_finder_be.Data.Entities.Restaurant", "Restaurant")
                         .WithMany("RestaurantCustomerTypes")
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -743,9 +785,9 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantImage", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantImage", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.Restaurant", "Restaurant")
+                    b.HasOne("f00die_finder_be.Data.Entities.Restaurant", "Restaurant")
                         .WithMany("Images")
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -754,15 +796,15 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("Restaurant");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.RestaurantServingType", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantServingType", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.Restaurant", "Restaurant")
+                    b.HasOne("f00die_finder_be.Data.Entities.Restaurant", "Restaurant")
                         .WithMany("RestaurantServingTypes")
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("f00die_finder_be.Entities.ServingType", "ServingType")
+                    b.HasOne("f00die_finder_be.Data.Entities.ServingType", "ServingType")
                         .WithMany()
                         .HasForeignKey("ServingTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -773,15 +815,15 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("ServingType");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.ReviewComment", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.ReviewComment", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.Restaurant", "Restaurant")
+                    b.HasOne("f00die_finder_be.Data.Entities.Restaurant", "Restaurant")
                         .WithMany("Reviews")
                         .HasForeignKey("RestaurantId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("f00die_finder_be.Entities.User", "User")
+                    b.HasOne("f00die_finder_be.Data.Entities.User", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -792,9 +834,20 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.WardOrCommune", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.UserToken", b =>
                 {
-                    b.HasOne("f00die_finder_be.Entities.District", "District")
+                    b.HasOne("f00die_finder_be.Data.Entities.User", "User")
+                        .WithMany("UserTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.WardOrCommune", b =>
+                {
+                    b.HasOne("f00die_finder_be.Data.Entities.District", "District")
                         .WithMany("WardOrCommunes")
                         .HasForeignKey("DistrictId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -803,17 +856,17 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("District");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.District", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.District", b =>
                 {
                     b.Navigation("WardOrCommunes");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.ProvinceOrCity", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.ProvinceOrCity", b =>
                 {
                     b.Navigation("Districts");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.Restaurant", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.Restaurant", b =>
                 {
                     b.Navigation("BusinessHours");
 
@@ -834,16 +887,18 @@ namespace f00die_finder_be.Migrations
                     b.Navigation("Reviews");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.User", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.User", b =>
                 {
                     b.Navigation("Reservations");
 
                     b.Navigation("Restaurant");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("UserTokens");
                 });
 
-            modelBuilder.Entity("f00die_finder_be.Entities.WardOrCommune", b =>
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.WardOrCommune", b =>
                 {
                     b.Navigation("Locations");
                 });

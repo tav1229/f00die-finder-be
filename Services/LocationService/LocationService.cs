@@ -1,5 +1,6 @@
-﻿using f00die_finder_be.Dtos.Location;
-using f00die_finder_be.Entities;
+﻿using f00die_finder_be.Data.Entities;
+using f00die_finder_be.Dtos;
+using f00die_finder_be.Dtos.Location;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.Location
@@ -9,36 +10,51 @@ namespace f00die_finder_be.Services.Location
         public LocationService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
-        public async Task<List<DistrictDto>> GetDistrictsByProvinceOrCityAsync(Guid provinceOrCityId)
+        public async Task<CustomResponse<List<DistrictDto>>> GetDistrictsByProvinceOrCityAsync(Guid provinceOrCityId)
         {
-            return await _cacheService.GetOrCreateAsync($"districts-provinceOrCity-{provinceOrCityId}", async () =>
+            var data = await _cacheService.GetOrCreateAsync($"districts-provinceOrCity-{provinceOrCityId}", async () =>
             {
-                var districtQuery = await _unitOfWork.GetAllAsync<District>();
+                var districtQuery = await _unitOfWork.GetQueryableAsync<District>();
                 var districts = await districtQuery
                     .Where(d => d.ProvinceOrCityId == provinceOrCityId).ToListAsync();
                 return _mapper.Map<List<DistrictDto>>(districts);
             });
+
+            return new CustomResponse<List<DistrictDto>>
+            {
+                Data = data
+            };
         }
 
-        public async Task<List<ProvinceOrCityDto>> GetProvinceOrCitysAsync()
+        public async Task<CustomResponse<List<ProvinceOrCityDto>>> GetProvinceOrCitysAsync()
         {
-            return await _cacheService.GetOrCreateAsync("provinceOrCitys", async () =>
+            var data = await _cacheService.GetOrCreateAsync("provinceOrCitys", async () =>
             {
-                var provinceOrCityQuery = await _unitOfWork.GetAllAsync<ProvinceOrCity>();
+                var provinceOrCityQuery = await _unitOfWork.GetQueryableAsync<ProvinceOrCity>();
                 var provinceOrCitys = await provinceOrCityQuery.ToListAsync();
                 return _mapper.Map<List<ProvinceOrCityDto>>(provinceOrCitys);
             });
+
+            return new CustomResponse<List<ProvinceOrCityDto>>
+            {
+                Data = data
+            };
         }
 
-        public async Task<List<WardOrCommuneDto>> GetWardOrCommunesByDistrictAsync(Guid districtId)
+        public async Task<CustomResponse<List<WardOrCommuneDto>>> GetWardOrCommunesByDistrictAsync(Guid districtId)
         {
-            return await _cacheService.GetOrCreateAsync($"wardOrCommunes-district-{districtId}", async () =>
+            var data = await _cacheService.GetOrCreateAsync($"wardOrCommunes-district-{districtId}", async () =>
             {
-                var wardOrCommuneQuery = await _unitOfWork.GetAllAsync<WardOrCommune>();
+                var wardOrCommuneQuery = await _unitOfWork.GetQueryableAsync<WardOrCommune>();
                 var wardOrCommunes = await wardOrCommuneQuery
                     .Where(w => w.DistrictId == districtId).ToListAsync();
                 return _mapper.Map<List<WardOrCommuneDto>>(wardOrCommunes);
             });
+
+            return new CustomResponse<List<WardOrCommuneDto>>
+            {
+                Data = data
+            };
         }
     }
 }

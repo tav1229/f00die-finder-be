@@ -1,5 +1,6 @@
-﻿using f00die_finder_be.Dtos.Restaurant;
-using f00die_finder_be.Entities;
+﻿using f00die_finder_be.Data.Entities;
+using f00die_finder_be.Dtos;
+using f00die_finder_be.Dtos.Restaurant;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.AdditionalServiceService
@@ -10,30 +11,21 @@ namespace f00die_finder_be.Services.AdditionalServiceService
         {
         }
 
-        public async Task<List<AdditionalServiceDto>> GetAditionalServicesAsync()
+        public async Task<CustomResponse<List<AdditionalServiceDto>>> GetAditionalServicesAsync()
         {
-            return await _cacheService.GetOrCreateAsync("additionalServices", async () =>
+            var data = await _cacheService.GetOrCreateAsync("additionalServices", async () =>
             {
-                var additionalServiceQuery = await _unitOfWork.GetAllAsync<AdditionalService>();
+                var additionalServiceQuery = await _unitOfWork.GetQueryableAsync<AdditionalService>();
 
                 var additionalServices = await additionalServiceQuery.ToListAsync();
 
                 return _mapper.Map<List<AdditionalServiceDto>>(additionalServices);
             });
-        }
 
-        public async Task<List<AdditionalServiceDto>> GetAditionalServicesByRestaurantAsync(Guid restaurantId)
-        {
-            return await _cacheService.GetOrCreateAsync($"additionalServices-restaurant-{restaurantId}", async () =>
+            return new CustomResponse<List<AdditionalServiceDto>>
             {
-                var additionalServiceQuery = await _unitOfWork.GetAllAsync<RestaurantAdditionalService>();
-
-                var additionalServices = await additionalServiceQuery
-                    .Where(s => s.RestaurantId == restaurantId)
-                    .Select(s => s.AdditionalService).ToListAsync();
-
-                return _mapper.Map<List<AdditionalServiceDto>>(additionalServices);
-            });
+                Data = data
+            };
         }
     }
 }

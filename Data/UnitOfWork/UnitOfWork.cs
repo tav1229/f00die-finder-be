@@ -1,4 +1,4 @@
-﻿using f00die_finder_be.Entities;
+﻿using f00die_finder_be.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Data.UnitOfWork
@@ -12,7 +12,7 @@ namespace f00die_finder_be.Data.UnitOfWork
             _context = context;
         }
 
-        public Task<IQueryable<T>> GetAllAsync<T>() where T : BaseEntity
+        public Task<IQueryable<T>> GetQueryableAsync<T>() where T : BaseEntity
         {
             return Task.FromResult(_context.Set<T>().Where(e => e.IsDeleted == false));
         }
@@ -51,7 +51,7 @@ namespace f00die_finder_be.Data.UnitOfWork
             var entities = _context.ChangeTracker.Entries()
                 .Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
-            var currentDateTime = DateTime.Now;
+            var currentDateTime = DateTimeOffset.Now;
 
             foreach (var entity in entities)
             {

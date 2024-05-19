@@ -16,7 +16,8 @@ namespace f00die_finder_be.Common
     {
         Pending,
         Confirmed,
-        Denied
+        Denied,
+        Cancelled
     }
     public enum PriceRangePerPerson
     {
@@ -28,5 +29,16 @@ namespace f00die_finder_be.Common
     {
         Menu,
         Restaurant
+    }
+    public enum OTPType
+    {
+        ForgotPassword
+    }
+    public enum RestaurantSortType
+    {
+        Popular,
+        PriceAscending,
+        PriceDescending,
+        Rating
     }
 }

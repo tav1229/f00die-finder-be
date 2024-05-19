@@ -1,7 +1,7 @@
 ﻿using f00die_finder_be.Common;
+using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Reservation;
-using f00die_finder_be.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.ReservationService
@@ -12,9 +12,9 @@ namespace f00die_finder_be.Services.ReservationService
         {
         }
 
-        public async Task<Guid> AddAsync(ReservationAddDto reservationAddDto)
+        public async Task<CustomResponse<ReservationDetailDto>> AddAsync(ReservationAddDto reservationAddDto)
         {
-            var restaurantQuery = await _unitOfWork.GetAllAsync<Restaurant>();
+            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
             var restaurant = await restaurantQuery.FirstOrDefaultAsync(r => r.Id == reservationAddDto.RestaurantId);
             if (restaurant == null)
             {
@@ -34,39 +34,48 @@ namespace f00die_finder_be.Services.ReservationService
             await _unitOfWork.SaveChangesAsync();
 
             await _cacheService.RemoveAsync($"reservations-restaurant-{reservation.RestaurantId}");
-            return reservation.Id;
+            
+            return new CustomResponse<ReservationDetailDto>
+            {
+                Data = _mapper.Map<ReservationDetailDto>(reservation)
+            };
         }
 
-        public async Task<ReservationDetailDto> GetReservationByIdAsync(Guid reservationId)
+        public async Task<CustomResponse<ReservationDetailDto>> GetReservationByIdAsync(Guid reservationId)
         {
-            return await _cacheService.GetOrCreateAsync($"reservation-{reservationId}", async () =>
+            var data = await _cacheService.GetOrCreateAsync($"reservation-{reservationId}", async () =>
             {
-                var reservationQuery = await _unitOfWork.GetAllAsync<Reservation>();
+                var reservationQuery = await _unitOfWork.GetQueryableAsync<Reservation>();
                 var reservation = await reservationQuery
                     .FirstOrDefaultAsync(r => r.Id == reservationId);
 
                 return _mapper.Map<ReservationDetailDto>(reservation);
             });
+
+            return new CustomResponse<ReservationDetailDto>
+            {
+                Data = data
+            };
         }
 
-        public async Task<PagedResult<ReservationDto>> GetReservationsOfRestaurantAsync(Guid restaurantId, ReservationStatus? reservationStatus, DateTime? time, int pageSize, int pageNumber)
+        public async Task<CustomResponse<List<ReservationDto>>> GetReservationsOfRestaurantAsync(FilterReservationsOfRestaurantDto filter, int pageSize, int pageNumber)
         {
-            var cacheKey = $"reservations-restaurant-{restaurantId}";
+            var cacheKey = $"reservations-restaurant-{filter.RestaurantId}";
             var restaurantReservations = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
             {
-                var reservationQuery = await _unitOfWork.GetAllAsync<Reservation>();
+                var reservationQuery = await _unitOfWork.GetQueryableAsync<Reservation>();
                 return await reservationQuery
-                    .Where(r => r.RestaurantId == restaurantId)
+                    .Where(r => r.RestaurantId == filter.RestaurantId)
                     .ToListAsync();
             });
             var restaurantReservationsQuery = restaurantReservations.AsQueryable();
-            if (reservationStatus != null)
+            if (filter.ReservationStatus != null)
             {
-                restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.ReservationStatus == reservationStatus);
+                restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.ReservationStatus == filter.ReservationStatus);
             }
-            if (time != null)
+            if (filter.ReservationTime != null)
             {
-                restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.Time.Date == time.Value.Date);
+                restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.ReservationTime.Date == filter.ReservationTime.Value.Date);
             }
 
             int totalItems = restaurantReservationsQuery.Count();
@@ -77,18 +86,21 @@ namespace f00die_finder_be.Services.ReservationService
                 .Select(r => _mapper.Map<ReservationDto>(r))
                 .ToList();
 
-            return new PagedResult<ReservationDto>
+            return new CustomResponse<List<ReservationDto>>
             {
-                PageSize = pageSize,
-                CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
-                Items = items
+                Data = items,
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                }
             };
         }
 
-        public async Task UpdateReservationStatusAsync(Guid reservationId, ReservationStatus reservationStatus)
+        public async Task<CustomResponse<ReservationDetailDto>> UpdateReservationStatusAsync(Guid reservationId, ReservationStatus reservationStatus)
         {
-            var reservationQuery = await _unitOfWork.GetAllAsync<Reservation>();
+            var reservationQuery = await _unitOfWork.GetQueryableAsync<Reservation>();
             var reservation = await reservationQuery.FirstOrDefaultAsync(r => r.Id == reservationId);
             if (reservation == null)
             {
@@ -101,6 +113,11 @@ namespace f00die_finder_be.Services.ReservationService
 
             await _cacheService.RemoveAsync($"reservations-restaurant-{reservation.RestaurantId}");
             await _cacheService.RemoveAsync($"reservation-{reservationId}");
+
+            return new CustomResponse<ReservationDetailDto>
+            {
+                Data = _mapper.Map<ReservationDetailDto>(reservation)
+            };
         }
     }
 }

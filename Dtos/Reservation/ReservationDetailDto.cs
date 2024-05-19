@@ -6,7 +6,7 @@ namespace f00die_finder_be.Dtos.Reservation
     {
         public Guid Id { get; set; }
 
-        public DateTime Time { get; set; }
+        public DateTimeOffset Time { get; set; }
 
         public string CustomerName { get; set; }
 
@@ -18,7 +18,7 @@ namespace f00die_finder_be.Dtos.Reservation
         
         public string? Note { get; set; }
         
-        public DateTime CreatedDate { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }
 
         public ReservationStatus ReservationStatus { get; set; }
     }

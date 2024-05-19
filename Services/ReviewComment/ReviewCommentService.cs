@@ -10,23 +10,27 @@ namespace f00die_finder_be.Services.ReviewComment
         {
         }
 
-        public async Task<Guid> AddAsync(ReviewCommentAddDto reviewCommentAddDto)
+        public async Task<CustomResponse<ReviewCommentDto>> AddAsync(ReviewCommentAddDto reviewCommentAddDto)
         {
-            var review = _mapper.Map<Entities.ReviewComment>(reviewCommentAddDto);
+            var review = _mapper.Map<Data.Entities.ReviewComment>(reviewCommentAddDto);
             review.UserId = _currentUserService.UserId;
 
             await _unitOfWork.AddAsync(review);
             await _unitOfWork.SaveChangesAsync();
 
             await _cacheService.RemoveAsync($"reviewComments-restaurant-{review.RestaurantId}");
-            return review.Id;
+            
+            return new CustomResponse<ReviewCommentDto>
+            {
+                Data = _mapper.Map<ReviewCommentDto>(review)
+            };
         }
 
-        public async Task<PagedResult<ReviewCommentDto>> GetReviewCommentsOfRestaurantAsync(Guid restaurantId, int pageSize, int pageNumber)
+        public async Task<CustomResponse<List<ReviewCommentDto>>> GetReviewCommentsOfRestaurantAsync(Guid restaurantId, int pageSize, int pageNumber)
         {
             var reviews = await _cacheService.GetOrCreateAsync($"reviewComments-restaurant-{restaurantId}", async () =>
             {
-                var reviewQuery = await _unitOfWork.GetAllAsync<Entities.ReviewComment>();
+                var reviewQuery = await _unitOfWork.GetQueryableAsync<Data.Entities.ReviewComment>();
                 return await reviewQuery
                     .Include(r => r.User)
                     .Where(r => r.RestaurantId == restaurantId)
@@ -41,12 +45,15 @@ namespace f00die_finder_be.Services.ReviewComment
                 .Select(r => _mapper.Map<ReviewCommentDto>(r))
                 .ToList();
 
-            return new PagedResult<ReviewCommentDto>
+            return new CustomResponse<List<ReviewCommentDto>>
             {
-                PageSize = pageSize,
-                CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
-                Items = items
+                Data = items,
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                }
             };
         }
     }

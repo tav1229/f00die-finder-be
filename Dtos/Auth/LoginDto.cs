@@ -10,8 +10,5 @@ namespace f00die_finder_be.Dtos.Auth
 
         [Required]
         public string Password { get; set; }
-
-        [Required]
-        public Role Role { get; set; }
     }
 }

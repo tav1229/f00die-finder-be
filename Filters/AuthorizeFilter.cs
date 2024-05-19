@@ -49,20 +49,9 @@ namespace f00die_finder_be.Filters
                     ?? throw new Exception("Invalid token");
                 var claims = jwtToken.Claims;
                 var userId = claims.FirstOrDefault(x => x.Type == "UserId")?.Value;
-                var username = claims.FirstOrDefault(x => x.Type == "Username")?.Value;
-                var role = claims.FirstOrDefault(x => x.Type == "Role")?.Value;
-                var fullName = claims.FirstOrDefault(x => x.Type == "FullName")?.Value;
-                var phone = claims.FirstOrDefault(x => x.Type == "Phone")?.Value;
-                var email = claims.FirstOrDefault(x => x.Type == "Email")?.Value;
 
                 var identity = new ClaimsIdentity(context.HttpContext.User.Identity);
                 identity.AddClaim(new Claim("UserId", userId));
-                identity.AddClaim(new Claim("Username", username));
-                identity.AddClaim(new Claim("Role", role));
-                identity.AddClaim(new Claim("FullName", fullName));
-                identity.AddClaim(new Claim("Phone", phone));
-                identity.AddClaim(new Claim("Email", email));
-
 
                 var principal = new ClaimsPrincipal(identity);
                 context.HttpContext.User = principal;
