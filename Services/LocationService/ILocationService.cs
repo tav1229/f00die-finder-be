@@ -1,11 +1,12 @@
-﻿using f00die_finder_be.Dtos.Location;
+﻿using f00die_finder_be.Dtos;
+using f00die_finder_be.Dtos.Location;
 
 namespace f00die_finder_be.Services.Location
 {
     public interface ILocationService
     {
-        Task<List<ProvinceOrCityDto>> GetProvinceOrCitysAsync();
-        Task<List<DistrictDto>> GetDistrictsByProvinceOrCityAsync(Guid provinceOrCityId);
-        Task<List<WardOrCommuneDto>> GetWardOrCommunesByDistrictAsync(Guid districtId);
+        Task<CustomResponse<List<ProvinceOrCityDto>>> GetProvinceOrCitysAsync();
+        Task<CustomResponse<List<DistrictDto>>> GetDistrictsByProvinceOrCityAsync(Guid provinceOrCityId);
+        Task<CustomResponse<List<WardOrCommuneDto>>> GetWardOrCommunesByDistrictAsync(Guid districtId);
     }
 }

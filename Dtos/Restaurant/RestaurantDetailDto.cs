@@ -42,5 +42,7 @@ namespace f00die_finder_be.Dtos.Restaurant
         public List<AdditionalServiceDto>? AdditionalServices { get; set; }
 
         public RestaurantStatus? Status { get; set; }
+        
+        public short Rating { get; set; }
     }
 }

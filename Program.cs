@@ -19,6 +19,7 @@ using f00die_finder_be.Common.FileService;
 using f00die_finder_be.Common.CacheService;
 using StackExchange.Redis;
 using f00die_finder_be.Services.CustomerTypeService;
+using f00die_finder_be.Common.IMailService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,6 +96,7 @@ builder.Services.AddScoped<IReviewCommentService, ReviewCommentService>();
 builder.Services.AddScoped<ICustomerTypeService, CustomerTypeService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<IMailService, MailService>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddHttpContextAccessor();
@@ -123,6 +125,12 @@ catch (Exception ex)
     logger.LogError(ex, "Migration Failed");
 }
 
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+});
 
 app.UseSwagger();
 app.UseSwaggerUI();

@@ -6,9 +6,9 @@ namespace f00die_finder_be.Services.ReservationService
 {
     public interface IReservationService
     {
-        Task<PagedResult<ReservationDto>> GetReservationsOfRestaurantAsync(Guid restaurantId, ReservationStatus? reservationStatus, DateTime? time, int pageSize, int pageNumber);
-        Task<Guid> AddAsync(ReservationAddDto reservationAddDto);
-        Task<ReservationDetailDto> GetReservationByIdAsync(Guid reservationId);
-        Task UpdateReservationStatusAsync(Guid reservationId, ReservationStatus reservationStatus);
+        Task<CustomResponse<List<ReservationDto>>> GetReservationsOfRestaurantAsync(FilterReservationsOfRestaurantDto filterReservationOfRestaurantDto, int pageSize, int pageNumber);
+        Task<CustomResponse<ReservationDetailDto>> AddAsync(ReservationAddDto reservationAddDto);
+        Task<CustomResponse<ReservationDetailDto>> GetReservationByIdAsync(Guid reservationId);
+        Task<CustomResponse<ReservationDetailDto>> UpdateReservationStatusAsync(Guid reservationId, ReservationStatus reservationStatus);
     }
 }

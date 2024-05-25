@@ -3,7 +3,7 @@
     public class ReservationAddDto
     {
         public Guid RestaurantId { get; set; }
-        public DateTime Time { get; set; }
+        public DateTimeOffset Time { get; set; }
 
         public string CustomerName { get; set; }
 

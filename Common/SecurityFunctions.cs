@@ -44,11 +44,7 @@ namespace f00die_finder_be.Common
             var claims = new List<Claim>()
             {
                 new Claim("UserId", tokenDto.UserId.ToString()),
-                new Claim("Username", tokenDto.Username),
-                new Claim("Role", tokenDto.Role.ToString()),
-                new Claim("FullName", tokenDto.FullName),
-                new Claim("Phone", tokenDto.Phone),
-                new Claim("Email", tokenDto.Email),
+                new Claim("IsVerified", tokenDto.IsVerified.ToString())
             };
 
             var symmetricKey = new SymmetricSecurityKey
@@ -57,7 +53,7 @@ namespace f00die_finder_be.Common
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(int.Parse(configuration["TokenTimeOut"]!)),
+                Expires = DateTimeOffset.Now.AddMinutes(int.Parse(configuration["TokenTimeOut"]!)).UtcDateTime,
                 SigningCredentials = new SigningCredentials(
                     symmetricKey, SecurityAlgorithms.HmacSha256Signature)
             };
@@ -68,17 +64,24 @@ namespace f00die_finder_be.Common
 
             return tokenHandler.WriteToken(token);
         }
+
+        public static string GenerateOTP(int length = 6)
+        {
+            string validChars = "1234567890";
+            char[] chars = new char[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                chars[i] = validChars[RandomNumberGenerator.GetInt32(validChars.Length - 1)];
+            }
+
+            return new string(chars);
+        }
     }
 
     public class ClaimData
     {
         public Guid UserId { get; set; }
-        public string Username { get; set; }
-        public Role Role { get; set; }
-        public string FullName { get; set; }
-
-        public string Phone { get; set; }
-
-        public string Email { get; set; }
+        public bool IsVerified { get; set; }
     }
 }

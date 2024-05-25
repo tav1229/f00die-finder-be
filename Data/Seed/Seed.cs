@@ -1,5 +1,5 @@
 using f00die_finder_be.Common;
-using f00die_finder_be.Entities;
+using f00die_finder_be.Data.Entities;
 using System.Text.Json;
 
 namespace f00die_finder_be.Data.Seed
@@ -111,8 +111,8 @@ namespace f00die_finder_be.Data.Seed
         //             SpecialDishes = "Special dishes for Restaurant " + i,
         //             Introduction = "Introduction for Restaurant " + i,
         //             Note = "Note for Restaurant " + i,
-        //             CreateAt = DateTime.Now,
-        //             UpdateAt = DateTime.Now,
+        //             CreateAt = DateTimeOffset.Now,
+        //             UpdateAt = DateTimeOffset.Now,
         //             UserId = new Guid("ee475df2-87c9-4cca-f211-08db6510c972"),
         //         };
         //         restaurantList.Add(restaurant);
@@ -142,11 +142,10 @@ namespace f00die_finder_be.Data.Seed
                 var hashedPassword = SecurityFunction.HashPassword("seed", passwordSalt);
 
                 var user = new User();
-                user.Username = "user" + i.ToString();
                 user.HashedPassword = hashedPassword;
                 user.PasswordSalt = passwordSalt;
                 user.FullName = "user " + i.ToString();
-                user.Phone = "09876543" + i.ToString();
+                user.PhoneNumber = "09876543" + i.ToString();
                 user.Email = "user" + i.ToString() + "@gmail.com";
                 user.Role = Role.RestaurantOwner;
 

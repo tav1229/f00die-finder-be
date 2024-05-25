@@ -26,5 +26,7 @@ namespace f00die_finder_be.Dtos.Restaurant
         public PriceRangePerPerson PriceRangePerPerson { get; set; }
 
         public List<string> Images { get; set; }
+
+        public short Rating { get; set; }
     }
 }

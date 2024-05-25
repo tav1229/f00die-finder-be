@@ -1,7 +1,8 @@
 ﻿using f00die_finder_be.Common;
+using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Restaurant;
-using f00die_finder_be.Entities;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.RestaurantService
@@ -12,7 +13,7 @@ namespace f00die_finder_be.Services.RestaurantService
         {
         }
 
-        public async Task<Guid> AddAsync(RestaurantAddDto restaurantDto)
+        public async Task<CustomResponse<RestaurantDetailDto>> AddAsync(RestaurantAddDto restaurantDto)
         {
             var cuisineTypes = new List<RestaurantCuisineType>();
             if (restaurantDto.CuisineTypes != null)
@@ -88,7 +89,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 RestaurantCuisineTypes = cuisineTypes,
                 RestaurantServingTypes = serviceTypes,
                 RestaurantCustomerTypes = customerTypes,
-                Location = new f00die_finder_be.Entities.Location()
+                Location = new f00die_finder_be.Data.Entities.Location()
                 {
                     Address = restaurantDto.Address,
                     WardOrCommuneId = restaurantDto.Ward
@@ -103,12 +104,15 @@ namespace f00die_finder_be.Services.RestaurantService
 
             await _cacheService.RemoveAsync("restaurants");
 
-            return restaurant.Id;
+            return new CustomResponse<RestaurantDetailDto>
+            {
+                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+            };
         }
 
-        public async Task DeactivateAsync()
+        public async Task<CustomResponse<RestaurantDetailDto>> DeactivateAsync()
         {
-            var restaurantQuery = await _unitOfWork.GetAllAsync<Restaurant>();
+            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
             var restaurant = await restaurantQuery.FirstOrDefaultAsync(r => r.OwnerId == _currentUserService.UserId);
             if (restaurant == null)
             {
@@ -122,13 +126,18 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurants");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
+
+            return new CustomResponse<RestaurantDetailDto>
+            {
+                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+            };
         }
 
-        public async Task<RestaurantDetailDto> GetRestaurantByIdAsync(Guid restaurantId)
+        public async Task<CustomResponse<RestaurantDetailDto>> GetRestaurantByIdAsync(Guid restaurantId)
         {
-            return await _cacheService.GetOrCreateAsync($"restaurant-{restaurantId}", async () =>
+            var data = await _cacheService.GetOrCreateAsync($"restaurant-{restaurantId}", async () =>
             {
-                var restaurantQuery = await _unitOfWork.GetAllAsync<Restaurant>();
+                var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
                 var restaurant = restaurantQuery
                     .Include(r => r.Location)
                     .ThenInclude(l => l.WardOrCommune)
@@ -153,13 +162,18 @@ namespace f00die_finder_be.Services.RestaurantService
 
                 return _mapper.Map<RestaurantDetailDto>(restaurant);
             });
+
+            return new CustomResponse<RestaurantDetailDto>
+            {
+                Data = data
+            };
         }
 
-        public async Task<RestaurantDetailDto> GetMyRestaurantAsync()
+        public async Task<CustomResponse<RestaurantDetailDto>> GetMyRestaurantAsync()
         {
-            return await _cacheService.GetOrCreateAsync($"restaurant-owner-{_currentUserService.UserId}", async () =>
+            var data = await _cacheService.GetOrCreateAsync($"restaurant-owner-{_currentUserService.UserId}", async () =>
             {
-                var restaurantQuery = await _unitOfWork.GetAllAsync<Restaurant>();
+                var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
                 var restaurant = restaurantQuery
                     .Include(r => r.Location)
                     .ThenInclude(l => l.WardOrCommune)
@@ -183,16 +197,21 @@ namespace f00die_finder_be.Services.RestaurantService
 
                 return _mapper.Map<RestaurantDetailDto>(restaurant);
             });
+
+            return new CustomResponse<RestaurantDetailDto>
+            {
+                Data = data
+            };
         }
 
 
-        public async Task<PagedResult<RestaurantDto>> GetRestaurantsAsync(FilterRestaurantDto? filterRestaurantDto, string searchValue, int pageSize, int pageNumber)
+        public async Task<CustomResponse<List<RestaurantDto>>> GetRestaurantsAsync(FilterRestaurantDto? filter, RestaurantSortType? sortType, int pageSize, int pageNumber)
         {
             //var cacheKey = $"restaurants-{filterRestaurantDto?.ProvinceOrCityId}-{filterRestaurantDto?.DistrictId}-{filterRestaurantDto?.PriceRangePerPerson}-{filterRestaurantDto?.WardOrCommuneId}-{filterRestaurantDto?.CuisineType}-{filterRestaurantDto?.ServingType}-{filterRestaurantDto?.Sort}-{searchValue}-{pageSize}-{pageNumber}";
             var cacheKey = "restaurants";
             var restaurants = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
             {
-                var restaurantQuery = await _unitOfWork.GetAllAsync<Restaurant>();
+                var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
 
                 return await restaurantQuery
                 .Include(r => r.Location)
@@ -208,55 +227,58 @@ namespace f00die_finder_be.Services.RestaurantService
                 .Include(r => r.Images)
                 .ToListAsync();
             });
-            
+
             var restaurantsQuery = restaurants.AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchValue))
+            if (!string.IsNullOrEmpty(filter.SearchValue))
             {
-                restaurantsQuery = restaurantsQuery.Where(r => r.Name.Contains(searchValue));
+                restaurantsQuery = restaurantsQuery.Where(r => r.Name.Contains(filter.SearchValue));
             }
 
-            if (filterRestaurantDto != null)
+            if (filter != null)
             {
-                if (filterRestaurantDto.ProvinceOrCityId.HasValue)
+                if (filter.ProvinceOrCityId.HasValue)
                 {
-                    restaurantsQuery = restaurantsQuery.Where(r => r.Location.WardOrCommune.District.ProvinceOrCityId == filterRestaurantDto.ProvinceOrCityId);
+                    restaurantsQuery = restaurantsQuery.Where(r => r.Location.WardOrCommune.District.ProvinceOrCityId == filter.ProvinceOrCityId);
                 }
-                if (filterRestaurantDto.DistrictId.HasValue)
+                if (filter.DistrictId.HasValue)
                 {
-                    restaurantsQuery = restaurantsQuery.Where(r => r.Location.WardOrCommune.DistrictId == filterRestaurantDto.DistrictId);
+                    restaurantsQuery = restaurantsQuery.Where(r => r.Location.WardOrCommune.DistrictId == filter.DistrictId);
                 }
-                if (filterRestaurantDto.WardOrCommuneId.HasValue)
+                if (filter.WardOrCommuneId.HasValue)
                 {
-                    restaurantsQuery = restaurantsQuery.Where(r => r.Location.WardOrCommuneId == filterRestaurantDto.WardOrCommuneId);
+                    restaurantsQuery = restaurantsQuery.Where(r => r.Location.WardOrCommuneId == filter.WardOrCommuneId);
                 }
-                if (filterRestaurantDto.PriceRangePerPerson.HasValue)
+                if (filter.PriceRangePerPerson.HasValue)
                 {
-                    restaurantsQuery = restaurantsQuery.Where(r => r.PriceRangePerPerson == filterRestaurantDto.PriceRangePerPerson);
+                    restaurantsQuery = restaurantsQuery.Where(r => r.PriceRangePerPerson == filter.PriceRangePerPerson);
                 }
-                if (filterRestaurantDto.CuisineType.HasValue)
+                if (filter.CuisineType.HasValue)
                 {
-                    restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantCuisineTypes.Any(rc => rc.CuisineTypeId == filterRestaurantDto.CuisineType));
+                    restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantCuisineTypes.Any(rc => rc.CuisineTypeId == filter.CuisineType));
                 }
-                if (filterRestaurantDto.ServingType.HasValue)
+                if (filter.ServingType.HasValue)
                 {
-                    restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantServingTypes.Any(rs => rs.ServingTypeId == filterRestaurantDto.ServingType));
+                    restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantServingTypes.Any(rs => rs.ServingTypeId == filter.ServingType));
                 }
-                if (filterRestaurantDto.CustomerType.HasValue)
+                if (filter.CustomerType.HasValue)
                 {
-                    restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantCustomerTypes.Any(rc => rc.CustomerTypeId == filterRestaurantDto.CustomerType));
+                    restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantCustomerTypes.Any(rc => rc.CustomerTypeId == filter.CustomerType));
                 }
 
-                switch (filterRestaurantDto.Sort)
+                switch (sortType)
                 {
-                    case "popular":
+                    case RestaurantSortType.Popular:
                         restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
                         break;
-                    case "price-increase":
+                    case RestaurantSortType.PriceAscending:
                         restaurantsQuery = restaurantsQuery.OrderBy(r => r.PriceRangePerPerson);
                         break;
-                    case "price-decrease":
+                    case RestaurantSortType.PriceDescending:
                         restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.PriceRangePerPerson);
+                        break;
+                    case RestaurantSortType.Rating:
+                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.Rating);
                         break;
                     default:
                         restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
@@ -270,20 +292,21 @@ namespace f00die_finder_be.Services.RestaurantService
                 .Select(r => _mapper.Map<RestaurantDto>(r))
                 .ToList();
 
-            var pagedResult = new PagedResult<RestaurantDto>
+            return new CustomResponse<List<RestaurantDto>>
             {
-                PageSize = pageSize,
-                CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
-                Items = pagedRestaurant
+                Data = pagedRestaurant,
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                }
             };
-
-            return pagedResult;
         }
 
-        public async Task UpdateAsync(RestaurantUpdateDto restaurantDto)
+        public async Task<CustomResponse<RestaurantDetailDto>> UpdateAsync(RestaurantUpdateDto restaurantDto)
         {
-            var restaurantQuery = await _unitOfWork.GetAllAsync<Restaurant>();
+            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
             var restaurant = await restaurantQuery
                 .Include(r => r.Images)
                 .FirstOrDefaultAsync(r => r.OwnerId == _currentUserService.UserId);
@@ -404,11 +427,16 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync("restaurants");
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
+
+            return new CustomResponse<RestaurantDetailDto>
+            {
+                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+            };
         }
 
-        public async Task AddImagesAsync(RestaurantAddImagesDto restaurantDto)
+        public async Task<CustomResponse<RestaurantDetailDto>> AddImagesAsync(RestaurantAddImagesDto restaurantDto)
         {
-            var restaurantQuery = await _unitOfWork.GetAllAsync<Restaurant>();
+            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
             var restaurant = await restaurantQuery
                 .Include(r => r.Images)
                 .FirstOrDefaultAsync(r => r.OwnerId == _currentUserService.UserId);
@@ -453,11 +481,16 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync("restaurants");
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
+
+            return new CustomResponse<RestaurantDetailDto>
+            {
+                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+            };
         }
 
-        public async Task DeleteImagesAsync(List<Guid> imageIds)
+        public async Task<CustomResponse<RestaurantDetailDto>> DeleteImagesAsync(List<Guid> imageIds)
         {
-            var restaurantQuery = await _unitOfWork.GetAllAsync<Restaurant>();
+            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
             var restaurant = await restaurantQuery
                 .Include(r => r.Images)
                 .FirstOrDefaultAsync(r => r.OwnerId == _currentUserService.UserId);
@@ -478,6 +511,79 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync("restaurants");
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
+
+            return new CustomResponse<RestaurantDetailDto>
+            {
+                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+            };
+        }
+
+        public async Task<CustomResponse<List<UserSavedRestaurantDto>>> GetMySavedRestaurantsAsync(int pageSize, int pageNumber)
+        {
+            //var cacheKey = $"restaurants-user-{_currentUserService.UserId}";
+            //var items = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
+            //{
+            var userSavedRestaurantQuery = await _unitOfWork.GetQueryableAsync<UserSavedRestaurant>();
+
+            var userSavedRestaurants = userSavedRestaurantQuery
+                .Where(u => u.UserId == _currentUserService.UserId)
+                .Include(u => u.Restaurant)
+                .ThenInclude(r => r.Location)
+                .ThenInclude(l => l.WardOrCommune)
+                .ThenInclude(w => w.District)
+                .ThenInclude(d => d.ProvinceOrCity)
+                .Include(u => u.Restaurant)
+                .ThenInclude(r => r.Images)
+                .Select(u => u.Restaurant);
+
+            var items = await userSavedRestaurants
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(r => _mapper.Map<UserSavedRestaurantDto>(r))
+                .ToListAsync();
+            //});
+
+            return new CustomResponse<List<UserSavedRestaurantDto>>
+            {
+                Data = items,
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(items.Count / (double)pageSize)
+                }
+            };
+        }
+
+        public async Task<CustomResponse<object>> SaveRestaurantAsync(Guid restaurantId)
+        {
+            var userSavedRestaurant = new UserSavedRestaurant()
+            {
+                UserId = _currentUserService.UserId,
+                RestaurantId = restaurantId
+            };
+
+            await _unitOfWork.AddAsync(userSavedRestaurant);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new CustomResponse<object>();
+        }
+
+        public async Task<CustomResponse<object>> UnsaveRestaurantAsync(Guid restaurantId)
+        {
+            var userSavedRestaurantQuery = await _unitOfWork.GetQueryableAsync<UserSavedRestaurant>();
+            var userSavedRestaurant = await userSavedRestaurantQuery
+                .FirstOrDefaultAsync(u => u.UserId == _currentUserService.UserId && u.RestaurantId == restaurantId);
+
+            if (userSavedRestaurant == null)
+            {
+                throw new NotFoundException();
+            }
+
+            await _unitOfWork.DeleteAsync(userSavedRestaurant);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new CustomResponse<object>();
         }
     }
 }

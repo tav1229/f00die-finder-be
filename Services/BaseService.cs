@@ -2,6 +2,7 @@
 using f00die_finder_be.Common.CacheService;
 using f00die_finder_be.Common.CurrentUserService;
 using f00die_finder_be.Common.FileService;
+using f00die_finder_be.Common.IMailService;
 using f00die_finder_be.Data.UnitOfWork;
 
 namespace f00die_finder_be.Services
@@ -14,6 +15,7 @@ namespace f00die_finder_be.Services
         protected readonly IUnitOfWork _unitOfWork;
         protected readonly IFileService _fileService;
         protected readonly ICacheService _cacheService;
+        protected readonly IMailService _mailService;
 
         public BaseService(IServiceProvider serviceProvider)
         {
@@ -23,6 +25,7 @@ namespace f00die_finder_be.Services
             _configuration = serviceProvider.GetService<IConfiguration>();
             _unitOfWork = serviceProvider.GetService<IUnitOfWork>();
             _fileService = serviceProvider.GetService<IFileService>();
+            _mailService = serviceProvider.GetService<IMailService>();
         }
     }
 }
