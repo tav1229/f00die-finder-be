@@ -20,4 +20,5 @@ RUN dotnet publish "./f00die-finder-be.csproj" -c $BUILD_CONFIGURATION -o /app/p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=build /src/Templates ./Templates
 ENTRYPOINT ["dotnet", "f00die-finder-be.dll"]
