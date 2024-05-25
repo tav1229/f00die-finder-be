@@ -2,7 +2,7 @@
 
 namespace f00die_finder_be.Dtos.Auth
 {
-    public class LoginRegisterResponseDto
+    public class TokenResponse
     {
         public Guid UserId { get; set; }
         public string AccessToken { get; set; }

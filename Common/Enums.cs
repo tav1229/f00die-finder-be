@@ -6,12 +6,14 @@ namespace f00die_finder_be.Common
         RestaurantOwner,
         User
     }
+
     public enum RestaurantStatus
     {
         Active,
         Inactive,
         Pending
     }
+
     public enum ReservationStatus
     {
         Pending,
@@ -19,26 +21,38 @@ namespace f00die_finder_be.Common
         Denied,
         Cancelled
     }
+
     public enum PriceRangePerPerson
     {
         LessThan200K,
         From200KTo500K,
         MoreThan500K
     }
+
     public enum ImageType
     {
         Menu,
         Restaurant
     }
+
     public enum OTPType
     {
-        ForgotPassword
+        ForgotPassword,
+        VerifyEmail
     }
+
     public enum RestaurantSortType
     {
         Popular,
         PriceAscending,
         PriceDescending,
         Rating
+    }
+
+    public enum UserStatus
+    {
+        Active,
+        Blocked,
+        Unverified
     }
 }

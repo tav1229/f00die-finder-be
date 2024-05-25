@@ -4,6 +4,7 @@ using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Auth;
 using f00die_finder_be.Services.UserService;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.WebRequestMethods;
 
 namespace f00die_finder_be.Services.AuthService
 {
@@ -20,9 +21,9 @@ namespace f00die_finder_be.Services.AuthService
 
         }
 
-        public async Task<CustomResponse<LoginRegisterResponseDto>> LoginAsync(LoginDto loginDto)
+        public async Task<CustomResponse<TokenResponse>> LoginAsync(LoginDto loginDto)
         {
-            var currentUser = await _userService.GetUserByEmailAsync(loginDto.Email);
+            var currentUser = await _userService.InternalGetUserByEmailAsync(loginDto.Email);
             if (currentUser == null)
             {
                 throw new InvalidCredentialsException();
@@ -46,14 +47,15 @@ namespace f00die_finder_be.Services.AuthService
             await _unitOfWork.SaveChangesAsync();
 
 
-            return new CustomResponse<LoginRegisterResponseDto>
+            return new CustomResponse<TokenResponse>
             {
-                Data = new LoginRegisterResponseDto
+                Data = new TokenResponse
                 {
                     UserId = currentUser.Id,
                     AccessToken = SecurityFunction.GenerateToken(new ClaimData()
                     {
                         UserId = currentUser.Id,
+                        IsVerified = currentUser.Status != UserStatus.Unverified
                     }, _configuration),
                     AccessTokenExpiryTime = DateTimeOffset.Now.AddMinutes(_tokenTimeOut),
                     RefreshToken = refreshToken,
@@ -63,12 +65,21 @@ namespace f00die_finder_be.Services.AuthService
             };
         }
 
-        public async Task<CustomResponse<LoginRegisterResponseDto>> RegisterAsync(RegistrationDto registrationDto)
+        public async Task<CustomResponse<TokenResponse>> RegisterAsync(RegistrationDto registrationDto)
         {
-            var users = await _userService.GetUsersAsync();
-            if (users.Any(u => u.Email == registrationDto.Email))
+            var users = await _userService.InternalGetUsersAsync();
+            var user = await _userService.InternalGetUserByEmailAsync(registrationDto.Email);
+
+            if (user is not null)
             {
-                throw new EmailIsAlreadyExistedException();
+                if (user.Status is not UserStatus.Unverified)
+                {
+                    throw new EmailIsAlreadyExistedException();
+                }
+                else
+                {
+                    await _userService.InternalDeleteAsync(user, true);
+                }
             }
             else if (users.Any(u => u.PhoneNumber == registrationDto.PhoneNumber))
             {
@@ -85,10 +96,11 @@ namespace f00die_finder_be.Services.AuthService
                 PasswordSalt = passwordSalt,
                 HashedPassword = hashedPassword,
                 Email = registrationDto.Email,
-                Role = (Role)registrationDto.Role
+                Role = (Role)registrationDto.Role,
+                Status = UserStatus.Unverified
             };
 
-            await _userService.AddAsync(newUser);
+            await _userService.InternalAddAsync(newUser);
 
             var refreshToken = SecurityFunction.GenerateRandomString();
             var userToken = new UserToken
@@ -101,14 +113,15 @@ namespace f00die_finder_be.Services.AuthService
             await _unitOfWork.AddAsync(userToken);
             await _unitOfWork.SaveChangesAsync();
 
-            return new CustomResponse<LoginRegisterResponseDto>
+            return new CustomResponse<TokenResponse>
             {
-                Data = new LoginRegisterResponseDto
+                Data = new TokenResponse
                 {
                     UserId = newUser.Id,
                     AccessToken = SecurityFunction.GenerateToken(new ClaimData()
                     {
                         UserId = newUser.Id,
+                        IsVerified = newUser.Status != UserStatus.Unverified
                     }, _configuration),
                     AccessTokenExpiryTime = DateTimeOffset.Now.AddMinutes(_tokenTimeOut),
                     RefreshToken = refreshToken,
@@ -120,7 +133,7 @@ namespace f00die_finder_be.Services.AuthService
 
         public async Task<CustomResponse<object>> GetNewOtpAsync(GetOtpDto getOtpDto)
         {
-            var user = await _userService.GetUserByEmailAsync(getOtpDto.Email);
+            var user = await _userService.InternalGetUserByEmailAsync(getOtpDto.Email);
             if (user == null)
             {
                 throw new NotFoundException();
@@ -148,16 +161,30 @@ namespace f00die_finder_be.Services.AuthService
 
             }
             await _unitOfWork.SaveChangesAsync();
-            await _mailService.SendEmailAsync(user.Email,
-                                              MailConsts.ForgotPassword.Subject,
-                                              MailConsts.ForgotPassword.Template,
-                                              new { OTP = OTP });
+            switch (getOtpDto.OTPType)
+            {
+                case OTPType.ForgotPassword:
+                    await _mailService.SendEmailAsync(user.Email,
+                                                      MailConsts.ForgotPassword.Subject,
+                                                      MailConsts.ForgotPassword.Template,
+                                                      new { OtpTimeOut = _otpTimeOut, Otp = OTP });
+                    break;
+                case OTPType.VerifyEmail:
+                    await _mailService.SendEmailAsync(user.Email,
+                                                      MailConsts.VerifyEmail.Subject,
+                    MailConsts.VerifyEmail.Template,
+                                                      new { OtpTimeOut = _otpTimeOut, Otp = OTP });
+                    break;
+                default:
+                    break;
+            }
+
             return new CustomResponse<object>();
         }
 
         public async Task<CustomResponse<object>> ForgotPasswordAsync(ForgotPasswordDto forgotPasswordDto)
         {
-            var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
+            var user = await _userService.InternalGetUserByEmailAsync(forgotPasswordDto.Email);
             if (user == null)
             {
                 throw new NotFoundException();
@@ -192,7 +219,7 @@ namespace f00die_finder_be.Services.AuthService
             return new CustomResponse<object>();
         }
 
-        public async Task<CustomResponse<LoginRegisterResponseDto>> RefreshTokenAsync(string refreshToken)
+        public async Task<CustomResponse<TokenResponse>> RefreshTokenAsync(string refreshToken)
         {
             var userToken = await (await _unitOfWork.GetQueryableAsync<UserToken>())
                 .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken && u.RefreshTokenExpiryTime > DateTimeOffset.Now);
@@ -201,7 +228,7 @@ namespace f00die_finder_be.Services.AuthService
                 throw new InvalidRefreshTokenException();
             }
 
-            var user = (await _userService.GetUserByIdAsync(userToken.UserId)).Data;
+            var user = await _userService.InternalGetUserByIdAsync(userToken.UserId);
             if (user == null)
             {
                 throw new NotFoundException();
@@ -214,14 +241,15 @@ namespace f00die_finder_be.Services.AuthService
             await _unitOfWork.UpdateAsync(userToken);
             await _unitOfWork.SaveChangesAsync();
 
-            return new CustomResponse<LoginRegisterResponseDto>
+            return new CustomResponse<TokenResponse>
             {
-                Data = new LoginRegisterResponseDto
+                Data = new TokenResponse
                 {
                     UserId = user.Id,
                     AccessToken = SecurityFunction.GenerateToken(new ClaimData()
                     {
                         UserId = user.Id,
+                        IsVerified = user.Status != UserStatus.Unverified
                     }, _configuration),
                     AccessTokenExpiryTime = DateTimeOffset.Now.AddMinutes(_tokenTimeOut),
                     RefreshToken = newRefreshToken,
@@ -229,6 +257,89 @@ namespace f00die_finder_be.Services.AuthService
                     Role = user.Role
                 }
             };
+        }
+
+        public async Task<CustomResponse<TokenResponse>> VerifyEmailAsync(string otp)
+        {
+            var userOTPToken = await (await _unitOfWork.GetQueryableAsync<UserToken>())
+                .FirstOrDefaultAsync(u => u.UserId == _currentUserService.UserId && u.OTP == otp && u.OTPType == OTPType.VerifyEmail && u.OTPExpiryTime > DateTimeOffset.Now);
+            if (userOTPToken == null)
+            {
+                throw new InvalidOtpException();
+            }
+
+            var user = await _userService.InternalGetUserByIdAsync(userOTPToken.UserId);
+
+            if (user is null)
+            {
+                throw new NotFoundException();
+            }
+            
+            user.Status = UserStatus.Active;
+            await _unitOfWork.UpdateAsync(user);
+
+            userOTPToken.OTP = null;
+            userOTPToken.OTPExpiryTime = null;
+            await _unitOfWork.UpdateAsync(userOTPToken);
+
+            var refreshToken = SecurityFunction.GenerateRandomString();
+            var userToken = new UserToken
+            {
+                UserId = user.Id,
+                RefreshToken = refreshToken,
+                RefreshTokenExpiryTime = DateTimeOffset.Now.AddMinutes(_refreshTokenTimeOut)
+            };
+
+            await _unitOfWork.AddAsync(userToken);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            await _cacheService.RemoveAsync($"user-{user.Id}");
+            await _cacheService.RemoveAsync($"user-{user.Email}");
+            await _cacheService.RemoveAsync("users");
+            
+            return new CustomResponse<TokenResponse>
+            {
+                Data = new TokenResponse
+                {
+                    UserId = user.Id,
+                    AccessToken = SecurityFunction.GenerateToken(new ClaimData()
+                    {
+                        UserId = user.Id,
+                        IsVerified = user.Status != UserStatus.Unverified
+                    }, _configuration),
+                    AccessTokenExpiryTime = DateTimeOffset.Now.AddMinutes(_tokenTimeOut),
+                    RefreshToken = refreshToken,
+                    RefreshTokenExpiryTime = userToken.RefreshTokenExpiryTime.Value,
+                    Role = user.Role
+                }
+            };
+        }
+
+        public async Task<CustomResponse<object>> ChangePasswordAsync(ChangePasswordDto changePasswordDto)
+        {
+            var user = await _userService.InternalGetUserByIdAsync(_currentUserService.UserId);
+            if (user == null)
+            {
+                throw new NotFoundException();
+            }
+
+            var hashedPassword = SecurityFunction.HashPassword(changePasswordDto.CurrentPassword, user.PasswordSalt);
+            if (user.HashedPassword != hashedPassword)
+            {
+                throw new InvalidCredentialsException();
+            }
+
+            var passwordSalt = SecurityFunction.GenerateRandomString();
+            var hashedPasswordNew = SecurityFunction.HashPassword(changePasswordDto.NewPassword, passwordSalt);
+
+            user.PasswordSalt = passwordSalt;
+            user.HashedPassword = hashedPasswordNew;
+
+            await _unitOfWork.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new CustomResponse<object>();
         }
     }
 }

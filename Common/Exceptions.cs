@@ -59,4 +59,10 @@ namespace f00die_finder_be.Common
         public InvalidRefreshTokenException()
             : base($"Invalid refresh token", (int)HttpStatusCode.BadRequest) { }
     }
+
+    public class UnverifiedEmailException : CustomException
+    {
+        public UnverifiedEmailException()
+            : base($"Email is not verified", (int)HttpStatusCode.BadRequest) { }
+    }
 }

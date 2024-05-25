@@ -10,10 +10,6 @@ namespace f00die_finder_be.Filters
     [AttributeUsage(AttributeTargets.All)]
     public class AuthorizeFilter : Attribute, IAsyncAuthorizationFilter
     {
-        public AuthorizeFilter()
-        {
-        }
-
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
             try
@@ -50,6 +46,14 @@ namespace f00die_finder_be.Filters
                 var claims = jwtToken.Claims;
                 var userId = claims.FirstOrDefault(x => x.Type == "UserId")?.Value;
 
+                if (!context.HttpContext.Request.Path.Value.Contains("verify-email"))
+                {
+                    var isVerified = bool.Parse(claims.FirstOrDefault(x => x.Type == "IsVerified")?.Value);
+
+                    if (isVerified == false)
+                        throw new UnverifiedEmailException();
+                }
+
                 var identity = new ClaimsIdentity(context.HttpContext.User.Identity);
                 identity.AddClaim(new Claim("UserId", userId));
 
@@ -59,9 +63,7 @@ namespace f00die_finder_be.Filters
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
-                throw new InvalidTokenException();
-
+                throw;
             }
         }
 

@@ -12,16 +12,15 @@ namespace f00die_finder_be.Services.UserService
         {
         }
 
-        public async Task<Guid> AddAsync(User user)
+        public async Task InternalAddAsync(User user)
         {
             await _unitOfWork.AddAsync(user);
             await _unitOfWork.SaveChangesAsync();
 
             await _cacheService.RemoveAsync("users");
-            return user.Id;
         }
 
-        public async Task<List<User>> GetUsersAsync()
+        public async Task<List<User>> InternalGetUsersAsync()
         {
             return await _cacheService.GetOrCreateAsync("users", async () =>
             {
@@ -31,7 +30,7 @@ namespace f00die_finder_be.Services.UserService
             });
         }
 
-        public async Task<User> GetUserByEmailAsync(string email)
+        public async Task<User> InternalGetUserByEmailAsync(string email)
         {
             return await _cacheService.GetOrCreateAsync($"user-{email}", async () =>
             {
@@ -39,6 +38,26 @@ namespace f00die_finder_be.Services.UserService
                 var user = await userQuery.FirstOrDefaultAsync(u => u.Email == email);
                 return user;
             });
+        }
+
+        public async Task<User> InternalGetUserByIdAsync(Guid id)
+        {
+            return await _cacheService.GetOrCreateAsync($"user-{id}", async () =>
+            {
+                var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+                var user = await userQuery.FirstOrDefaultAsync(u => u.Id == id);
+                return user;
+            });
+        }
+
+        public async Task InternalDeleteAsync(User user, bool isHardDelete)
+        {
+            await _unitOfWork.DeleteAsync(user, isHardDelete);
+            await _unitOfWork.SaveChangesAsync();
+
+            await _cacheService.RemoveAsync($"user-{user.Email}");
+            await _cacheService.RemoveAsync($"user-{user.Id}");
+            await _cacheService.RemoveAsync("users");
         }
 
         public async Task<CustomResponse<UserDetailDto>> GetMyInfoAsync()

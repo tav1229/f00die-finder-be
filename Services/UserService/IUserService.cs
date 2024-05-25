@@ -6,9 +6,12 @@ namespace f00die_finder_be.Services.UserService
 {
     public interface IUserService 
     {
-        Task<User> GetUserByEmailAsync(string email); // not public to be used in the controller
-        Task<List<User>> GetUsersAsync(); // not public to be used in the controller
-        Task<Guid> AddAsync(User user);  // not public to be used in the controller
+        Task<User> InternalGetUserByEmailAsync(string email); // not public to be used in the controller
+        Task<List<User>> InternalGetUsersAsync(); // not public to be used in the controller
+        Task InternalAddAsync(User user);  // not public to be used in the controller
+        Task InternalDeleteAsync(User user, bool isHardDelete);  // not public to be used in the controller
+        Task<User> InternalGetUserByIdAsync(Guid id);  // not public to be used in the controller
+
 
         Task<CustomResponse<UserDetailDto>> GetUserByIdAsync(Guid id);
         Task<CustomResponse<UserDetailDto>> GetMyInfoAsync();

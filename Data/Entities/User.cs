@@ -26,5 +26,6 @@ namespace f00die_finder_be.Data.Entities
 
         public List<ReviewComment>? Reviews { get; set; }
         public List<UserToken> UserTokens { get; set; }
+        public UserStatus Status { get; set; }
     }
 }

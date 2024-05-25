@@ -9,9 +9,11 @@
 
   <ItemGroup>
     <None Remove="Templates\ForgotPassword.html" />
+    <None Remove="Templates\VerifyEmail.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Templates\VerifyEmail.html" />
     <Content Include="Templates\ForgotPassword.html" />
   </ItemGroup>
 

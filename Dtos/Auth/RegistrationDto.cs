@@ -5,7 +5,7 @@ namespace f00die_finder_be.Dtos.Auth
     public class RegistrationDto
     {
         [Required]
-        public string Username { get; set; }
+        public string Email { get; set; }
 
         [Required]
         public string Password { get; set; }
@@ -15,9 +15,6 @@ namespace f00die_finder_be.Dtos.Auth
 
         [Required]
         public short Role { get; set; }
-
-        [Required]
-        public string Email { get; set; }
 
         [Required]
         public string PhoneNumber { get; set; }

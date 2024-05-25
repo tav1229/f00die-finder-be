@@ -1,4 +1,5 @@
 using f00die_finder_be.Dtos.Auth;
+using f00die_finder_be.Filters;
 using f00die_finder_be.Services.AuthService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,6 +47,22 @@ namespace f00die_finder_be.Controllers
         public async Task<IActionResult> RefreshToken(string refreshTokenDto)
         {
             var result = await _authService.RefreshTokenAsync(refreshTokenDto);
+            return Ok(result);
+        }
+
+        [AuthorizeFilter]
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail(string otp)
+        {
+            var result = await _authService.VerifyEmailAsync(otp);
+            return Ok(result);
+        }
+
+        [AuthorizeFilter]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
+        {
+            var result = await _authService.ChangePasswordAsync(changePasswordDto);
             return Ok(result);
         }
     }
