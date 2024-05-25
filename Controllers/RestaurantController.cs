@@ -50,29 +50,50 @@ namespace f00die_finder_be.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] RestaurantUpdateDto restaurant)
         {
-            await _restaurantService.UpdateAsync(restaurant);
-            return Ok();
+            var result = await _restaurantService.UpdateAsync(restaurant);
+            return Ok(result);
         }
 
         [HttpPost("images")]
         public async Task<IActionResult> AddImagesAsync([FromForm] RestaurantAddImagesDto restaurant)
         {
-            await _restaurantService.AddImagesAsync(restaurant);
-            return Ok();
+            var result = await _restaurantService.AddImagesAsync(restaurant);
+            return Ok(result);
         }
 
         [HttpDelete("images")]
         public async Task<IActionResult> DeleteImagesAsync([FromBody] List<Guid> imageIds)
         {
-            await _restaurantService.DeleteImagesAsync(imageIds);
-            return Ok();
+            var result = await _restaurantService.DeleteImagesAsync(imageIds);
+            return Ok(result);
         }
 
         [HttpPut("deactivate")]
         public async Task<IActionResult> DeactivateAsync()
         {
-            await _restaurantService.DeactivateAsync();
-            return Ok();
+            var result = await _restaurantService.DeactivateAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("my-saved-restaurants")]
+        public async Task<IActionResult> GetMySavedRestaurantsAsync([FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
+        {
+            var result = await _restaurantService.GetMySavedRestaurantsAsync(pageSize, pageNumber);
+            return Ok(result);
+        }
+
+        [HttpPost("save")]
+        public async Task<IActionResult> SaveRestaurantAsync([FromBody] Guid restaurantId)
+        {
+            var result = await _restaurantService.SaveRestaurantAsync(restaurantId);
+            return Ok(result);
+        }
+
+        [HttpPost("unsave")]
+        public async Task<IActionResult> UnsaveRestaurantAsync([FromBody] Guid restaurantId)
+        {
+            var result = await _restaurantService.UnsaveRestaurantAsync(restaurantId);
+            return Ok(result);
         }
     }
 }

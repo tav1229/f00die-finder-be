@@ -42,8 +42,8 @@ namespace f00die_finder_be.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateReservationStatusAsync(Guid reservationId, ReservationStatus reservationStatus)
         {
-            await _reservationService.UpdateReservationStatusAsync(reservationId, reservationStatus);
-            return Ok();
+            var result = await _reservationService.UpdateReservationStatusAsync(reservationId, reservationStatus);
+            return Ok(result);
         }
 
     }

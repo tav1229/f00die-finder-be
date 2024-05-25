@@ -22,7 +22,7 @@ namespace f00die_finder_be.Services.AuthService
 
         public async Task<CustomResponse<LoginRegisterResponseDto>> LoginAsync(LoginDto loginDto)
         {
-            var currentUser = await _userService.GetUserByUsernameAsync(loginDto.Username);
+            var currentUser = await _userService.GetUserByEmailAsync(loginDto.Email);
             if (currentUser == null)
             {
                 throw new InvalidCredentialsException();
@@ -66,11 +66,7 @@ namespace f00die_finder_be.Services.AuthService
         public async Task<CustomResponse<LoginRegisterResponseDto>> RegisterAsync(RegistrationDto registrationDto)
         {
             var users = await _userService.GetUsersAsync();
-            if (users.Any(u => u.Username == registrationDto.Username))
-            {
-                throw new UsernameIsAlreadyExistedException();
-            }
-            else if (users.Any(u => u.Email == registrationDto.Email))
+            if (users.Any(u => u.Email == registrationDto.Email))
             {
                 throw new EmailIsAlreadyExistedException();
             }
@@ -84,7 +80,6 @@ namespace f00die_finder_be.Services.AuthService
 
             var newUser = new User
             {
-                Username = registrationDto.Username,
                 FullName = registrationDto.FullName,
                 PhoneNumber = registrationDto.PhoneNumber,
                 PasswordSalt = passwordSalt,
@@ -192,7 +187,6 @@ namespace f00die_finder_be.Services.AuthService
 
             await _cacheService.RemoveAsync($"user-{user.Id}");
             await _cacheService.RemoveAsync($"user-{user.Email}");
-            await _cacheService.RemoveAsync($"user-{user.Username}");
             await _cacheService.RemoveAsync("users");
 
             return new CustomResponse<object>();

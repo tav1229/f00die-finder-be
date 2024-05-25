@@ -41,16 +41,6 @@ namespace f00die_finder_be.Services.UserService
             });
         }
 
-        public async Task<User> GetUserByUsernameAsync(string userName)
-        {
-            return await _cacheService.GetOrCreateAsync($"user-{userName}", async () =>
-            {
-                var userQuery = await _unitOfWork.GetQueryableAsync<User>();
-                var user = await userQuery.FirstOrDefaultAsync(u => u.Username == userName);
-                return user;
-            });
-        }
-
         public async Task<CustomResponse<UserDetailDto>> GetMyInfoAsync()
         {
             var data = await _cacheService.GetOrCreateAsync($"user-{_currentUserService.UserId}", async () =>
@@ -110,7 +100,6 @@ namespace f00die_finder_be.Services.UserService
 
             await _cacheService.RemoveAsync($"user-{_currentUserService.UserId}");
             await _cacheService.RemoveAsync($"user-{user.Email}");
-            await _cacheService.RemoveAsync($"user-{user.Username}");
             await _cacheService.RemoveAsync("users");
 
             return new CustomResponse<UserDetailDto>

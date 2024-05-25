@@ -31,15 +31,22 @@ namespace f00die_finder_be.Controllers
         [HttpPost("get-otp")]
         public async Task<IActionResult> GetNewOtp(GetOtpDto getOtpDto)
         {
-            await _authService.GetNewOtpAsync(getOtpDto);
-            return Ok();
+            var result = await _authService.GetNewOtpAsync(getOtpDto);
+            return Ok(result);
         }
 
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
         {
-            await _authService.ForgotPasswordAsync(forgotPasswordDto);
-            return Ok();
+            var result = await _authService.ForgotPasswordAsync(forgotPasswordDto);
+            return Ok(result);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(string refreshTokenDto)
+        {
+            var result = await _authService.RefreshTokenAsync(refreshTokenDto);
+            return Ok(result);
         }
     }
 }

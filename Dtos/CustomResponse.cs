@@ -3,7 +3,7 @@
     public class CustomResponse<T> where T : class
     {
         public T Data { get; set; }
-        public List<Error> Errors { get; set; }
+        public List<Error> Error { get; set; }
         public MetaData Meta { get; set; }
     }
 

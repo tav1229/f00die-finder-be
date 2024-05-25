@@ -25,6 +25,7 @@ namespace f00die_finder_be.Data
         public DbSet<CustomerType> CustomerTypes { get; set; }
         public DbSet<RestaurantCustomerType> RestaurantCustomerTypes { get; set; }
         public DbSet<UserToken> UserTokens { get; set; }
+        public DbSet<UserSavedRestaurant> UserSavedRestaurants { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -39,7 +40,7 @@ namespace f00die_finder_be.Data
                         .WithMany(u => u.Reservations)
                         .HasForeignKey(c => c.UserId)
                         .OnDelete(DeleteBehavior.NoAction);
-            
+
             builder.Entity<ReviewComment>()
                 .HasOne(c => c.Restaurant)
                         .WithMany(u => u.Reviews)
@@ -51,7 +52,18 @@ namespace f00die_finder_be.Data
                         .WithMany(u => u.Reviews)
                         .HasForeignKey(c => c.UserId)
                         .OnDelete(DeleteBehavior.NoAction);
-        }
 
+            builder.Entity<UserSavedRestaurant>()
+                .HasOne(usr => usr.User)
+                    .WithMany()
+                    .HasForeignKey(usr => usr.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<UserSavedRestaurant>()
+                .HasOne(usr => usr.Restaurant)
+                    .WithMany()
+                    .HasForeignKey(usr => usr.RestaurantId)
+                    .OnDelete(DeleteBehavior.NoAction);
+        }
     }
 }

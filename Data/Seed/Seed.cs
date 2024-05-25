@@ -142,7 +142,6 @@ namespace f00die_finder_be.Data.Seed
                 var hashedPassword = SecurityFunction.HashPassword("seed", passwordSalt);
 
                 var user = new User();
-                user.Username = "user" + i.ToString();
                 user.HashedPassword = hashedPassword;
                 user.PasswordSalt = passwordSalt;
                 user.FullName = "user " + i.ToString();

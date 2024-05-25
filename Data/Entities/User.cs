@@ -5,11 +5,9 @@ namespace f00die_finder_be.Data.Entities
 {
     public class User : BaseEntity
     {
-        [Required]
-        public string Username { get; set; }
-
         public string FullName { get; set; }
 
+        [Required]
         public string Email { get; set; }
 
         public string? PhoneNumber { get; set; }

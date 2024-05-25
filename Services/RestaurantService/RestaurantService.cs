@@ -2,6 +2,7 @@
 using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Restaurant;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.RestaurantService
@@ -226,7 +227,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 .Include(r => r.Images)
                 .ToListAsync();
             });
-            
+
             var restaurantsQuery = restaurants.AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.SearchValue))
@@ -515,6 +516,74 @@ namespace f00die_finder_be.Services.RestaurantService
             {
                 Data = _mapper.Map<RestaurantDetailDto>(restaurant)
             };
+        }
+
+        public async Task<CustomResponse<List<UserSavedRestaurantDto>>> GetMySavedRestaurantsAsync(int pageSize, int pageNumber)
+        {
+            //var cacheKey = $"restaurants-user-{_currentUserService.UserId}";
+            //var items = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
+            //{
+            var userSavedRestaurantQuery = await _unitOfWork.GetQueryableAsync<UserSavedRestaurant>();
+
+            var userSavedRestaurants = userSavedRestaurantQuery
+                .Where(u => u.UserId == _currentUserService.UserId)
+                .Include(u => u.Restaurant)
+                .ThenInclude(r => r.Location)
+                .ThenInclude(l => l.WardOrCommune)
+                .ThenInclude(w => w.District)
+                .ThenInclude(d => d.ProvinceOrCity)
+                .Include(u => u.Restaurant)
+                .ThenInclude(r => r.Images)
+                .Select(u => u.Restaurant);
+
+            var items = await userSavedRestaurants
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(r => _mapper.Map<UserSavedRestaurantDto>(r))
+                .ToListAsync();
+            //});
+
+            return new CustomResponse<List<UserSavedRestaurantDto>>
+            {
+                Data = items,
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(items.Count / (double)pageSize)
+                }
+            };
+        }
+
+        public async Task<CustomResponse<object>> SaveRestaurantAsync(Guid restaurantId)
+        {
+            var userSavedRestaurant = new UserSavedRestaurant()
+            {
+                UserId = _currentUserService.UserId,
+                RestaurantId = restaurantId
+            };
+
+            await _unitOfWork.AddAsync(userSavedRestaurant);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new CustomResponse<object>();
+        }
+
+        public async Task<CustomResponse<object>> UnsaveRestaurantAsync(Guid restaurantId)
+        {
+            var userSavedRestaurantQuery = await _unitOfWork.GetQueryableAsync<UserSavedRestaurant>();
+            var userSavedRestaurant = await userSavedRestaurantQuery
+                .FirstOrDefaultAsync(u => u.UserId == _currentUserService.UserId && u.RestaurantId == restaurantId);
+
+            if (userSavedRestaurant == null)
+            {
+                throw new NotFoundException();
+            }
+
+            await _unitOfWork.DeleteAsync(userSavedRestaurant);
+            await _unitOfWork.SaveChangesAsync();
+
+            return new CustomResponse<object>();
         }
     }
 }

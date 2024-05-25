@@ -18,12 +18,6 @@ namespace f00die_finder_be.Common
             : base($"Invalid credentials.") { }
     }
 
-    public class UsernameIsAlreadyExistedException : CustomException
-    {
-        public UsernameIsAlreadyExistedException()
-            : base($"Username is already existed.") { }
-    }
-
     public class EmailIsAlreadyExistedException : CustomException
     {
         public EmailIsAlreadyExistedException()

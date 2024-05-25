@@ -28,8 +28,8 @@ namespace f00die_finder_be.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] UserUpdateDto userUpdateDto)
         {
-            await _userService.UpdateAsync(userUpdateDto);
-            return Ok();
+            var result = await _userService.UpdateAsync(userUpdateDto);
+            return Ok(result);
         }
 
         [HttpGet("my-info")]

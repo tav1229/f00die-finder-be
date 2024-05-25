@@ -30,7 +30,7 @@ namespace f00die_finder_be.Middlewares
 
                     var responseMessage = new CustomResponse<object>
                     {
-                        Errors = new List<Error>
+                        Error = new List<Error>
                         {
                             new Error
                             {
