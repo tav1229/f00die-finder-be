@@ -20,6 +20,10 @@ using f00die_finder_be.Common.CacheService;
 using StackExchange.Redis;
 using f00die_finder_be.Services.CustomerTypeService;
 using f00die_finder_be.Common.IMailService;
+using Vault.Client;
+using Vault;
+using Vault.Model;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,14 +37,26 @@ builder.Services.AddSwaggerGen();
 
 if (!builder.Environment.IsDevelopment())
 {
-    builder.Configuration["Secret"] = Environment.GetEnvironmentVariable("Secret");
-    builder.Configuration["DefaultConnection"] = Environment.GetEnvironmentVariable("DefaultConnection");
-    builder.Configuration["Redis"] = Environment.GetEnvironmentVariable("Redis");
-    builder.Configuration["Minio:EndPoint"] = Environment.GetEnvironmentVariable("Minio:EndPoint");
-    builder.Configuration["Minio:AccessKey"] = Environment.GetEnvironmentVariable("Minio:AccessKey");
-    builder.Configuration["Minio:SecretKey"] = Environment.GetEnvironmentVariable("Minio:SecretKey");
-    builder.Configuration["Minio:BucketName"] = Environment.GetEnvironmentVariable("Minio:BucketName");
-    builder.Configuration["Minio:UseSSL"] = Environment.GetEnvironmentVariable("Minio:UseSSL");
+    VaultConfiguration vaultConfiguration = new VaultConfiguration(Environment.GetEnvironmentVariable("Vault:EndPoint"));
+    var vaultClient = new VaultClient(vaultConfiguration);
+    var authResponse = await vaultClient.Auth.AppRoleLoginAsync(
+        new AppRoleLoginRequest
+        {
+            RoleId = Environment.GetEnvironmentVariable("Vault:RoleId"),
+            SecretId = Environment.GetEnvironmentVariable("Vault:SecretId")
+        });
+
+    vaultClient.SetToken(authResponse.ResponseAuth.ClientToken);
+
+    var response = await vaultClient.Secrets.KvV2ReadAsync(
+        builder.Configuration["Vault:SecretPath"],
+        builder.Configuration["Vault:EnginePath"]);
+
+    var secretDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(response.Data.Data.ToString());
+    foreach (var item in secretDict)
+    {
+        builder.Configuration[item.Key] = item.Value;
+    }
 }
 
 builder.Services.AddDbContext<DataContext>(options =>
@@ -104,7 +120,7 @@ var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = redisConnectionString;
-    options.InstanceName = "f00die_finder_be";
+    options.InstanceName = builder.Configuration["RedisInstanceName"];
 });
 var redis = ConnectionMultiplexer.Connect(redisConnectionString);
 redis.GetDatabase().Execute("FLUSHDB");

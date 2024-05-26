@@ -4,7 +4,6 @@ using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Auth;
 using f00die_finder_be.Services.UserService;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.WebRequestMethods;
 
 namespace f00die_finder_be.Services.AuthService
 {
