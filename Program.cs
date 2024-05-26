@@ -49,8 +49,8 @@ if (!builder.Environment.IsDevelopment())
     vaultClient.SetToken(authResponse.ResponseAuth.ClientToken);
 
     var response = await vaultClient.Secrets.KvV2ReadAsync(
-        builder.Configuration["Vault:SecretPath"],
-        builder.Configuration["Vault:EnginePath"]);
+        Environment.GetEnvironmentVariable("Vault:SecretPath"),
+        Environment.GetEnvironmentVariable("Vault:EnginePath"));
 
     var secretDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(response.Data.Data.ToString());
     foreach (var item in secretDict)

@@ -45,9 +45,11 @@ jobs:
             docker ps -a --filter "ancestor=${{ env.DOCKER_IMAGE_NAME }}" -q | xargs -r docker rm >/dev/null 2>&1
             docker load -i /home/${{ env.SSH_USER }}/${{ env.DOCKER_IMAGE_NAME }}.tar
             docker run -d \
-              -e "Vault:EndPoint=${{ secrets.VAULT_ENDPOINT }}" \
+              -e "Vault:EndPoint=${{ vars.VAULT_ENDPOINT }}" \
               -e "Vault:RoleId=${{ secrets.VAULT_ROLEID }}" \
               -e "Vault:SecretId=${{ secrets.VAULT_SECRETID }}" \
+              -e "Vault:SecretPath=${{ vars.VAULT_SECRETPATH }}" \
+              -e "Vault:EnginePath=${{ vars.VAULT_ENGINEPATH }}" \
               -p 1111:8080 \
               -p 1112:8081 \
               ${{ env.DOCKER_IMAGE_NAME }}
