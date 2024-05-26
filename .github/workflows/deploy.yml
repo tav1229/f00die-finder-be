@@ -45,14 +45,9 @@ jobs:
             docker ps -a --filter "ancestor=${{ env.DOCKER_IMAGE_NAME }}" -q | xargs -r docker rm >/dev/null 2>&1
             docker load -i /home/${{ env.SSH_USER }}/${{ env.DOCKER_IMAGE_NAME }}.tar
             docker run -d \
-              -e "SecretKey=${{ secrets.SECRET_KEY }}" \
-              -e "ConnectionStrings__DefaultConnection=${{ secrets.CONNECTION_STRING }}" \
-              -e "ConnectionStrings__Redis=${{ secrets.REDIS }}" \
-              -e "Minio:EndPoint=${{ vars.MINIO_ENDPOINT }}" \
-              -e "Minio:AccessKey=${{ secrets.MINIO_ACCESSKEY }}" \
-              -e "Minio:SecretKey=${{ secrets.MINIO_SECRETKEY }}" \
-              -e "Minio:BucketName=${{ vars.MINIO_BUCKETNAME }}" \
-              -e "Minio:UseSSL=${{ vars.MINIO_USESSL }}" \
+              -e "Vault:EndPoint=${{ secrets.VAULT_ENDPOINT }}" \
+              -e "Vault:RoleId=${{ secrets.VAULT_ROLEID }}" \
+              -e "Vault:SecretId=${{ secrets.VAULT_SECRETID }}" \
               -p 1111:8080 \
               -p 1112:8081 \
               ${{ env.DOCKER_IMAGE_NAME }}
