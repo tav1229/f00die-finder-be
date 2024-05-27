@@ -2,7 +2,7 @@
 using f00die_finder_be.Common.CacheService;
 using f00die_finder_be.Common.CurrentUserService;
 using f00die_finder_be.Common.FileService;
-using f00die_finder_be.Common.IMailService;
+using f00die_finder_be.Common.MailService;
 using f00die_finder_be.Data.UnitOfWork;
 
 namespace f00die_finder_be.Services

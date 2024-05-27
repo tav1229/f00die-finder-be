@@ -18,7 +18,7 @@ namespace f00die_finder_be.Filters
                 var token = GetValue(context, "Authorization");
                 if (string.IsNullOrEmpty(token))
                 {
-                    throw new Exception("Token is required");
+                    throw new InvalidTokenException();
                 }
 
                 if (token.ToString().StartsWith("Bearer "))
@@ -63,23 +63,16 @@ namespace f00die_finder_be.Filters
             }
             catch (Exception e)
             {
-                throw;
+                throw new InvalidTokenException();
             }
         }
 
         static string GetValue(AuthorizationFilterContext context, string key)
         {
-            try
-            {
-                var apiKeyHeader = context.HttpContext.Request.Headers[key].ToString();
-                if (string.IsNullOrEmpty(apiKeyHeader))
-                    apiKeyHeader = context.HttpContext.Request.Cookies[key].ToString();
-                return apiKeyHeader;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            var apiKeyHeader = context.HttpContext.Request.Headers[key].ToString();
+            if (string.IsNullOrEmpty(apiKeyHeader))
+                apiKeyHeader = context.HttpContext.Request.Cookies[key].ToString();
+            return apiKeyHeader;
         }
     }
 }

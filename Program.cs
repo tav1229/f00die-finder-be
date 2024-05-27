@@ -19,11 +19,12 @@ using f00die_finder_be.Common.FileService;
 using f00die_finder_be.Common.CacheService;
 using StackExchange.Redis;
 using f00die_finder_be.Services.CustomerTypeService;
-using f00die_finder_be.Common.IMailService;
+using f00die_finder_be.Common.MailService;
 using Vault.Client;
 using Vault;
 using Vault.Model;
 using Newtonsoft.Json;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -116,6 +117,7 @@ builder.Services.AddScoped<IMailService, MailService>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddHttpContextAccessor();
+
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -124,6 +126,9 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 var redis = ConnectionMultiplexer.Connect(redisConnectionString);
 redis.GetDatabase().Execute("FLUSHDB");
+
+builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 

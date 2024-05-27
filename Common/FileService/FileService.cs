@@ -1,7 +1,5 @@
 ﻿using Minio;
 using Minio.DataModel.Args;
-using Newtonsoft.Json.Linq;
-using System.Net.Http.Headers;
 
 namespace f00die_finder_be.Common.FileService
 {

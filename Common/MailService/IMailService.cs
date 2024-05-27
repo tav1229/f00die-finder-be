@@ -1,4 +1,4 @@
-﻿namespace f00die_finder_be.Common.IMailService
+﻿namespace f00die_finder_be.Common.MailService
 {
     public interface IMailService
     {

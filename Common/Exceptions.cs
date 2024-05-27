@@ -15,19 +15,19 @@ namespace f00die_finder_be.Common
     public class InvalidCredentialsException : CustomException
     {
         public InvalidCredentialsException()
-            : base($"Invalid credentials.") { }
+            : base($"Invalid credentials.", (int)HttpStatusCode.Unauthorized) { }
     }
 
     public class EmailIsAlreadyExistedException : CustomException
     {
         public EmailIsAlreadyExistedException()
-            : base($"Email is already existed.") { }
+            : base($"Email is already existed.", (int)HttpStatusCode.Conflict) { }
     }
 
     public class PhoneIsAlreadyExistedException : CustomException
     {
         public PhoneIsAlreadyExistedException()
-            : base($"Phone is already existed.") { }
+            : base($"Phone is already existed.", (int)HttpStatusCode.Conflict) { }
     }
 
     public class InternalServerErrorException : CustomException
@@ -39,7 +39,7 @@ namespace f00die_finder_be.Common
     public class InvalidTokenException : CustomException
     {
         public InvalidTokenException()
-            : base($"InvalidToken", (int)HttpStatusCode.Unauthorized) { }
+            : base($"Invalid token", (int)HttpStatusCode.Unauthorized) { }
     }
 
     public class NotFoundException : CustomException
@@ -57,12 +57,12 @@ namespace f00die_finder_be.Common
     public class InvalidRefreshTokenException : CustomException
     {
         public InvalidRefreshTokenException()
-            : base($"Invalid refresh token", (int)HttpStatusCode.BadRequest) { }
+            : base($"Invalid refresh token", (int)HttpStatusCode.Unauthorized) { }
     }
 
     public class UnverifiedEmailException : CustomException
     {
         public UnverifiedEmailException()
-            : base($"Email is not verified", (int)HttpStatusCode.BadRequest) { }
+            : base($"Email is not verified", (int)HttpStatusCode.Forbidden) { }
     }
 }

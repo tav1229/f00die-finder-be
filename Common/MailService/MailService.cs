@@ -1,9 +1,10 @@
 ﻿using HandlebarsDotNet;
+using Hangfire;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 
-namespace f00die_finder_be.Common.IMailService
+namespace f00die_finder_be.Common.MailService
 {
     public class MailService : IMailService
     {
@@ -16,14 +17,18 @@ namespace f00die_finder_be.Common.IMailService
 
         public async Task SendEmailAsync(string toEmail, string subject, string templatePath, object data)
         {
+            templatePath = Path.Combine(Directory.GetCurrentDirectory(), _configuration["TemplateRelativePath"], templatePath);
+            var body = RenderTemplate(templatePath, data);
+
+            BackgroundJob.Enqueue(() => SendEmailJob(toEmail, subject, body));
+        }
+
+        public async Task SendEmailJob(string toEmail, string subject, string body)
+        {
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_configuration["Mail:Email"]));
             email.To.Add(MailboxAddress.Parse(toEmail));
-
             email.Subject = subject;
-
-            templatePath = Path.Combine(Directory.GetCurrentDirectory(), _configuration["TemplateRelativePath"], templatePath);
-            var body = RenderTemplate(templatePath, data);
             email.Body = new TextPart("html") { Text = body };
 
             using (var client = new SmtpClient())
@@ -34,6 +39,7 @@ namespace f00die_finder_be.Common.IMailService
                 await client.DisconnectAsync(true);
             }
         }
+
 
         public string RenderTemplate(string templatePath, object data)
         {
