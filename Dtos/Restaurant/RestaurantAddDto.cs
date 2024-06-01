@@ -1,5 +1,3 @@
-using f00die_finder_be.Common;
-
 namespace f00die_finder_be.Dtos.Restaurant
 {
     public class RestaurantAddDto
@@ -8,7 +6,7 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public string Phone { get; set; }
 
-        public PriceRangePerPerson PriceRangePerPerson { get; set; }
+        public Guid PriceRangePerPerson { get; set; }
 
         public int Capacity { get; set; }
 

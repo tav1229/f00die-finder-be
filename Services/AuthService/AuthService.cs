@@ -17,7 +17,6 @@ namespace f00die_finder_be.Services.AuthService
         public AuthService(IUserService userService, IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _userService = userService;
-
         }
 
         public async Task<CustomResponse<TokenResponse>> LoginAsync(LoginDto loginDto)

@@ -8,15 +8,26 @@ namespace f00die_finder_be.Data.Seed
     {
         public static void SeedAll(DataContext context)
         {
+            SeedPriceRangePerPerson(context);
             SeedServingType(context);
             SeedCuisineType(context);
             SeedAddionalService(context);
+            SeedCustomerType(context);
             SeedUser(context);
             SeedCity(context);
             SeedDistrict(context);
             SeedWard(context);
             SeedLocation(context);
-            SeedCustomerType(context);
+        }
+
+        public static void SeedPriceRangePerPerson(DataContext context)
+        {
+            if (context.PriceRangePerPersons.Any()) return;
+
+            context.PriceRangePerPersons.Add(new PriceRangePerPerson { Name = "Dưới 200.000đ", PriceOrder = 1 });
+            context.PriceRangePerPersons.Add(new PriceRangePerPerson { Name = "200.000đ - 400.000đ", PriceOrder = 2 });
+            context.PriceRangePerPersons.Add(new PriceRangePerPerson { Name = "500.000đ - 1.000.000đ", PriceOrder = 3 });
+            context.PriceRangePerPersons.Add(new PriceRangePerPerson { Name = "Trên 1.000.000đ", PriceOrder = 4 });
         }
 
         public static void SeedCustomerType(DataContext context)
@@ -46,28 +57,28 @@ namespace f00die_finder_be.Data.Seed
         {
             if (context.CuisineTypes.Any()) return;
 
-            context.CuisineTypes.Add(new CuisineType { Name = "Lẩu" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Nướng" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Lẩu", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638441023317916801-icon-lau.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Nướng", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638441027537096717-icon-nuong.png" });
             context.CuisineTypes.Add(new CuisineType { Name = "Lẩu-Nướng" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Quán chay" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Quán nhậu" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món việt" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Quán chay", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011884827831221-mon-chay-pasgo.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Quán nhậu", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011851008641451-quan-nhau-pasgo.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Việt", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011878657732280-mon-viet-pasgo.png" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món ăn miền Bắc" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món ăn miền Trung" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món ăn miền Nam" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món Nhật" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món Hàn" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Nhật", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011867970619295-mon-nhat-ban-pasgo.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Hàn", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638442738231563544-mon-han.png" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Thái" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Trung" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món Á" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món Âu" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Á", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638239778553118285-mon-chau-a.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Âu", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638239806231357799-mon-chau-au.png" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Ý" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Mỹ" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Pháp" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Singapore" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Nga" });
             context.CuisineTypes.Add(new CuisineType { Name = "Đặc sản" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Hải sản" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Hải sản", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011847245865102-hai-san-pasgo.png" });
 
             context.SaveChanges();
         }
@@ -132,9 +143,9 @@ namespace f00die_finder_be.Data.Seed
             var allServingTypes = context.ServingTypes.ToList();
             var allAdditionalServices = context.AdditionalServices.ToList();
             var allCustomerTypes = context.CustomerTypes.ToList();
+            var allPriceRangePerPersons = context.PriceRangePerPersons.ToList();
 
             Random random = new Random();
-            PriceRangePerPerson[] priceRanges = (PriceRangePerPerson[])Enum.GetValues(typeof(PriceRangePerPerson));
 
             for (int i = 10; i < 15; i++)
             {
@@ -153,7 +164,7 @@ namespace f00die_finder_be.Data.Seed
                 {
                     Name = "Restaurant " + i,
                     Phone = "123-456-7890",
-                    PriceRangePerPerson = priceRanges[random.Next(priceRanges.Length)],
+                    PriceRangePerPerson = allPriceRangePerPersons[random.Next(allPriceRangePerPersons.Count)],
                     Capacity = 50,
                     SpecialDishes = "Special dishes for Restaurant " + i,
                     Description = "Description for Restaurant " + i,

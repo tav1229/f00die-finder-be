@@ -22,13 +22,6 @@ namespace f00die_finder_be.Common
         Cancelled
     }
 
-    public enum PriceRangePerPerson
-    {
-        LessThan200K,
-        From200KTo500K,
-        MoreThan500K
-    }
-
     public enum ImageType
     {
         Menu,

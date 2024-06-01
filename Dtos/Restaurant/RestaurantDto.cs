@@ -1,4 +1,5 @@
 using f00die_finder_be.Common;
+using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos.Location;
 
 namespace f00die_finder_be.Dtos.Restaurant
@@ -8,6 +9,8 @@ namespace f00die_finder_be.Dtos.Restaurant
         public Guid Id { get; set; }
 
         public string Name { get; set; }
+
+        public string Note { get; set; }
 
         public LocationDto Location { get; set; }
 

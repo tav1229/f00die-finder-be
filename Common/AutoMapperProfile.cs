@@ -51,6 +51,7 @@ namespace f00die_finder_be.Common
             CreateMap<User, UserDetailDto>();
             CreateMap<Restaurant, UserSavedRestaurantDto>()
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Where(i => i.ImageType == ImageType.Restaurant).Select(i => i.URL)));
+            CreateMap<PriceRangePerPerson, PriceRangePerPersonDto>();
         }
     }
 }

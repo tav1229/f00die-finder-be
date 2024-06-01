@@ -25,6 +25,7 @@ using Vault;
 using Vault.Model;
 using Newtonsoft.Json;
 using Hangfire;
+using f00die_finder_be.Services.PriceRangePerPersonService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -111,6 +112,7 @@ builder.Services.AddScoped<IServingTypeService, ServingTypeService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IReviewCommentService, ReviewCommentService>();
 builder.Services.AddScoped<ICustomerTypeService, CustomerTypeService>();
+builder.Services.AddScoped<IPriceRangePerPersonService, PriceRangePerPersonService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<IMailService, MailService>();

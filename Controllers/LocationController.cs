@@ -1,12 +1,10 @@
-﻿using f00die_finder_be.Filters;
-using f00die_finder_be.Services.Location;
+﻿using f00die_finder_be.Services.Location;
 using Microsoft.AspNetCore.Mvc;
 
 namespace f00die_finder_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AuthorizeFilter]
     public class LocationController : ControllerBase
     {
         private readonly ILocationService _locationService;

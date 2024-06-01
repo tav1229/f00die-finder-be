@@ -80,7 +80,10 @@ namespace f00die_finder_be.Services.RestaurantService
             {
                 Name = restaurantDto.Name,
                 Phone = restaurantDto.Phone,
-                PriceRangePerPerson = restaurantDto.PriceRangePerPerson,
+                PriceRangePerPerson = new PriceRangePerPerson()
+                {
+                    Id = restaurantDto.PriceRangePerPerson
+                },
                 Capacity = restaurantDto.Capacity,
                 SpecialDishes = restaurantDto.SpecialDishes,
                 Description = restaurantDto.Description,
@@ -251,7 +254,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 }
                 if (filter.PriceRangePerPerson.HasValue)
                 {
-                    restaurantsQuery = restaurantsQuery.Where(r => r.PriceRangePerPerson == filter.PriceRangePerPerson);
+                    restaurantsQuery = restaurantsQuery.Where(r => r.PriceRangePerPerson.Id == filter.PriceRangePerPerson);
                 }
                 if (filter.CuisineType.HasValue)
                 {
@@ -272,10 +275,10 @@ namespace f00die_finder_be.Services.RestaurantService
                         restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
                         break;
                     case RestaurantSortType.PriceAscending:
-                        restaurantsQuery = restaurantsQuery.OrderBy(r => r.PriceRangePerPerson);
+                        restaurantsQuery = restaurantsQuery.OrderBy(r => r.PriceRangePerPerson.PriceOrder);
                         break;
                     case RestaurantSortType.PriceDescending:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.PriceRangePerPerson);
+                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.PriceRangePerPerson.PriceOrder);
                         break;
                     case RestaurantSortType.Rating:
                         restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.Rating);
@@ -325,7 +328,7 @@ namespace f00die_finder_be.Services.RestaurantService
             }
             if (restaurantDto.PriceRangePerPerson.HasValue)
             {
-                restaurant.PriceRangePerPerson = (PriceRangePerPerson)restaurantDto.PriceRangePerPerson;
+                restaurant.PriceRangePerPerson.Id = restaurantDto.PriceRangePerPerson.Value;
             }
             if (restaurantDto.Capacity.HasValue)
             {

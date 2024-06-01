@@ -7,7 +7,6 @@ namespace f00die_finder_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AuthorizeFilter]
     public class ReviewCommentController : ControllerBase
     {
         private readonly IReviewCommentService _reviewCommentService;
@@ -24,6 +23,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
+        [AuthorizeFilter]
         [HttpPost("restaurant")]
         public async Task<IActionResult> AddAsync([FromBody] ReviewCommentAddDto reviewCommentAddDto)
         {

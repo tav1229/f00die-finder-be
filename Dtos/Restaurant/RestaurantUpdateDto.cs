@@ -1,4 +1,5 @@
 ﻿using f00die_finder_be.Common;
+using f00die_finder_be.Data.Entities;
 
 namespace f00die_finder_be.Dtos.Restaurant
 {
@@ -8,7 +9,7 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public string? Phone { get; set; }
 
-        public PriceRangePerPerson? PriceRangePerPerson { get; set; }
+        public Guid? PriceRangePerPerson { get; set; }
 
         public int? Capacity { get; set; }
 
