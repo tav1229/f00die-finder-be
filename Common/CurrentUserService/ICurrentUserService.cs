@@ -3,5 +3,6 @@
     public interface ICurrentUserService
     {
         public Guid UserId { get; }
+        public Role Role { get; }
     }
 }

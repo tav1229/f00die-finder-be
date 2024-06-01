@@ -90,7 +90,7 @@ namespace f00die_finder_be.Services.UserService
             };
         }
 
-        public async Task<CustomResponse<UserDetailDto>> UpdateAsync(UserUpdateDto dto)
+        public async Task<CustomResponse<UserDetailDto>> UpdateMyInfoAsync(UserUpdateDto dto)
         {
             var userQuery = await _unitOfWork.GetQueryableAsync<User>();
             var user = await userQuery.FirstOrDefaultAsync(u => u.Id == _currentUserService.UserId);

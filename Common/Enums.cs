@@ -4,7 +4,7 @@ namespace f00die_finder_be.Common
     {
         Admin,
         RestaurantOwner,
-        User
+        Customer
     }
 
     public enum RestaurantStatus

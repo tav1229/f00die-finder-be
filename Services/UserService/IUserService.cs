@@ -15,6 +15,6 @@ namespace f00die_finder_be.Services.UserService
 
         Task<CustomResponse<UserDetailDto>> GetUserByIdAsync(Guid id);
         Task<CustomResponse<UserDetailDto>> GetMyInfoAsync();
-        Task<CustomResponse<UserDetailDto>> UpdateAsync(UserUpdateDto user);
+        Task<CustomResponse<UserDetailDto>> UpdateMyInfoAsync(UserUpdateDto user);
     }
 }

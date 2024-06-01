@@ -1,4 +1,5 @@
-﻿using f00die_finder_be.Dtos.ReviewComment;
+﻿using f00die_finder_be.Common;
+using f00die_finder_be.Dtos.ReviewComment;
 using f00die_finder_be.Filters;
 using f00die_finder_be.Services.ReviewComment;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.Customer])]
         [HttpPost("restaurant")]
         public async Task<IActionResult> AddAsync([FromBody] ReviewCommentAddDto reviewCommentAddDto)
         {

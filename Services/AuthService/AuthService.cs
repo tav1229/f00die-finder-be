@@ -53,7 +53,8 @@ namespace f00die_finder_be.Services.AuthService
                     AccessToken = SecurityFunction.GenerateToken(new ClaimData()
                     {
                         UserId = currentUser.Id,
-                        IsVerified = currentUser.Status != UserStatus.Unverified
+                        IsVerified = currentUser.Status != UserStatus.Unverified,
+                        Role = currentUser.Role
                     }, _configuration),
                     AccessTokenExpiryTime = DateTimeOffset.Now.AddMinutes(_tokenTimeOut),
                     RefreshToken = refreshToken,
@@ -119,7 +120,8 @@ namespace f00die_finder_be.Services.AuthService
                     AccessToken = SecurityFunction.GenerateToken(new ClaimData()
                     {
                         UserId = newUser.Id,
-                        IsVerified = newUser.Status != UserStatus.Unverified
+                        IsVerified = newUser.Status != UserStatus.Unverified,
+                        Role = newUser.Role
                     }, _configuration),
                     AccessTokenExpiryTime = DateTimeOffset.Now.AddMinutes(_tokenTimeOut),
                     RefreshToken = refreshToken,
@@ -247,7 +249,8 @@ namespace f00die_finder_be.Services.AuthService
                     AccessToken = SecurityFunction.GenerateToken(new ClaimData()
                     {
                         UserId = user.Id,
-                        IsVerified = user.Status != UserStatus.Unverified
+                        IsVerified = user.Status != UserStatus.Unverified,
+                        Role = user.Role
                     }, _configuration),
                     AccessTokenExpiryTime = DateTimeOffset.Now.AddMinutes(_tokenTimeOut),
                     RefreshToken = newRefreshToken,
@@ -304,7 +307,8 @@ namespace f00die_finder_be.Services.AuthService
                     AccessToken = SecurityFunction.GenerateToken(new ClaimData()
                     {
                         UserId = user.Id,
-                        IsVerified = user.Status != UserStatus.Unverified
+                        IsVerified = user.Status != UserStatus.Unverified,
+                        Role = user.Role
                     }, _configuration),
                     AccessTokenExpiryTime = DateTimeOffset.Now.AddMinutes(_tokenTimeOut),
                     RefreshToken = refreshToken,

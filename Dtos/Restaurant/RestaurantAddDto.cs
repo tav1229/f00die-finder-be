@@ -6,9 +6,9 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public string Phone { get; set; }
 
-        public Guid PriceRangePerPerson { get; set; }
+        public Guid? PriceRangePerPerson { get; set; }
 
-        public int Capacity { get; set; }
+        public int? Capacity { get; set; }
 
         public string? SpecialDishes { get; set; }
 
@@ -22,7 +22,7 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public List<Guid>? CustomerTypes { get; set; }
 
-        public string? Address { get; set; }
+        public string Address { get; set; }
 
         public Guid Ward { get; set; }
 

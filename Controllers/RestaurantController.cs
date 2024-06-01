@@ -32,7 +32,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.RestaurantOwner])]
         [HttpGet("my-restaurant")]
         public async Task<IActionResult> GetMyRestaurantAsync()
         {
@@ -40,7 +40,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.RestaurantOwner])]
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] RestaurantAddDto restaurant)
         {
@@ -48,7 +48,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.RestaurantOwner])]
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] RestaurantUpdateDto restaurant)
         {
@@ -56,7 +56,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.RestaurantOwner])]
         [HttpPost("images")]
         public async Task<IActionResult> AddImagesAsync([FromForm] RestaurantAddImagesDto restaurant)
         {
@@ -64,7 +64,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.RestaurantOwner])]
         [HttpDelete("images")]
         public async Task<IActionResult> DeleteImagesAsync([FromBody] List<Guid> imageIds)
         {
@@ -72,7 +72,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.RestaurantOwner, Role.Admin])]
         [HttpPut("deactivate")]
         public async Task<IActionResult> DeactivateAsync()
         {
@@ -80,7 +80,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.Customer])]
         [HttpGet("my-saved-restaurants")]
         public async Task<IActionResult> GetMySavedRestaurantsAsync([FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
         {
@@ -88,7 +88,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.Customer])]
         [HttpPost("save")]
         public async Task<IActionResult> SaveRestaurantAsync([FromBody] Guid restaurantId)
         {
@@ -96,7 +96,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilter([Role.Customer])]
         [HttpPost("unsave")]
         public async Task<IActionResult> UnsaveRestaurantAsync([FromBody] Guid restaurantId)
         {

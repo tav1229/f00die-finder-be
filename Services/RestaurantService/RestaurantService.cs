@@ -82,9 +82,9 @@ namespace f00die_finder_be.Services.RestaurantService
                 Phone = restaurantDto.Phone,
                 PriceRangePerPerson = new PriceRangePerPerson()
                 {
-                    Id = restaurantDto.PriceRangePerPerson
+                    Id = restaurantDto.PriceRangePerPerson.Value
                 },
-                Capacity = restaurantDto.Capacity,
+                Capacity = restaurantDto.Capacity.Value,
                 SpecialDishes = restaurantDto.SpecialDishes,
                 Description = restaurantDto.Description,
                 Note = restaurantDto.Note,
