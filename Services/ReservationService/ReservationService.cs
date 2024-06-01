@@ -25,7 +25,6 @@ namespace f00die_finder_be.Services.ReservationService
             reservation.RestaurantId = reservationAddDto.RestaurantId;
             reservation.UserId = _currentUserService.UserId;
             reservation.ReservationStatus = ReservationStatus.Pending;
-            reservation.Restaurant = restaurant;
 
             restaurant.ReservationCount++;
 
@@ -37,6 +36,15 @@ namespace f00die_finder_be.Services.ReservationService
             await _cacheService.RemoveAsync($"reservations-restaurant-owner-{restaurant.OwnerId}");
             await _cacheService.RemoveAsync($"reservations-customer-{_currentUserService.UserId}");
             
+            reservation = await (await _unitOfWork.GetQueryableAsync<Reservation>())
+                .Include(r => r.Restaurant)
+                .ThenInclude(r => r.Images)
+                .Include(r => r.Restaurant)
+                .ThenInclude(r => r.Location)
+                .ThenInclude(l => l.WardOrCommune)
+                .ThenInclude(w => w.District)
+                .FirstOrDefaultAsync(r => r.Id == reservation.Id);
+
             return new CustomResponse<ReservationDetailDto>
             {
                 Data = _mapper.Map<ReservationDetailDto>(reservation)
@@ -169,6 +177,15 @@ namespace f00die_finder_be.Services.ReservationService
             await _cacheService.RemoveAsync($"reservations-restaurant-owner-{reservation.Restaurant.OwnerId}");
             await _cacheService.RemoveAsync($"reservation-{reservationId}");
             await _cacheService.RemoveAsync($"reservations-customer-{reservation.UserId}");
+
+            reservation = await (await _unitOfWork.GetQueryableAsync<Reservation>())
+               .Include(r => r.Restaurant)
+               .ThenInclude(r => r.Images)
+               .Include(r => r.Restaurant)
+               .ThenInclude(r => r.Location)
+               .ThenInclude(l => l.WardOrCommune)
+               .ThenInclude(w => w.District)
+               .FirstOrDefaultAsync(r => r.Id == reservation.Id);
 
             return new CustomResponse<ReservationDetailDto>
             {

@@ -13,7 +13,7 @@ namespace f00die_finder_be.Services.RestaurantService
         Task<CustomResponse<RestaurantDetailDto>> UpdateAsync(RestaurantUpdateDto restaurant);
         Task<CustomResponse<RestaurantDetailDto>> AddImagesAsync (RestaurantAddImagesDto restaurant);
         Task<CustomResponse<RestaurantDetailDto>> DeleteImagesAsync (List<Guid> imageIds);
-        Task<CustomResponse<RestaurantDetailDto>> DeactivateAsync();
+        Task<CustomResponse<RestaurantDetailDto>> DeactivateMyRestaurantAsync();
         Task<CustomResponse<List<UserSavedRestaurantDto>>> GetMySavedRestaurantsAsync(int pageSize, int pageNumber);
         Task<CustomResponse<object>> SaveRestaurantAsync(Guid restaurantId);
         Task<CustomResponse<object>> UnsaveRestaurantAsync(Guid restaurantId);

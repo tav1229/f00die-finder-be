@@ -72,11 +72,11 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter([Role.RestaurantOwner, Role.Admin])]
-        [HttpPut("deactivate")]
-        public async Task<IActionResult> DeactivateAsync()
+        [AuthorizeFilter([Role.RestaurantOwner])]
+        [HttpPut("deactivate-my-restaurant")]
+        public async Task<IActionResult> DeactivateMyRestaurantAsync()
         {
-            var result = await _restaurantService.DeactivateAsync();
+            var result = await _restaurantService.DeactivateMyRestaurantAsync();
             return Ok(result);
         }
 

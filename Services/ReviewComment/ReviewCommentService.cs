@@ -20,6 +20,10 @@ namespace f00die_finder_be.Services.ReviewComment
 
             await _cacheService.RemoveAsync($"reviewComments-restaurant-{review.RestaurantId}");
             
+            review = await (await _unitOfWork.GetQueryableAsync<Data.Entities.ReviewComment>())
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.Id == review.Id);
+
             return new CustomResponse<ReviewCommentDto>
             {
                 Data = _mapper.Map<ReviewCommentDto>(review)

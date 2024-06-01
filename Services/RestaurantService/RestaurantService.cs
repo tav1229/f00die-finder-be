@@ -76,14 +76,20 @@ namespace f00die_finder_be.Services.RestaurantService
                     });
                 }
             }
+
+            PriceRangePerPerson priceRangePerPerson = null;
+
+            if (restaurantDto.PriceRangePerPerson.HasValue)
+            {
+                priceRangePerPerson = await (await _unitOfWork.GetQueryableAsync<PriceRangePerPerson>())
+                    .FirstOrDefaultAsync(p => p.Id == restaurantDto.PriceRangePerPerson.Value);
+            }
+
             var restaurant = new Restaurant()
             {
                 Name = restaurantDto.Name,
                 Phone = restaurantDto.Phone,
-                PriceRangePerPerson = new PriceRangePerPerson()
-                {
-                    Id = restaurantDto.PriceRangePerPerson.Value
-                },
+                PriceRangePerPerson = priceRangePerPerson,
                 Capacity = restaurantDto.Capacity.Value,
                 SpecialDishes = restaurantDto.SpecialDishes,
                 Description = restaurantDto.Description,
@@ -107,13 +113,21 @@ namespace f00die_finder_be.Services.RestaurantService
 
             await _cacheService.RemoveAsync("restaurants");
 
+            restaurant = await(await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .Include(r => r.RestaurantServingTypes)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .Include(r => r.BusinessHours)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
+
             return new CustomResponse<RestaurantDetailDto>
             {
                 Data = _mapper.Map<RestaurantDetailDto>(restaurant)
             };
         }
 
-        public async Task<CustomResponse<RestaurantDetailDto>> DeactivateAsync()
+        public async Task<CustomResponse<RestaurantDetailDto>> DeactivateMyRestaurantAsync()
         {
             var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
             var restaurant = await restaurantQuery.FirstOrDefaultAsync(r => r.OwnerId == _currentUserService.UserId);
@@ -129,6 +143,14 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurants");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
+
+            restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .Include(r => r.RestaurantServingTypes)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .Include(r => r.BusinessHours)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
 
             return new CustomResponse<RestaurantDetailDto>
             {
@@ -431,6 +453,14 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
 
+            restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .Include(r => r.RestaurantServingTypes)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .Include(r => r.BusinessHours)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
+
             return new CustomResponse<RestaurantDetailDto>
             {
                 Data = _mapper.Map<RestaurantDetailDto>(restaurant)
@@ -485,6 +515,14 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
 
+            restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .Include(r => r.RestaurantServingTypes)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .Include(r => r.BusinessHours)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
+
             return new CustomResponse<RestaurantDetailDto>
             {
                 Data = _mapper.Map<RestaurantDetailDto>(restaurant)
@@ -514,6 +552,14 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync("restaurants");
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
+
+            restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .Include(r => r.RestaurantServingTypes)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .Include(r => r.BusinessHours)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
 
             return new CustomResponse<RestaurantDetailDto>
             {
