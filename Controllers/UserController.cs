@@ -18,7 +18,7 @@ namespace f00die_finder_be.Controllers
         }
 
 
-        [AuthorizeFilter([Role.Admin])]
+        [AuthorizeFilterAttribute([Role.Admin])]
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetByIdAsync(Guid userId)
         {
@@ -26,7 +26,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilterAttribute]
         [HttpPut]
         public async Task<IActionResult> UpdateMyInfoAsync([FromBody] UserUpdateDto userUpdateDto)
         {
@@ -34,7 +34,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilterAttribute]
         [HttpGet("my-info")]
         public async Task<IActionResult> GetMyInfoAsync()
         {

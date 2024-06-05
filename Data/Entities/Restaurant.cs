@@ -10,6 +10,7 @@ namespace f00die_finder_be.Data.Entities
 
         public RestaurantStatus Status { get; set; }
 
+        public Guid PriceRangePerPersonId { get; set; }
         public PriceRangePerPerson PriceRangePerPerson { get; set; }
 
         public int Capacity { get; set; }

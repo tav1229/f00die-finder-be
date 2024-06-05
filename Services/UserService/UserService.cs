@@ -22,32 +22,23 @@ namespace f00die_finder_be.Services.UserService
 
         public async Task<List<User>> InternalGetUsersAsync()
         {
-            return await _cacheService.GetOrCreateAsync("users", async () =>
-            {
-                var userQuery = await _unitOfWork.GetQueryableAsync<User>();
-                var users = await userQuery.ToListAsync();
-                return users;
-            });
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            var users = await userQuery.ToListAsync();
+            return users;
         }
 
         public async Task<User> InternalGetUserByEmailAsync(string email)
         {
-            return await _cacheService.GetOrCreateAsync($"user-{email}", async () =>
-            {
-                var userQuery = await _unitOfWork.GetQueryableAsync<User>();
-                var user = await userQuery.FirstOrDefaultAsync(u => u.Email == email);
-                return user;
-            });
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            var user = await userQuery.FirstOrDefaultAsync(u => u.Email == email);
+            return user;
         }
 
         public async Task<User> InternalGetUserByIdAsync(Guid id)
         {
-            return await _cacheService.GetOrCreateAsync($"user-{id}", async () =>
-            {
-                var userQuery = await _unitOfWork.GetQueryableAsync<User>();
-                var user = await userQuery.FirstOrDefaultAsync(u => u.Id == id);
-                return user;
-            });
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            var user = await userQuery.FirstOrDefaultAsync(u => u.Id == id);
+            return user;
         }
 
         public async Task InternalDeleteAsync(User user, bool isHardDelete)
@@ -55,7 +46,6 @@ namespace f00die_finder_be.Services.UserService
             await _unitOfWork.DeleteAsync(user, isHardDelete);
             await _unitOfWork.SaveChangesAsync();
 
-            await _cacheService.RemoveAsync($"user-{user.Email}");
             await _cacheService.RemoveAsync($"user-{user.Id}");
             await _cacheService.RemoveAsync("users");
         }
@@ -118,12 +108,16 @@ namespace f00die_finder_be.Services.UserService
             await _unitOfWork.SaveChangesAsync();
 
             await _cacheService.RemoveAsync($"user-{_currentUserService.UserId}");
-            await _cacheService.RemoveAsync($"user-{user.Email}");
             await _cacheService.RemoveAsync("users");
+
+
+            var data = _mapper.Map<UserDetailDto>(user);
+
+            await _cacheService.SetAsync($"user-{_currentUserService.UserId}", data);
 
             return new CustomResponse<UserDetailDto>
             {
-                Data = _mapper.Map<UserDetailDto>(user)
+                Data = data
             };
         }
     }

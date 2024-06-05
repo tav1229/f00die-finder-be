@@ -41,7 +41,7 @@ namespace f00die_finder_be.Common
                 .ForMember(dest => dest.CuisineTypes, opt => opt.MapFrom(src => src.RestaurantCuisineTypes.Select(rct => rct.CuisineType)))
                 .ForMember(dest => dest.ServingTypes, opt => opt.MapFrom(src => src.RestaurantServingTypes.Select(rst => rst.ServingType)))
                 .ForMember(dest => dest.CustomerTypes, opt => opt.MapFrom(src => src.RestaurantCustomerTypes.Select(rct => rct.CustomerType)));
-            CreateMap<Reservation, ReservationDto>()
+            CreateMap<Reservation, ReservationCustomerDto>()
                 .ForMember(dest => dest.RestaurantName, opt => opt.MapFrom(src => src.Restaurant.Name))
                 .ForMember(dest => dest.RestaurantImageUrl, opt => opt.MapFrom(src => src.Restaurant.Images.FirstOrDefault(i => i.ImageType == ImageType.Restaurant).URL));
             CreateMap<Reservation, ReservationDetailDto>()
@@ -57,6 +57,7 @@ namespace f00die_finder_be.Common
             CreateMap<Restaurant, UserSavedRestaurantDto>()
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Where(i => i.ImageType == ImageType.Restaurant).Select(i => i.URL)));
             CreateMap<PriceRangePerPerson, PriceRangePerPersonDto>();
+            CreateMap<Reservation, ReservationOwnerDto>();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace f00die_finder_be.Controllers
             _reservationService = reservationService;
         }
 
-        [AuthorizeFilter([Role.RestaurantOwner])]
+        [AuthorizeFilterAttribute([Role.RestaurantOwner])]
         [HttpGet("my-restaurant")]
         public async Task<IActionResult> GetReservationsOfMyRestaurantAsync([FromQuery] FilterReservationDto filter, [FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
         {
@@ -25,7 +25,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter([Role.Customer, Role.RestaurantOwner])]
+        [AuthorizeFilterAttribute([Role.Customer, Role.RestaurantOwner])]
         [HttpGet("{reservationId}")]
         public async Task<IActionResult> GetReservationByIdAsync(Guid reservationId)
         {
@@ -33,7 +33,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter([Role.Customer])]
+        [AuthorizeFilterAttribute([Role.Customer])]
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] ReservationAddDto reservationAddDto)
         {
@@ -41,7 +41,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter([Role.Customer, Role.RestaurantOwner])]
+        [AuthorizeFilterAttribute([Role.Customer, Role.RestaurantOwner])]
         [HttpPut]
         public async Task<IActionResult> UpdateReservationStatusAsync(Guid reservationId, ReservationStatus reservationStatus)
         {
@@ -49,7 +49,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter([Role.Customer])]
+        [AuthorizeFilterAttribute([Role.Customer])]
         [HttpGet("my-reservations")]
         public async Task<IActionResult> GetMyReservations([FromQuery] FilterReservationDto filter, [FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
         {

@@ -8,16 +8,16 @@ using Microsoft.IdentityModel.Tokens;
 namespace f00die_finder_be.Filters
 {
     [AttributeUsage(AttributeTargets.All)]
-    public class AuthorizeFilter : Attribute, IAsyncAuthorizationFilter
+    public class AuthorizeFilterAttribute : Attribute, IAsyncAuthorizationFilter
     {
         private readonly Role[]? _roles;
 
-        public AuthorizeFilter(Role[] roles)
+        public AuthorizeFilterAttribute(Role[] roles)
         {
             _roles = roles;
         }
 
-        public AuthorizeFilter() { }
+        public AuthorizeFilterAttribute() { }
 
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {

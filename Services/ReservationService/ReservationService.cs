@@ -45,13 +45,17 @@ namespace f00die_finder_be.Services.ReservationService
                 .ThenInclude(w => w.District)
                 .FirstOrDefaultAsync(r => r.Id == reservation.Id);
 
+            var data = _mapper.Map<ReservationDetailDto>(reservation);
+
+            await _cacheService.SetAsync($"reservation-{reservation.Id}", data);
+
             return new CustomResponse<ReservationDetailDto>
             {
-                Data = _mapper.Map<ReservationDetailDto>(reservation)
+                Data = data
             };
         }
 
-        public async Task<CustomResponse<List<ReservationDto>>> GetMyReservations(FilterReservationDto filterReservationDto, int pageSize, int pageNumber)
+        public async Task<CustomResponse<List<ReservationCustomerDto>>> GetMyReservations(FilterReservationDto filterReservationDto, int pageSize, int pageNumber)
         {
             var cacheKey = $"reservations-customer-{_currentUserService.UserId}";
             var userReservations = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
@@ -59,6 +63,7 @@ namespace f00die_finder_be.Services.ReservationService
                 var reservationQuery = await _unitOfWork.GetQueryableAsync<Reservation>();
                 return await reservationQuery
                     .Include(r => r.Restaurant)
+                    .ThenInclude(r => r.Images)
                     .Where(r => r.UserId == _currentUserService.UserId)
                     .ToListAsync();
             });
@@ -77,10 +82,10 @@ namespace f00die_finder_be.Services.ReservationService
                 .OrderByDescending(r => r.CreatedDate)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Select(r => _mapper.Map<ReservationDto>(r))
+                .Select(r => _mapper.Map<ReservationCustomerDto>(r))
                 .ToList();
 
-            return new CustomResponse<List<ReservationDto>>
+            return new CustomResponse<List<ReservationCustomerDto>>
             {
                 Data = items,
                 Meta = new MetaData
@@ -110,7 +115,7 @@ namespace f00die_finder_be.Services.ReservationService
             };
         }
 
-        public async Task<CustomResponse<List<ReservationDto>>> GetReservationsOfMyRestaurantAsync(FilterReservationDto filter, int pageSize, int pageNumber)
+        public async Task<CustomResponse<List<ReservationOwnerDto>>> GetReservationsOfMyRestaurantAsync(FilterReservationDto filter, int pageSize, int pageNumber)
         {
             var cacheKey = $"reservations-restaurant-owner-{_currentUserService.UserId}";
             var restaurantReservations = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
@@ -136,10 +141,10 @@ namespace f00die_finder_be.Services.ReservationService
                 .OrderByDescending(r => r.CreatedDate)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Select(r => _mapper.Map<ReservationDto>(r))
+                .Select(r => _mapper.Map<ReservationOwnerDto>(r))
                 .ToList();
 
-            return new CustomResponse<List<ReservationDto>>
+            return new CustomResponse<List<ReservationOwnerDto>>
             {
                 Data = items,
                 Meta = new MetaData
@@ -187,9 +192,13 @@ namespace f00die_finder_be.Services.ReservationService
                .ThenInclude(w => w.District)
                .FirstOrDefaultAsync(r => r.Id == reservation.Id);
 
+            var data = _mapper.Map<ReservationDetailDto>(reservation);
+
+            await _cacheService.SetAsync($"reservation-{reservation.Id}", data);
+
             return new CustomResponse<ReservationDetailDto>
             {
-                Data = _mapper.Map<ReservationDetailDto>(reservation)
+                Data = data
             };
         }
     }

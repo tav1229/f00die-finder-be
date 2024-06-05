@@ -24,7 +24,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter([Role.Customer])]
+        [AuthorizeFilterAttribute([Role.Customer])]
         [HttpPost("restaurant")]
         public async Task<IActionResult> AddAsync([FromBody] ReviewCommentAddDto reviewCommentAddDto)
         {
