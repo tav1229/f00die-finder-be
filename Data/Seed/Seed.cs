@@ -248,7 +248,7 @@ namespace f00die_finder_be.Data.Seed
             var passwordSalt = SecurityFunction.GenerateRandomString();
             var customer = new User()
             {
-                CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
+                CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
                 PasswordSalt = passwordSalt,
                 HashedPassword = SecurityFunction.HashPassword("string", passwordSalt),
                 FullName = "Lê Văn C",
@@ -260,7 +260,7 @@ namespace f00die_finder_be.Data.Seed
 
             var admin = new User()
             {
-                CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
+                CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
                 PasswordSalt = passwordSalt,
                 HashedPassword = SecurityFunction.HashPassword("string", passwordSalt),
                 FullName = "Nguyễn Văn B",
@@ -272,7 +272,7 @@ namespace f00die_finder_be.Data.Seed
 
             var restaurantOwner = new User()
             {
-                CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
+                CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
                 PasswordSalt = passwordSalt,
                 HashedPassword = SecurityFunction.HashPassword("string", passwordSalt),
                 FullName = "Nguyễn Văn A",
@@ -281,7 +281,7 @@ namespace f00die_finder_be.Data.Seed
                 Role = Role.RestaurantOwner,
                 Restaurant = new Restaurant
                 {
-                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
+                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
                     Name = "Nhà hàng Biển Cả",
                     Phone = phoneNumbers[random.Next(phoneNumbers.Count)],
                     PriceRangePerPerson = allPriceRangePerPersons[random.Next(allPriceRangePerPersons.Count)],
@@ -364,7 +364,7 @@ namespace f00die_finder_be.Data.Seed
             for (int i = 1; i < 30; i++)
             {
                 var user = new User();
-                user.CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-random.Next(1, 100));
+                user.CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100));
                 user.PasswordSalt = passwordSalt;
                 user.HashedPassword = SecurityFunction.HashPassword("string", passwordSalt);
                 user.FullName = "Tên người dùng" + i.ToString();
@@ -373,7 +373,7 @@ namespace f00die_finder_be.Data.Seed
                 user.Role = Role.RestaurantOwner;
                 user.Restaurant = new Restaurant
                 {
-                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
+                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
                     Name = "Nhà hàng " + i,
                     Phone = phoneNumbers[random.Next(phoneNumbers.Count)],
                     PriceRangePerPerson = allPriceRangePerPersons[random.Next(allPriceRangePerPersons.Count)],
@@ -497,7 +497,7 @@ namespace f00die_finder_be.Data.Seed
                     User = user,
                     Restaurant = restaurant,
                     ReservationStatus = random.Next(0, 2) == 0 ? ReservationStatus.Confirmed : ReservationStatus.Pending,
-                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-random.Next(1, 100))
+                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100))
                 };
 
                 context.Reservations.Add(reservation);
@@ -519,7 +519,7 @@ namespace f00die_finder_be.Data.Seed
                     User = user1,
                     Restaurant = restaurants[random.Next(restaurants.Count)],
                     ReservationStatus = random.Next(0, 2) == 0 ? ReservationStatus.Confirmed : ReservationStatus.Pending,
-                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-random.Next(1, 100))
+                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100))
                 };
 
                 context.Reservations.Add(reservation);
@@ -567,7 +567,7 @@ namespace f00die_finder_be.Data.Seed
                             Rating = (short)(random.Next(1, 6)),
                             User = customer,
                             Restaurant = restaurant,
-                            CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-random.Next(1, 100)
+                            CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100)
                                                        )
                         };
 
@@ -575,6 +575,7 @@ namespace f00die_finder_be.Data.Seed
                     }
                 }
             }
+            context.SaveChanges();
 
             foreach (var restaurant in restaurants)
             {
