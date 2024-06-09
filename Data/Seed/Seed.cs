@@ -311,11 +311,6 @@ namespace f00die_finder_be.Data.Seed
                 new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Restaurant, URL = restaurantImages[random.Next(restaurantImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Restaurant, URL = restaurantImages[random.Next(restaurantImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Restaurant, URL = restaurantImages[random.Next(restaurantImages.Count)] },
@@ -325,7 +320,6 @@ namespace f00die_finder_be.Data.Seed
             },
                     RestaurantCuisineTypes = new List<RestaurantCuisineType>()
             {
-                new RestaurantCuisineType() { CuisineType = allCuisineTypes[random.Next(allCuisineTypes.Count)] },
                 new RestaurantCuisineType() { CuisineType = allCuisineTypes[random.Next(allCuisineTypes.Count)] },
                 new RestaurantCuisineType() { CuisineType = allCuisineTypes[random.Next(allCuisineTypes.Count)] }
             },
@@ -338,15 +332,10 @@ namespace f00die_finder_be.Data.Seed
                         new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
                         new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
                         new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
-                        new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
-                        new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
-                        new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
-                        new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
                     },
                     RestaurantCustomerTypes = new List<RestaurantCustomerType>()
                     {
                         new RestaurantCustomerType() { CustomerType = allCustomerTypes[random.Next(allCustomerTypes.Count)] },
-                        new RestaurantCustomerType() { CustomerType = allCustomerTypes[random.Next(allCustomerTypes.Count)] }
                     },
                     BusinessHours = new List<BusinessHour>()
             {
@@ -361,7 +350,7 @@ namespace f00die_finder_be.Data.Seed
                 }
 
             };
-            for (int i = 1; i < 30; i++)
+            for (int i = 1; i < 40; i++)
             {
                 var user = new User();
                 user.CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100));
@@ -404,11 +393,6 @@ namespace f00die_finder_be.Data.Seed
                 new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
-                new RestaurantImage() { ImageType = ImageType.Menu, URL = menuImages[random.Next(menuImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Restaurant, URL = restaurantImages[random.Next(restaurantImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Restaurant, URL = restaurantImages[random.Next(restaurantImages.Count)] },
                 new RestaurantImage() { ImageType = ImageType.Restaurant, URL = restaurantImages[random.Next(restaurantImages.Count)] },
@@ -418,7 +402,6 @@ namespace f00die_finder_be.Data.Seed
             },
                     RestaurantCuisineTypes = new List<RestaurantCuisineType>()
             {
-                new RestaurantCuisineType() { CuisineType = allCuisineTypes[random.Next(allCuisineTypes.Count)] },
                 new RestaurantCuisineType() { CuisineType = allCuisineTypes[random.Next(allCuisineTypes.Count)] },
                 new RestaurantCuisineType() { CuisineType = allCuisineTypes[random.Next(allCuisineTypes.Count)] }
             },
@@ -431,15 +414,10 @@ namespace f00die_finder_be.Data.Seed
                         new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
                         new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
                         new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
-                        new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
-                        new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
-                        new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
-                        new RestaurantAdditionalService() { AdditionalService = allAdditionalServices[random.Next(allAdditionalServices.Count)] },
                     },
                     RestaurantCustomerTypes = new List<RestaurantCustomerType>()
                     {
                         new RestaurantCustomerType() { CustomerType = allCustomerTypes[random.Next(allCustomerTypes.Count)] },
-                        new RestaurantCustomerType() { CustomerType = allCustomerTypes[random.Next(allCustomerTypes.Count)] }
                     },
                     BusinessHours = new List<BusinessHour>()
             {
