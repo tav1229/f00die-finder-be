@@ -41,5 +41,21 @@ namespace f00die_finder_be.Controllers
             var result = await _userService.GetMyInfoAsync();
             return Ok(result);
         }
+
+        [AuthorizeFilterAttribute([Role.Admin])]
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsersAsync([FromQuery] FilterUserAdminDto? filter, [FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
+        {
+            var result = await _userService.GetUsersGetRestaurantsAdminAsync(filter, pageSize, pageNumber);
+            return Ok(result);
+        }
+
+        [AuthorizeFilterAttribute([Role.Admin])]
+        [HttpPut("status/{userId}")]
+        public async Task<IActionResult> ChangeUserStatusAdminAsync(Guid userId, [FromBody] UserStatus status)
+        {
+            var result = await _userService.ChangeUserStatusAdminAsync(userId, status);
+            return Ok(result);
+        }
     }
 }

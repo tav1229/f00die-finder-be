@@ -2,7 +2,6 @@
   "profiles": {
     "http": {
       "commandName": "Project",
-      "commandLineArgs": "--urls http://10.10.53.123:7185",
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {

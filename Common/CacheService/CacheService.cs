@@ -11,12 +11,15 @@ namespace f00die_finder_be.Common.CacheService
         private readonly IDistributedCache _cache;
         private readonly ConcurrentDictionary<string, bool> _cacheKeys;
         private readonly JsonSerializerSettings _jsonSettings;
-
-        public CacheService(IDistributedCache cache, IOptions<MvcNewtonsoftJsonOptions> jsonOptions)
+        private readonly IConfiguration _configuration;
+        private readonly int _cacheExpiryTimeInMinutes;
+        public CacheService(IDistributedCache cache, IOptions<MvcNewtonsoftJsonOptions> jsonOptions, IConfiguration configuration)
         {
             _cache = cache;
             _cacheKeys = new ConcurrentDictionary<string, bool>();
             _jsonSettings = jsonOptions.Value.SerializerSettings;
+            _configuration = configuration;
+            _cacheExpiryTimeInMinutes = _configuration.GetValue<int>("Cache:ExpiryTimeInMinutes");
         }
 
         public async Task<T?> GetAsync<T>(string key) where T : class
@@ -33,8 +36,10 @@ namespace f00die_finder_be.Common.CacheService
         public async Task SetAsync<T>(string key, T value) where T : class
         {
             var cacheValue = JsonConvert.SerializeObject(value, _jsonSettings);
-            await _cache.SetStringAsync(key, cacheValue);
-
+            await _cache.SetStringAsync(key, cacheValue, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_cacheExpiryTimeInMinutes)
+            });
             _cacheKeys.TryAdd(key, true);
         }
 

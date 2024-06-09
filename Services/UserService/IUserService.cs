@@ -1,3 +1,4 @@
+using f00die_finder_be.Common;
 using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.User;
@@ -16,5 +17,7 @@ namespace f00die_finder_be.Services.UserService
         Task<CustomResponse<UserDetailDto>> GetUserByIdAsync(Guid id);
         Task<CustomResponse<UserDetailDto>> GetMyInfoAsync();
         Task<CustomResponse<UserDetailDto>> UpdateMyInfoAsync(UserUpdateDto user);
+        Task<CustomResponse<List<UserAdminDto>>> GetUsersGetRestaurantsAdminAsync(FilterUserAdminDto? filter, int pageSize, int pageNumber);
+        Task<CustomResponse<object>> ChangeUserStatusAdminAsync(Guid userId, UserStatus status);
     }
 }

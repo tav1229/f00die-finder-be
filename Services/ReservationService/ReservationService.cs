@@ -92,7 +92,8 @@ namespace f00die_finder_be.Services.ReservationService
                 {
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                    TotalCount = totalItems
                 }
             };
         }
@@ -151,7 +152,8 @@ namespace f00die_finder_be.Services.ReservationService
                 {
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                    TotalCount = totalItems
                 }
             };
         }

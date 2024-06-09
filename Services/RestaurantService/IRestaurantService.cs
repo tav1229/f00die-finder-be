@@ -17,6 +17,7 @@ namespace f00die_finder_be.Services.RestaurantService
         Task<CustomResponse<List<UserSavedRestaurantDto>>> GetMySavedRestaurantsAsync(int pageSize, int pageNumber);
         Task<CustomResponse<object>> SaveRestaurantAsync(Guid restaurantId);
         Task<CustomResponse<object>> UnsaveRestaurantAsync(Guid restaurantId);
-
+        Task<CustomResponse<object>> ChangeRestaurantStatusAdminAsync(Guid restaurantId, RestaurantStatus status);
+        Task<CustomResponse<List<RestaurantAdminDto>>> GetRestaurantsAdminAsync(FilterRestaurantAdminDto? filter, int pageSize, int pageNumber);
     }
 }

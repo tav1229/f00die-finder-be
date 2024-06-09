@@ -120,5 +120,62 @@ namespace f00die_finder_be.Services.UserService
                 Data = data
             };
         }
+
+        public async Task<CustomResponse<List<UserAdminDto>>> GetUsersGetRestaurantsAdminAsync(FilterUserAdminDto? filter, int pageSize, int pageNumber)
+        {
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            
+            if (filter is not null)
+            {
+                if (filter.Role is not null)
+                {
+                    userQuery = userQuery.Where(u => u.Role == filter.Role);
+                }
+
+                if (filter.Status is not null)
+                {
+                    userQuery = userQuery.Where(u => u.Status == filter.Status);
+                }
+            }
+
+            var users = await userQuery
+                .OrderByDescending(u => u.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var data = _mapper.Map<List<UserAdminDto>>(users);
+
+            return new CustomResponse<List<UserAdminDto>>
+            {
+                Data = data,
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(await userQuery.CountAsync() / (double)pageSize),
+                    TotalCount = await userQuery.CountAsync()
+                }
+            };
+        }
+
+        public async Task<CustomResponse<object>> ChangeUserStatusAdminAsync(Guid userId, UserStatus status)
+        {
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            var user = await userQuery.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                throw new NotFoundException();
+            }
+
+            user.Status = status;
+            await _unitOfWork.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            await _cacheService.RemoveAsync($"user-{userId}");
+            await _cacheService.RemoveAsync("users");
+            
+            return new CustomResponse<object>();
+        }
     }
 }

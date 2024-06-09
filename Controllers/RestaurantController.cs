@@ -103,5 +103,22 @@ namespace f00die_finder_be.Controllers
             var result = await _restaurantService.UnsaveRestaurantAsync(restaurantId);
             return Ok(result);
         }
+
+        [AuthorizeFilterAttribute([Role.Admin])]
+        [HttpPut("status/{restaurantId}")]
+        public async Task<IActionResult> ChangeRestaurantStatusAdminAsync(Guid restaurantId, [FromBody] RestaurantStatus status)
+        {
+            var result = await _restaurantService.ChangeRestaurantStatusAdminAsync(restaurantId, status);
+            return Ok(result);
+        }
+
+        [AuthorizeFilterAttribute([Role.Admin])]
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetRestaurantsAdminAsync([FromQuery] FilterRestaurantAdminDto? filterRestaurantAdminDto,
+                       [FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
+        {
+            var result = await _restaurantService.GetRestaurantsAdminAsync(filterRestaurantAdminDto, pageSize, pageNumber);
+            return Ok(result);
+        }
     }
 }

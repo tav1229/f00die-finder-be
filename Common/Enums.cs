@@ -39,7 +39,8 @@ namespace f00die_finder_be.Common
         Popular,
         PriceAscending,
         PriceDescending,
-        Rating
+        Rating,
+        CreatedDate
     }
 
     public enum UserStatus

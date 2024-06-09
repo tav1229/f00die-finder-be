@@ -277,6 +277,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 .ThenInclude(r => r.CustomerType)
                 .Include(r => r.Images)
                 .Include(r => r.PriceRangePerPerson)
+                .Where(r => r.Status == RestaurantStatus.Active)
                 .ToListAsync();
             });
 
@@ -332,6 +333,9 @@ namespace f00die_finder_be.Services.RestaurantService
                     case RestaurantSortType.Rating:
                         restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.Rating);
                         break;
+                    case RestaurantSortType.CreatedDate:
+                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.CreatedDate);
+                        break;
                     default:
                         restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
                         break;
@@ -351,7 +355,8 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                    TotalCount = totalItems
                 }
             };
         }
@@ -671,7 +676,8 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling(items.Count / (double)pageSize)
+                    TotalPages = (int)Math.Ceiling(items.Count / (double)pageSize),
+                    TotalCount = items.Count
                 }
             };
         }
@@ -705,6 +711,67 @@ namespace f00die_finder_be.Services.RestaurantService
             await _unitOfWork.SaveChangesAsync();
 
             return new CustomResponse<object>();
+        }
+
+        public async Task<CustomResponse<object>> ChangeRestaurantStatusAdminAsync(Guid restaurantId, RestaurantStatus status)
+        {
+            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
+            var restaurant = await restaurantQuery
+                .FirstOrDefaultAsync(r => r.Id == restaurantId);
+
+            if (restaurant == null)
+            {
+                throw new NotFoundException();
+            }
+
+            restaurant.Status = status;
+
+            await _unitOfWork.UpdateAsync(restaurant);
+            await _unitOfWork.SaveChangesAsync();
+
+            await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
+            await _cacheService.RemoveAsync("restaurants");
+            await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
+
+            return new CustomResponse<object>();
+        }
+
+        public async Task<CustomResponse<List<RestaurantAdminDto>>> GetRestaurantsAdminAsync(FilterRestaurantAdminDto? filter, int pageSize, int pageNumber)
+        {
+            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
+
+            var restaurantsQuery = restaurantQuery
+                .Include(r => r.Location)
+                .ThenInclude(l => l.WardOrCommune)
+                .ThenInclude(w => w.District)
+                .ThenInclude(d => d.ProvinceOrCity)
+                .AsQueryable();
+
+            if (filter.Status != null)
+            {
+                restaurantsQuery = restaurantsQuery.Where(r => r.Status == filter.Status);
+            }
+
+            var totalItems = restaurantsQuery.Count();
+
+            var pagedRestaurants = restaurantsQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(r => _mapper.Map<RestaurantAdminDto>(r))
+                .OrderByDescending(r => r.CreatedDate)
+                .ToList();
+
+            return new CustomResponse<List<RestaurantAdminDto>>
+            {
+                Data = pagedRestaurants,
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                    TotalCount = totalItems
+                }
+            };
         }
     }
 }
