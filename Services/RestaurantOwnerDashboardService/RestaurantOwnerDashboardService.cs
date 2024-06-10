@@ -44,11 +44,17 @@ namespace f00die_finder_be.Services.RestaurantOwnerDashboardService
                     Month = x.Key,
                     Count = x.Count()
                 })
-                .ToDictionaryAsync(x => x.Month, x => x.Count);
+                .ToListAsync();
+
+            var completeReservationsByMonth = Enumerable.Range(1, 12)
+                .ToDictionary(
+                    month => month,
+                    month => reservationsByMonth.FirstOrDefault(x => x.Month == month)?.Count ?? 0
+                );
 
             return new CustomResponse<Dictionary<int, int>>
             {
-                Data = reservationsByMonth
+                Data = completeReservationsByMonth
             };
         }
 

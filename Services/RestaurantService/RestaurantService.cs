@@ -755,10 +755,10 @@ namespace f00die_finder_be.Services.RestaurantService
             var totalItems = restaurantsQuery.Count();
 
             var pagedRestaurants = restaurantsQuery
+                .OrderByDescending(r => r.CreatedDate)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .Select(r => _mapper.Map<RestaurantAdminDto>(r))
-                .OrderByDescending(r => r.CreatedDate)
                 .ToList();
 
             return new CustomResponse<List<RestaurantAdminDto>>

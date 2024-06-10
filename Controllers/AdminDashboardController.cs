@@ -44,5 +44,12 @@ namespace f00die_finder_be.Controllers
             var response = await _adminDashboardService.GetTotalReservationsAsync();
             return Ok(response);
         }
+
+        [HttpGet("number-of-users-by-role")]
+        public async Task<IActionResult> GetNumberOfUsersByRoleAsync()
+        {
+            var response = await _adminDashboardService.GetNumberOfUsersByRole();
+            return Ok(response);
+        }
     }
 }

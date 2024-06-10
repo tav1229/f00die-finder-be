@@ -62,6 +62,10 @@ namespace f00die_finder_be.Common
             CreateMap<PriceRangePerPerson, PriceRangePerPersonDto>();
             CreateMap<Reservation, ReservationOwnerDto>()
                 .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.ReservationTime));
+            CreateMap<Restaurant, RestaurantAdminDto>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Location.Address))
+                .ForMember(dest => dest.ProvinceOrCity, opt => opt.MapFrom(src => src.Location.WardOrCommune.District.ProvinceOrCity.Name));
+            CreateMap<User, UserAdminDto>();
         }
     }
 }

@@ -52,7 +52,7 @@ namespace f00die_finder_be.Controllers
 
         [AuthorizeFilterAttribute([Role.Admin])]
         [HttpPut("status/{userId}")]
-        public async Task<IActionResult> ChangeUserStatusAdminAsync(Guid userId, [FromBody] UserStatus status)
+        public async Task<IActionResult> ChangeUserStatusAdminAsync(Guid userId, [FromQuery] UserStatus status)
         {
             var result = await _userService.ChangeUserStatusAdminAsync(userId, status);
             return Ok(result);
