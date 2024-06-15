@@ -49,4 +49,10 @@ namespace f00die_finder_be.Common
         Blocked,
         Unverified
     }
+
+    public enum SemanticSearchType
+    {
+        RestaurantName,
+        CuisineName
+    }
 }

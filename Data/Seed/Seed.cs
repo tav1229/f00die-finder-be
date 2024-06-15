@@ -2,6 +2,7 @@ using f00die_finder_be.Common;
 using f00die_finder_be.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using static System.Net.WebRequestMethods;
 
 namespace f00die_finder_be.Data.Seed
 {
@@ -59,19 +60,18 @@ namespace f00die_finder_be.Data.Seed
         {
             if (context.CuisineTypes.Any()) return;
 
-            context.CuisineTypes.Add(new CuisineType { Name = "Lẩu", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638441023317916801-icon-lau.png" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Nướng", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638441027537096717-icon-nuong.png" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Lẩu-Nướng" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Quán chay", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011884827831221-mon-chay-pasgo.png" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Quán nhậu", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011851008641451-quan-nhau-pasgo.png" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món Việt", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011878657732280-mon-viet-pasgo.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món lẩu", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638441023317916801-icon-lau.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món nướng", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638441027537096717-icon-nuong.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món chay", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011884827831221-mon-chay-pasgo.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món nhậu", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011851008641451-quan-nhau-pasgo.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Việt Nam", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011878657732280-mon-viet-pasgo.png" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món ăn miền Bắc" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món ăn miền Trung" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món ăn miền Nam" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món Nhật", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011867970619295-mon-nhat-ban-pasgo.png" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món Hàn", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638442738231563544-mon-han.png" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món Thái" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Món Trung" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Nhật Bản", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011867970619295-mon-nhat-ban-pasgo.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Hàn Quốc", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638442738231563544-mon-han.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Thái Lan" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món Trung Quốc" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Á", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638239778553118285-mon-chau-a.png" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Âu", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638239806231357799-mon-chau-au.png" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Ý" });
@@ -79,8 +79,7 @@ namespace f00die_finder_be.Data.Seed
             context.CuisineTypes.Add(new CuisineType { Name = "Món Pháp" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Singapore" });
             context.CuisineTypes.Add(new CuisineType { Name = "Món Nga" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Đặc sản" });
-            context.CuisineTypes.Add(new CuisineType { Name = "Hải sản", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011847245865102-hai-san-pasgo.png" });
+            context.CuisineTypes.Add(new CuisineType { Name = "Món hải sản", IconUrl = "https://pastaxi-manager.onepas.vn/Upload/DanhMucHienThi/Avatar/638011847245865102-hai-san-pasgo.png" });
 
             context.SaveChanges();
         }
@@ -149,30 +148,29 @@ namespace f00die_finder_be.Data.Seed
 
             var restaurantImages = new List<string>()
             {
-                "https://storage.pasgo.com.vn/PasGoGianHang/2261f583-857f-4f9b-b305-47e9ab151517.webp?Width=280&Type=webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/9c98749c-123a-4f09-b010-3177af74e264.webp?Width=280&Type=webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/1cf4cccb-c75f-4c9f-9013-1fe44048ed6a.webp?Width=280&Type=webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/88dcc2a2-1568-4ac8-b72e-0c582c1ebf24.webp?Width=280&Type=webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/88dcc2a2-1568-4ac8-b72e-0c582c1ebf24.webp?Width=280&Type=webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/b3f709a3-80a8-41fa-a701-44badaaf443e.webp?Width=280&Type=webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/a171ccc7-32d5-4207-8689-259d9d926c28.webp?Width=280&Type=webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/4c3500b1-9adf-4f08-9bd1-0e59a9c6654c.webp?Width=280&Type=webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/5593ef8f-6781-471a-b24d-037a0907f224.webp?Width=280&Type=webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/25879c45-c27d-446d-b6eb-e9d82d9a86ae.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/ead3550d-ef8b-45c3-8055-81e70047569c.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/1ef4d0c0-9523-44a6-887d-5528838be6fc.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/5593ef8f-6781-471a-b24d-037a0907f224.webp",
-                "https://pastaxi-manager.onepas.vn/Upload/DoiTuong/Banner/638384481343377175-7f44618c-fdc9-48f9-842a-003cfe2f3ed3.png",
-                "https://pastaxi-manager.onepas.vn/Upload/DoiTuong/Banner/638384481343367166-758a3891-44d7-4fb9-b151-66cc6ed7ba58.png",
-                "https://pastaxi-manager.onepas.vn/Upload/DoiTuong/Banner/638384481343367166-0b198136-edb1-4692-92c5-90620392bfbf.png",
-                "https://storage.pasgo.com.vn/PasGoGianHang/50aed043-17c2-43e5-8fae-b8eee422f458.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/ead3550d-ef8b-45c3-8055-81e70047569c.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/d99700e6-ed68-46cb-bc73-8c5868927932.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/a4ef2a45-52bf-415c-aa04-a9c20c268f54.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/833a5bad-9ec6-4e78-98d9-cb4caa0f2a93.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/5e2f84df-c16d-4fa8-85e3-f258e8229f78.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/25879c45-c27d-446d-b6eb-e9d82d9a86ae.webp",
-                "https://storage.pasgo.com.vn/PasGoGianHang/e8983735-2ebe-480e-8f62-f51b1168386e.webp"
+                "https://images.unsplash.com/photo-1513442542250-854d436a73f2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+                "https://images.unsplash.com/photo-1515668166700-4c11137632fc?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1515668236457-83c3b8764839?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1564758565388-0d5da0cbb08c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://plus.unsplash.com/premium_photo-1673580742890-4af144293960?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1457460866886-40ef8d4b42a0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://plus.unsplash.com/premium_photo-1661600643912-dc6dbb1db475?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1564759296729-771e78c26df7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjh8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://plus.unsplash.com/premium_photo-1661777692723-ba8dd05065d9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjl8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1543992321-cefacfc2322e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjR8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1515669097368-22e68427d265?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1543826173-70651703c5a4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzF8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://plus.unsplash.com/premium_photo-1661777712373-9a9ee6e01007?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzd8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://plus.unsplash.com/premium_photo-1661668648046-f2bc1091e4b8?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzN8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1546456674-8aa8c81b9b8e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1576829824883-bf9e6b522252?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDR8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1626056087729-a1f5c1a7d90d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzh8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDJ8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzl8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://plus.unsplash.com/premium_photo-1678897742200-85f052d33a71?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDl8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDd8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://plus.unsplash.com/premium_photo-1661600135596-dcb910b05340?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDV8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww",
+        "https://images.unsplash.com/photo-1554502078-ef0fc409efce?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDZ8fHJlc3RhdXJhbnQlMjBmb29kfGVufDB8fDB8fHww"
             };
 
             var menuImages = new List<string>()
@@ -350,7 +348,7 @@ namespace f00die_finder_be.Data.Seed
                 }
 
             };
-            for (int i = 1; i < 40; i++)
+            for (int i = 1; i < 50; i++)
             {
                 var user = new User();
                 user.CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100));
@@ -467,7 +465,7 @@ namespace f00die_finder_be.Data.Seed
 
                 var reservation = new Reservation
                 {
-                    ReservationTime = DateTimeOffset.Now.AddDays(i),
+                    ReservationTime = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(random.Next(1, 100)),
                     CustomerName = user.FullName,
                     CustomerPhone = user.PhoneNumber,
                     NumberOfAdults = random.Next(0, 10),

@@ -2,7 +2,9 @@
 using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Restaurant;
+using f00die_finder_be.Dtos.SemanticSearch;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace f00die_finder_be.Services.RestaurantService
 {
@@ -285,7 +287,26 @@ namespace f00die_finder_be.Services.RestaurantService
 
             if (!string.IsNullOrEmpty(filter.SearchValue))
             {
-                restaurantsQuery = restaurantsQuery.Where(r => r.Name.Contains(filter.SearchValue));
+                using (var client = new HttpClient())
+                {
+                    string url = $"{_configuration["SemanticSearch:EndPoint"]}/semantic-search?query={filter.SearchValue}";
+
+                    var response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        var searchResults = JsonConvert.DeserializeObject<List<SemanticSearchResult>>(responseContent);
+
+                        var restaurantIds = searchResults.Where(s => s.IdType == (int)SemanticSearchType.RestaurantName).Select(s => s.Id).ToList();
+                        var cuisineTypeIds = searchResults.Where(s => s.IdType == (int)SemanticSearchType.CuisineName).Select(s => s.Id).ToList();
+
+                        var scores = searchResults.ToDictionary(s => s.Id, s => s.Score);
+
+                        restaurantsQuery = restaurantsQuery.Where(r => restaurantIds.Contains(r.Id.ToString()) || r.RestaurantCuisineTypes.Any(rc => cuisineTypeIds.Contains(rc.CuisineTypeId.ToString())));
+
+                    }
+                }
             }
 
             if (filter != null)
@@ -318,27 +339,29 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantCustomerTypes.Any(rc => rc.CustomerTypeId == filter.CustomerType));
                 }
-
-                switch (sortType)
+                if (filter.SearchValue is null)
                 {
-                    case RestaurantSortType.Popular:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
-                        break;
-                    case RestaurantSortType.PriceAscending:
-                        restaurantsQuery = restaurantsQuery.OrderBy(r => r.PriceRangePerPerson.PriceOrder);
-                        break;
-                    case RestaurantSortType.PriceDescending:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.PriceRangePerPerson.PriceOrder);
-                        break;
-                    case RestaurantSortType.Rating:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.Rating);
-                        break;
-                    case RestaurantSortType.CreatedDate:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.CreatedDate);
-                        break;
-                    default:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
-                        break;
+                    switch (sortType)
+                    {
+                        case RestaurantSortType.Popular:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
+                            break;
+                        case RestaurantSortType.PriceAscending:
+                            restaurantsQuery = restaurantsQuery.OrderBy(r => r.PriceRangePerPerson.PriceOrder);
+                            break;
+                        case RestaurantSortType.PriceDescending:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.PriceRangePerPerson.PriceOrder);
+                            break;
+                        case RestaurantSortType.Rating:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.Rating);
+                            break;
+                        case RestaurantSortType.CreatedDate:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.CreatedDate);
+                            break;
+                        default:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
+                            break;
+                    }
                 }
             }
             int totalItems = restaurantsQuery.Count();
