@@ -26,6 +26,7 @@ namespace f00die_finder_be.Data
         public DbSet<RestaurantCustomerType> RestaurantCustomerTypes { get; set; }
         public DbSet<UserToken> UserTokens { get; set; }
         public DbSet<UserSavedRestaurant> UserSavedRestaurants { get; set; }
+        public DbSet<PriceRangePerPerson> PriceRangePerPersons { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

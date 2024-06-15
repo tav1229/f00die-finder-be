@@ -1,4 +1,5 @@
-﻿using f00die_finder_be.Dtos.ReviewComment;
+﻿using f00die_finder_be.Common;
+using f00die_finder_be.Dtos.ReviewComment;
 using f00die_finder_be.Filters;
 using f00die_finder_be.Services.ReviewComment;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,6 @@ namespace f00die_finder_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AuthorizeFilter]
     public class ReviewCommentController : ControllerBase
     {
         private readonly IReviewCommentService _reviewCommentService;
@@ -24,6 +24,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
+        [AuthorizeFilterAttribute([Role.Customer])]
         [HttpPost("restaurant")]
         public async Task<IActionResult> AddAsync([FromBody] ReviewCommentAddDto reviewCommentAddDto)
         {

@@ -44,7 +44,8 @@ namespace f00die_finder_be.Common
             var claims = new List<Claim>()
             {
                 new Claim("UserId", tokenDto.UserId.ToString()),
-                new Claim("IsVerified", tokenDto.IsVerified.ToString())
+                new Claim("IsVerified", tokenDto.IsVerified.ToString()),
+                new Claim("Role", tokenDto.Role.ToString())
             };
 
             var symmetricKey = new SymmetricSecurityKey
@@ -83,5 +84,6 @@ namespace f00die_finder_be.Common
     {
         public Guid UserId { get; set; }
         public bool IsVerified { get; set; }
+        public Role Role { get; set; }
     }
 }

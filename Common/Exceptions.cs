@@ -65,4 +65,16 @@ namespace f00die_finder_be.Common
         public UnverifiedEmailException()
             : base($"Email is not verified", (int)HttpStatusCode.Forbidden) { }
     }
+
+    public class UnauthorizedAccessException : CustomException
+    {
+        public UnauthorizedAccessException()
+            : base($"Unauthorized access", (int)HttpStatusCode.Forbidden) { }
+    }
+
+    public class BadRequestException : CustomException
+    {
+        public BadRequestException(string message)
+            : base(message, (int)HttpStatusCode.BadRequest) { }
+    }
 }

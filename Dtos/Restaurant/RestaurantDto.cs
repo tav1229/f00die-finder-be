@@ -1,4 +1,3 @@
-using f00die_finder_be.Common;
 using f00die_finder_be.Dtos.Location;
 
 namespace f00die_finder_be.Dtos.Restaurant
@@ -8,6 +7,8 @@ namespace f00die_finder_be.Dtos.Restaurant
         public Guid Id { get; set; }
 
         public string Name { get; set; }
+
+        public string Note { get; set; }
 
         public LocationDto Location { get; set; }
 
@@ -23,7 +24,7 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public List<CustomerTypeDto> CustomerTypes { get; set; }
 
-        public PriceRangePerPerson PriceRangePerPerson { get; set; }
+        public PriceRangePerPersonDto PriceRangePerPerson { get; set; }
 
         public List<string> Images { get; set; }
 

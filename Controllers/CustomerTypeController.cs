@@ -1,12 +1,10 @@
-﻿using f00die_finder_be.Filters;
-using f00die_finder_be.Services.CustomerTypeService;
+﻿using f00die_finder_be.Services.CustomerTypeService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace f00die_finder_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AuthorizeFilter]
     public class CustomerTypeController : ControllerBase
     {
         private readonly ICustomerTypeService _customerTypeService;

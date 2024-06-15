@@ -41,9 +41,17 @@ namespace f00die_finder_be.Common
                 .ForMember(dest => dest.CuisineTypes, opt => opt.MapFrom(src => src.RestaurantCuisineTypes.Select(rct => rct.CuisineType)))
                 .ForMember(dest => dest.ServingTypes, opt => opt.MapFrom(src => src.RestaurantServingTypes.Select(rst => rst.ServingType)))
                 .ForMember(dest => dest.CustomerTypes, opt => opt.MapFrom(src => src.RestaurantCustomerTypes.Select(rct => rct.CustomerType)));
-            CreateMap<Reservation, ReservationDto>();
-            CreateMap<Reservation, ReservationDetailDto>();
-            CreateMap<ReservationAddDto, Reservation>();
+            CreateMap<Reservation, ReservationCustomerDto>()
+                .ForMember(dest => dest.RestaurantName, opt => opt.MapFrom(src => src.Restaurant.Name))
+                .ForMember(dest => dest.RestaurantImageUrl, opt => opt.MapFrom(src => src.Restaurant.Images.FirstOrDefault(i => i.ImageType == ImageType.Restaurant).URL))
+                .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.ReservationTime));
+            CreateMap<Reservation, ReservationDetailDto>()
+                .ForMember(dest => dest.RestaurantName, opt => opt.MapFrom(src => src.Restaurant.Name))
+                .ForMember(dest => dest.RestaurantImageUrl, opt => opt.MapFrom(src => src.Restaurant.Images.FirstOrDefault(i => i.ImageType == ImageType.Restaurant).URL))
+                .ForMember(dest => dest.RestaurantAddress, opt => opt.MapFrom(src => src.Restaurant.Location.WardOrCommune.Name + ", " + src.Restaurant.Location.WardOrCommune.District.Name))
+                .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.ReservationTime));
+            CreateMap<ReservationAddDto, Reservation>()
+                .ForMember(dest => dest.ReservationTime, opt => opt.MapFrom(src => src.Time));
             CreateMap<ReviewComment, ReviewCommentDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.User.FullName));
             CreateMap<ReviewCommentAddDto, ReviewComment>();
@@ -51,6 +59,13 @@ namespace f00die_finder_be.Common
             CreateMap<User, UserDetailDto>();
             CreateMap<Restaurant, UserSavedRestaurantDto>()
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images.Where(i => i.ImageType == ImageType.Restaurant).Select(i => i.URL)));
+            CreateMap<PriceRangePerPerson, PriceRangePerPersonDto>();
+            CreateMap<Reservation, ReservationOwnerDto>()
+                .ForMember(dest => dest.Time, opt => opt.MapFrom(src => src.ReservationTime));
+            CreateMap<Restaurant, RestaurantAdminDto>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Location.Address))
+                .ForMember(dest => dest.ProvinceOrCity, opt => opt.MapFrom(src => src.Location.WardOrCommune.District.ProvinceOrCity.Name));
+            CreateMap<User, UserAdminDto>();
         }
     }
 }

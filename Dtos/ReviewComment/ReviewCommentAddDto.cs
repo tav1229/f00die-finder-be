@@ -7,7 +7,7 @@ namespace f00die_finder_be.Dtos.ReviewComment
         public Guid RestaurantId { get; set; }
         public string Content { get; set; }
 
-        [Range(1, 10)]
+        [Range(1, 5)]
         public short Rating { get; set; }
     }
 }

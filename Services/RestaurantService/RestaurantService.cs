@@ -2,8 +2,9 @@
 using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Restaurant;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using f00die_finder_be.Dtos.SemanticSearch;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace f00die_finder_be.Services.RestaurantService
 {
@@ -70,18 +71,27 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     businessHours.Add(new BusinessHour()
                     {
-                        DayOfWeek = (DayOfWeek)businessHour.Date,
-                        OpenTime = TimeSpan.Parse(businessHour.OpenTime),
-                        CloseTime = TimeSpan.Parse(businessHour.CloseTime)
+                        DayOfWeek = businessHour.DayOfWeek,
+                        OpenTime = businessHour.OpenTime,
+                        CloseTime = businessHour.CloseTime
                     });
                 }
             }
+
+            PriceRangePerPerson priceRangePerPerson = null;
+
+            if (restaurantDto.PriceRangePerPerson.HasValue)
+            {
+                priceRangePerPerson = await (await _unitOfWork.GetQueryableAsync<PriceRangePerPerson>())
+                    .FirstOrDefaultAsync(p => p.Id == restaurantDto.PriceRangePerPerson.Value);
+            }
+
             var restaurant = new Restaurant()
             {
                 Name = restaurantDto.Name,
                 Phone = restaurantDto.Phone,
-                PriceRangePerPerson = restaurantDto.PriceRangePerPerson,
-                Capacity = restaurantDto.Capacity,
+                PriceRangePerPerson = priceRangePerPerson,
+                Capacity = restaurantDto.Capacity.Value,
                 SpecialDishes = restaurantDto.SpecialDishes,
                 Description = restaurantDto.Description,
                 Note = restaurantDto.Note,
@@ -104,13 +114,34 @@ namespace f00die_finder_be.Services.RestaurantService
 
             await _cacheService.RemoveAsync("restaurants");
 
+            restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .ThenInclude(r => r.CuisineType)
+                            .Include(r => r.RestaurantServingTypes)
+                            .ThenInclude(r => r.ServingType)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .ThenInclude(r => r.CustomerType)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .ThenInclude(r => r.AdditionalService)
+                            .Include(r => r.BusinessHours)
+                            .Include(r => r.PriceRangePerPerson)
+                            .Include(r => r.Location)
+                            .ThenInclude(l => l.WardOrCommune)
+                            .ThenInclude(w => w.District)
+                            .ThenInclude(d => d.ProvinceOrCity)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
+
+            var data = _mapper.Map<RestaurantDetailDto>(restaurant);
+
+            await _cacheService.SetAsync($"restaurant-{restaurant.Id}", data);
+
             return new CustomResponse<RestaurantDetailDto>
             {
-                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+                Data = data
             };
         }
 
-        public async Task<CustomResponse<RestaurantDetailDto>> DeactivateAsync()
+        public async Task<CustomResponse<RestaurantDetailDto>> DeactivateMyRestaurantAsync()
         {
             var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
             var restaurant = await restaurantQuery.FirstOrDefaultAsync(r => r.OwnerId == _currentUserService.UserId);
@@ -127,9 +158,29 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync($"restaurants");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
 
+            restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .ThenInclude(r => r.CuisineType)
+                            .Include(r => r.RestaurantServingTypes)
+                            .ThenInclude(r => r.ServingType)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .ThenInclude(r => r.CustomerType)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .ThenInclude(r => r.AdditionalService)
+                            .Include(r => r.BusinessHours)
+                            .Include(r => r.PriceRangePerPerson)
+                            .Include(r => r.Location)
+                            .ThenInclude(l => l.WardOrCommune)
+                            .ThenInclude(w => w.District)
+                            .ThenInclude(d => d.ProvinceOrCity)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
+            var data = _mapper.Map<RestaurantDetailDto>(restaurant);
+
+            await _cacheService.SetAsync($"restaurant-{restaurant.Id}", data);
+
             return new CustomResponse<RestaurantDetailDto>
             {
-                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+                Data = data
             };
         }
 
@@ -153,6 +204,7 @@ namespace f00die_finder_be.Services.RestaurantService
                     .ThenInclude(r => r.CustomerType)
                     .Include(r => r.BusinessHours)
                     .Include(r => r.Images)
+                    .Include(r => r.PriceRangePerPerson)
                     .FirstOrDefault(r => r.Id == restaurantId);
 
                 if (restaurant == null)
@@ -189,6 +241,7 @@ namespace f00die_finder_be.Services.RestaurantService
                     .ThenInclude(r => r.CustomerType)
                     .Include(r => r.BusinessHours)
                     .Include(r => r.Images)
+                    .Include(r => r.PriceRangePerPerson)
                     .FirstOrDefault(r => r.OwnerId == _currentUserService.UserId);
                 if (restaurant == null)
                 {
@@ -225,6 +278,8 @@ namespace f00die_finder_be.Services.RestaurantService
                 .Include(r => r.RestaurantCustomerTypes)
                 .ThenInclude(r => r.CustomerType)
                 .Include(r => r.Images)
+                .Include(r => r.PriceRangePerPerson)
+                .Where(r => r.Status == RestaurantStatus.Active)
                 .ToListAsync();
             });
 
@@ -232,7 +287,26 @@ namespace f00die_finder_be.Services.RestaurantService
 
             if (!string.IsNullOrEmpty(filter.SearchValue))
             {
-                restaurantsQuery = restaurantsQuery.Where(r => r.Name.Contains(filter.SearchValue));
+                using (var client = new HttpClient())
+                {
+                    string url = $"{_configuration["SemanticSearch:EndPoint"]}/semantic-search?query={filter.SearchValue}";
+
+                    var response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        var searchResults = JsonConvert.DeserializeObject<List<SemanticSearchResult>>(responseContent);
+
+                        var restaurantIds = searchResults.Where(s => s.IdType == (int)SemanticSearchType.RestaurantName).Select(s => s.Id).ToList();
+                        var cuisineTypeIds = searchResults.Where(s => s.IdType == (int)SemanticSearchType.CuisineName).Select(s => s.Id).ToList();
+
+                        var scores = searchResults.ToDictionary(s => s.Id, s => s.Score);
+
+                        restaurantsQuery = restaurantsQuery.Where(r => restaurantIds.Contains(r.Id.ToString()) || r.RestaurantCuisineTypes.Any(rc => cuisineTypeIds.Contains(rc.CuisineTypeId.ToString())));
+
+                    }
+                }
             }
 
             if (filter != null)
@@ -251,7 +325,7 @@ namespace f00die_finder_be.Services.RestaurantService
                 }
                 if (filter.PriceRangePerPerson.HasValue)
                 {
-                    restaurantsQuery = restaurantsQuery.Where(r => r.PriceRangePerPerson == filter.PriceRangePerPerson);
+                    restaurantsQuery = restaurantsQuery.Where(r => r.PriceRangePerPersonId == filter.PriceRangePerPerson);
                 }
                 if (filter.CuisineType.HasValue)
                 {
@@ -265,24 +339,29 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     restaurantsQuery = restaurantsQuery.Where(r => r.RestaurantCustomerTypes.Any(rc => rc.CustomerTypeId == filter.CustomerType));
                 }
-
-                switch (sortType)
+                if (filter.SearchValue is null)
                 {
-                    case RestaurantSortType.Popular:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
-                        break;
-                    case RestaurantSortType.PriceAscending:
-                        restaurantsQuery = restaurantsQuery.OrderBy(r => r.PriceRangePerPerson);
-                        break;
-                    case RestaurantSortType.PriceDescending:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.PriceRangePerPerson);
-                        break;
-                    case RestaurantSortType.Rating:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.Rating);
-                        break;
-                    default:
-                        restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
-                        break;
+                    switch (sortType)
+                    {
+                        case RestaurantSortType.Popular:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
+                            break;
+                        case RestaurantSortType.PriceAscending:
+                            restaurantsQuery = restaurantsQuery.OrderBy(r => r.PriceRangePerPerson.PriceOrder);
+                            break;
+                        case RestaurantSortType.PriceDescending:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.PriceRangePerPerson.PriceOrder);
+                            break;
+                        case RestaurantSortType.Rating:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.Rating);
+                            break;
+                        case RestaurantSortType.CreatedDate:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.CreatedDate);
+                            break;
+                        default:
+                            restaurantsQuery = restaurantsQuery.OrderByDescending(r => r.ReservationCount);
+                            break;
+                    }
                 }
             }
             int totalItems = restaurantsQuery.Count();
@@ -299,7 +378,8 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                    TotalCount = totalItems
                 }
             };
         }
@@ -309,6 +389,12 @@ namespace f00die_finder_be.Services.RestaurantService
             var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
             var restaurant = await restaurantQuery
                 .Include(r => r.Images)
+                .Include(r => r.RestaurantCuisineTypes)
+                .Include(r => r.RestaurantServingTypes)
+                .Include(r => r.RestaurantCustomerTypes)
+                .Include(r => r.RestaurantAdditionalServices)
+                .Include(r => r.BusinessHours)
+                .Include(r => r.Location)
                 .FirstOrDefaultAsync(r => r.OwnerId == _currentUserService.UserId);
             if (restaurant == null)
             {
@@ -325,7 +411,7 @@ namespace f00die_finder_be.Services.RestaurantService
             }
             if (restaurantDto.PriceRangePerPerson.HasValue)
             {
-                restaurant.PriceRangePerPerson = (PriceRangePerPerson)restaurantDto.PriceRangePerPerson;
+                restaurant.PriceRangePerPersonId = restaurantDto.PriceRangePerPerson.Value;
             }
             if (restaurantDto.Capacity.HasValue)
             {
@@ -413,9 +499,9 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     businessHours.Add(new BusinessHour()
                     {
-                        DayOfWeek = (DayOfWeek)businessHour.Date,
-                        OpenTime = TimeSpan.Parse(businessHour.OpenTime),
-                        CloseTime = TimeSpan.Parse(businessHour.CloseTime)
+                        DayOfWeek = businessHour.DayOfWeek,
+                        OpenTime = businessHour.OpenTime,
+                        CloseTime = businessHour.CloseTime
                     });
                 }
                 restaurant.BusinessHours = businessHours;
@@ -428,9 +514,30 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
 
+            restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .ThenInclude(r => r.CuisineType)
+                            .Include(r => r.RestaurantServingTypes)
+                            .ThenInclude(r => r.ServingType)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .ThenInclude(r => r.CustomerType)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .ThenInclude(r => r.AdditionalService)
+                            .Include(r => r.BusinessHours)
+                            .Include(r => r.PriceRangePerPerson)
+                            .Include(r => r.Location)
+                            .ThenInclude(l => l.WardOrCommune)
+                            .ThenInclude(w => w.District)
+                            .ThenInclude(d => d.ProvinceOrCity)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
+
+            var data = _mapper.Map<RestaurantDetailDto>(restaurant);
+
+            await _cacheService.SetAsync($"restaurant-{restaurant.Id}", data);
+
             return new CustomResponse<RestaurantDetailDto>
             {
-                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+                Data = data
             };
         }
 
@@ -482,9 +589,30 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
 
+            restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .ThenInclude(r => r.CuisineType)
+                            .Include(r => r.RestaurantServingTypes)
+                            .ThenInclude(r => r.ServingType)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .ThenInclude(r => r.CustomerType)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .ThenInclude(r => r.AdditionalService)
+                            .Include(r => r.BusinessHours)
+                            .Include(r => r.PriceRangePerPerson)
+                            .Include(r => r.Location)
+                            .ThenInclude(l => l.WardOrCommune)
+                            .ThenInclude(w => w.District)
+                            .ThenInclude(d => d.ProvinceOrCity)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
+
+            var data = _mapper.Map<RestaurantDetailDto>(restaurant);
+
+            await _cacheService.SetAsync($"restaurant-{restaurant.Id}", data);
+
             return new CustomResponse<RestaurantDetailDto>
             {
-                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+                Data = data
             };
         }
 
@@ -512,9 +640,30 @@ namespace f00die_finder_be.Services.RestaurantService
             await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
             await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
 
+            restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                            .Include(r => r.RestaurantCuisineTypes)
+                            .ThenInclude(r => r.CuisineType)
+                            .Include(r => r.RestaurantServingTypes)
+                            .ThenInclude(r => r.ServingType)
+                            .Include(r => r.RestaurantCustomerTypes)
+                            .ThenInclude(r => r.CustomerType)
+                            .Include(r => r.RestaurantAdditionalServices)
+                            .ThenInclude(r => r.AdditionalService)
+                            .Include(r => r.BusinessHours)
+                            .Include(r => r.PriceRangePerPerson)
+                            .Include(r => r.Location)
+                            .ThenInclude(l => l.WardOrCommune)
+                            .ThenInclude(w => w.District)
+                            .ThenInclude(d => d.ProvinceOrCity)
+                            .FirstOrDefaultAsync(r => r.Id == restaurant.Id);
+
+            var data = _mapper.Map<RestaurantDetailDto>(restaurant);
+
+            await _cacheService.SetAsync($"restaurant-{restaurant.Id}", data);
+
             return new CustomResponse<RestaurantDetailDto>
             {
-                Data = _mapper.Map<RestaurantDetailDto>(restaurant)
+                Data = data
             };
         }
 
@@ -550,7 +699,8 @@ namespace f00die_finder_be.Services.RestaurantService
                 {
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling(items.Count / (double)pageSize)
+                    TotalPages = (int)Math.Ceiling(items.Count / (double)pageSize),
+                    TotalCount = items.Count
                 }
             };
         }
@@ -584,6 +734,67 @@ namespace f00die_finder_be.Services.RestaurantService
             await _unitOfWork.SaveChangesAsync();
 
             return new CustomResponse<object>();
+        }
+
+        public async Task<CustomResponse<object>> ChangeRestaurantStatusAdminAsync(Guid restaurantId, RestaurantStatus status)
+        {
+            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
+            var restaurant = await restaurantQuery
+                .FirstOrDefaultAsync(r => r.Id == restaurantId);
+
+            if (restaurant == null)
+            {
+                throw new NotFoundException();
+            }
+
+            restaurant.Status = status;
+
+            await _unitOfWork.UpdateAsync(restaurant);
+            await _unitOfWork.SaveChangesAsync();
+
+            await _cacheService.RemoveAsync($"restaurant-{restaurant.Id}");
+            await _cacheService.RemoveAsync("restaurants");
+            await _cacheService.RemoveAsync($"restaurant-owner-{restaurant.OwnerId}");
+
+            return new CustomResponse<object>();
+        }
+
+        public async Task<CustomResponse<List<RestaurantAdminDto>>> GetRestaurantsAdminAsync(FilterRestaurantAdminDto? filter, int pageSize, int pageNumber)
+        {
+            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
+
+            var restaurantsQuery = restaurantQuery
+                .Include(r => r.Location)
+                .ThenInclude(l => l.WardOrCommune)
+                .ThenInclude(w => w.District)
+                .ThenInclude(d => d.ProvinceOrCity)
+                .AsQueryable();
+
+            if (filter.Status != null)
+            {
+                restaurantsQuery = restaurantsQuery.Where(r => r.Status == filter.Status);
+            }
+
+            var totalItems = restaurantsQuery.Count();
+
+            var pagedRestaurants = restaurantsQuery
+                .OrderByDescending(r => r.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(r => _mapper.Map<RestaurantAdminDto>(r))
+                .ToList();
+
+            return new CustomResponse<List<RestaurantAdminDto>>
+            {
+                Data = pagedRestaurants,
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                    TotalCount = totalItems
+                }
+            };
         }
     }
 }

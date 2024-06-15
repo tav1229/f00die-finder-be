@@ -1,5 +1,3 @@
-using f00die_finder_be.Common;
-
 namespace f00die_finder_be.Dtos.Restaurant
 {
     public class FilterRestaurantDto
@@ -10,7 +8,7 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public Guid? WardOrCommuneId { get; set; }
 
-        public PriceRangePerPerson? PriceRangePerPerson { get; set; }
+        public Guid? PriceRangePerPerson { get; set; }
 
         public Guid? CuisineType { get; set; }
 

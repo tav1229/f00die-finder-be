@@ -50,7 +50,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilterAttribute]
         [HttpPost("verify-email")]
         public async Task<IActionResult> VerifyEmail(string otp)
         {
@@ -58,7 +58,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [AuthorizeFilter]
+        [AuthorizeFilterAttribute]
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
         {

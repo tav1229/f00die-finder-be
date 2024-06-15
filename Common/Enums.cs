@@ -4,7 +4,7 @@ namespace f00die_finder_be.Common
     {
         Admin,
         RestaurantOwner,
-        User
+        Customer
     }
 
     public enum RestaurantStatus
@@ -20,13 +20,6 @@ namespace f00die_finder_be.Common
         Confirmed,
         Denied,
         Cancelled
-    }
-
-    public enum PriceRangePerPerson
-    {
-        LessThan200K,
-        From200KTo500K,
-        MoreThan500K
     }
 
     public enum ImageType
@@ -46,7 +39,8 @@ namespace f00die_finder_be.Common
         Popular,
         PriceAscending,
         PriceDescending,
-        Rating
+        Rating,
+        CreatedDate
     }
 
     public enum UserStatus
@@ -54,5 +48,11 @@ namespace f00die_finder_be.Common
         Active,
         Blocked,
         Unverified
+    }
+
+    public enum SemanticSearchType
+    {
+        RestaurantName,
+        CuisineName
     }
 }

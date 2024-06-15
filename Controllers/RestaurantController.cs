@@ -8,7 +8,6 @@ namespace f00die_finder_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AuthorizeFilter]
     public class RestaurantController : ControllerBase
     {
         private readonly IRestaurantService _restaurantService;
@@ -33,6 +32,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
+        [AuthorizeFilterAttribute([Role.RestaurantOwner])]
         [HttpGet("my-restaurant")]
         public async Task<IActionResult> GetMyRestaurantAsync()
         {
@@ -40,6 +40,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
+        [AuthorizeFilterAttribute([Role.RestaurantOwner])]
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] RestaurantAddDto restaurant)
         {
@@ -47,6 +48,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
+        [AuthorizeFilterAttribute([Role.RestaurantOwner])]
         [HttpPut]
         public async Task<IActionResult> UpdateAsync([FromBody] RestaurantUpdateDto restaurant)
         {
@@ -54,6 +56,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
+        [AuthorizeFilterAttribute([Role.RestaurantOwner])]
         [HttpPost("images")]
         public async Task<IActionResult> AddImagesAsync([FromForm] RestaurantAddImagesDto restaurant)
         {
@@ -61,6 +64,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
+        [AuthorizeFilterAttribute([Role.RestaurantOwner])]
         [HttpDelete("images")]
         public async Task<IActionResult> DeleteImagesAsync([FromBody] List<Guid> imageIds)
         {
@@ -68,13 +72,15 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
-        [HttpPut("deactivate")]
-        public async Task<IActionResult> DeactivateAsync()
+        [AuthorizeFilterAttribute([Role.RestaurantOwner])]
+        [HttpPut("deactivate-my-restaurant")]
+        public async Task<IActionResult> DeactivateMyRestaurantAsync()
         {
-            var result = await _restaurantService.DeactivateAsync();
+            var result = await _restaurantService.DeactivateMyRestaurantAsync();
             return Ok(result);
         }
 
+        [AuthorizeFilterAttribute([Role.Customer])]
         [HttpGet("my-saved-restaurants")]
         public async Task<IActionResult> GetMySavedRestaurantsAsync([FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
         {
@@ -82,6 +88,7 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
+        [AuthorizeFilterAttribute([Role.Customer])]
         [HttpPost("save")]
         public async Task<IActionResult> SaveRestaurantAsync([FromBody] Guid restaurantId)
         {
@@ -89,10 +96,28 @@ namespace f00die_finder_be.Controllers
             return Ok(result);
         }
 
+        [AuthorizeFilterAttribute([Role.Customer])]
         [HttpPost("unsave")]
         public async Task<IActionResult> UnsaveRestaurantAsync([FromBody] Guid restaurantId)
         {
             var result = await _restaurantService.UnsaveRestaurantAsync(restaurantId);
+            return Ok(result);
+        }
+
+        [AuthorizeFilterAttribute([Role.Admin])]
+        [HttpPut("status/{restaurantId}")]
+        public async Task<IActionResult> ChangeRestaurantStatusAdminAsync(Guid restaurantId, [FromBody] RestaurantStatus status)
+        {
+            var result = await _restaurantService.ChangeRestaurantStatusAdminAsync(restaurantId, status);
+            return Ok(result);
+        }
+
+        [AuthorizeFilterAttribute([Role.Admin])]
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetRestaurantsAdminAsync([FromQuery] FilterRestaurantAdminDto? filterRestaurantAdminDto,
+                       [FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
+        {
+            var result = await _restaurantService.GetRestaurantsAdminAsync(filterRestaurantAdminDto, pageSize, pageNumber);
             return Ok(result);
         }
     }

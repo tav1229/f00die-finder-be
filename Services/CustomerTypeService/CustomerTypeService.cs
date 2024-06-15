@@ -25,7 +25,6 @@ namespace f00die_finder_be.Services.CustomerTypeService
             {
                 Data = data
             };
-
         }
     }
 }

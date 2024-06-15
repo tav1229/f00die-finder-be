@@ -2,9 +2,8 @@
 
 namespace f00die_finder_be.Dtos.Reservation
 {
-    public class FilterReservationsOfRestaurantDto
+    public class FilterReservationDto
     {
-        public Guid RestaurantId { get; set; }
         public ReservationStatus? ReservationStatus { get; set; }
         public DateTimeOffset? ReservationTime { get; set; }
     }

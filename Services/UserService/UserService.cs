@@ -22,32 +22,23 @@ namespace f00die_finder_be.Services.UserService
 
         public async Task<List<User>> InternalGetUsersAsync()
         {
-            return await _cacheService.GetOrCreateAsync("users", async () =>
-            {
-                var userQuery = await _unitOfWork.GetQueryableAsync<User>();
-                var users = await userQuery.ToListAsync();
-                return users;
-            });
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            var users = await userQuery.ToListAsync();
+            return users;
         }
 
         public async Task<User> InternalGetUserByEmailAsync(string email)
         {
-            return await _cacheService.GetOrCreateAsync($"user-{email}", async () =>
-            {
-                var userQuery = await _unitOfWork.GetQueryableAsync<User>();
-                var user = await userQuery.FirstOrDefaultAsync(u => u.Email == email);
-                return user;
-            });
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            var user = await userQuery.FirstOrDefaultAsync(u => u.Email == email);
+            return user;
         }
 
         public async Task<User> InternalGetUserByIdAsync(Guid id)
         {
-            return await _cacheService.GetOrCreateAsync($"user-{id}", async () =>
-            {
-                var userQuery = await _unitOfWork.GetQueryableAsync<User>();
-                var user = await userQuery.FirstOrDefaultAsync(u => u.Id == id);
-                return user;
-            });
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            var user = await userQuery.FirstOrDefaultAsync(u => u.Id == id);
+            return user;
         }
 
         public async Task InternalDeleteAsync(User user, bool isHardDelete)
@@ -55,7 +46,6 @@ namespace f00die_finder_be.Services.UserService
             await _unitOfWork.DeleteAsync(user, isHardDelete);
             await _unitOfWork.SaveChangesAsync();
 
-            await _cacheService.RemoveAsync($"user-{user.Email}");
             await _cacheService.RemoveAsync($"user-{user.Id}");
             await _cacheService.RemoveAsync("users");
         }
@@ -90,7 +80,7 @@ namespace f00die_finder_be.Services.UserService
             };
         }
 
-        public async Task<CustomResponse<UserDetailDto>> UpdateAsync(UserUpdateDto dto)
+        public async Task<CustomResponse<UserDetailDto>> UpdateMyInfoAsync(UserUpdateDto dto)
         {
             var userQuery = await _unitOfWork.GetQueryableAsync<User>();
             var user = await userQuery.FirstOrDefaultAsync(u => u.Id == _currentUserService.UserId);
@@ -118,13 +108,74 @@ namespace f00die_finder_be.Services.UserService
             await _unitOfWork.SaveChangesAsync();
 
             await _cacheService.RemoveAsync($"user-{_currentUserService.UserId}");
-            await _cacheService.RemoveAsync($"user-{user.Email}");
             await _cacheService.RemoveAsync("users");
+
+
+            var data = _mapper.Map<UserDetailDto>(user);
+
+            await _cacheService.SetAsync($"user-{_currentUserService.UserId}", data);
 
             return new CustomResponse<UserDetailDto>
             {
-                Data = _mapper.Map<UserDetailDto>(user)
+                Data = data
             };
+        }
+
+        public async Task<CustomResponse<List<UserAdminDto>>> GetUsersGetRestaurantsAdminAsync(FilterUserAdminDto? filter, int pageSize, int pageNumber)
+        {
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            
+            if (filter is not null)
+            {
+                if (filter.Role is not null)
+                {
+                    userQuery = userQuery.Where(u => u.Role == filter.Role);
+                }
+
+                if (filter.Status is not null)
+                {
+                    userQuery = userQuery.Where(u => u.Status == filter.Status);
+                }
+            }
+
+            var users = await userQuery
+                .OrderByDescending(u => u.CreatedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var data = _mapper.Map<List<UserAdminDto>>(users);
+
+            return new CustomResponse<List<UserAdminDto>>
+            {
+                Data = data,
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(await userQuery.CountAsync() / (double)pageSize),
+                    TotalCount = await userQuery.CountAsync()
+                }
+            };
+        }
+
+        public async Task<CustomResponse<object>> ChangeUserStatusAdminAsync(Guid userId, UserStatus status)
+        {
+            var userQuery = await _unitOfWork.GetQueryableAsync<User>();
+            var user = await userQuery.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                throw new NotFoundException();
+            }
+
+            user.Status = status;
+            await _unitOfWork.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            await _cacheService.RemoveAsync($"user-{userId}");
+            await _cacheService.RemoveAsync("users");
+            
+            return new CustomResponse<object>();
         }
     }
 }

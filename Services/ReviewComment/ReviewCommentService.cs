@@ -1,4 +1,5 @@
-﻿using f00die_finder_be.Dtos;
+﻿using f00die_finder_be.Data.Entities;
+using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.ReviewComment;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +16,27 @@ namespace f00die_finder_be.Services.ReviewComment
             var review = _mapper.Map<Data.Entities.ReviewComment>(reviewCommentAddDto);
             review.UserId = _currentUserService.UserId;
 
+            var restaurant = await (await _unitOfWork.GetQueryableAsync<Restaurant>())
+                .FirstOrDefaultAsync(r => r.Id == reviewCommentAddDto.RestaurantId);
+
+            var reviewQuery = await _unitOfWork.GetQueryableAsync<Data.Entities.ReviewComment>();
+            var reviews = await reviewQuery
+                .Where(r => r.RestaurantId == restaurant.Id)
+                .ToListAsync();
+
+            restaurant.Rating = (short)Math.Round(reviews.Average(r => r.Rating));
+
+            await _unitOfWork.UpdateAsync(restaurant);
+
             await _unitOfWork.AddAsync(review);
             await _unitOfWork.SaveChangesAsync();
 
             await _cacheService.RemoveAsync($"reviewComments-restaurant-{review.RestaurantId}");
             
+            review = await reviewQuery
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.Id == review.Id);
+
             return new CustomResponse<ReviewCommentDto>
             {
                 Data = _mapper.Map<ReviewCommentDto>(review)
@@ -52,7 +69,8 @@ namespace f00die_finder_be.Services.ReviewComment
                 {
                     CurrentPage = pageNumber,
                     PageSize = pageSize,
-                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize)
+                    TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+                    TotalCount = totalItems
                 }
             };
         }

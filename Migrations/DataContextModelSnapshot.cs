@@ -89,6 +89,9 @@ namespace f00die_finder_be.Migrations
                     b.Property<DateTimeOffset>("CreatedDate")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("IconUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -193,6 +196,33 @@ namespace f00die_finder_be.Migrations
                     b.HasIndex("WardOrCommuneId");
 
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("f00die_finder_be.Data.Entities.PriceRangePerPerson", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("LastUpdatedDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PriceOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PriceRangePerPersons");
                 });
 
             modelBuilder.Entity("f00die_finder_be.Data.Entities.ProvinceOrCity", b =>
@@ -309,8 +339,8 @@ namespace f00die_finder_be.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PriceRangePerPerson")
-                        .HasColumnType("int");
+                    b.Property<Guid>("PriceRangePerPersonId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<short>("Rating")
                         .HasColumnType("smallint");
@@ -328,6 +358,8 @@ namespace f00die_finder_be.Migrations
 
                     b.HasIndex("OwnerId")
                         .IsUnique();
+
+                    b.HasIndex("PriceRangePerPersonId");
 
                     b.ToTable("Restaurants");
                 });
@@ -754,7 +786,15 @@ namespace f00die_finder_be.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("f00die_finder_be.Data.Entities.PriceRangePerPerson", "PriceRangePerPerson")
+                        .WithMany()
+                        .HasForeignKey("PriceRangePerPersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Owner");
+
+                    b.Navigation("PriceRangePerPerson");
                 });
 
             modelBuilder.Entity("f00die_finder_be.Data.Entities.RestaurantAdditionalService", b =>
