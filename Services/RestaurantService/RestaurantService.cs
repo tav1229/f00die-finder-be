@@ -796,5 +796,173 @@ namespace f00die_finder_be.Services.RestaurantService
                 }
             };
         }
+
+        public async Task<CustomResponse<List<RestaurantDto>>> GetRecommendedRestaurantsAsync(int pageSize, int pageNumber)
+        {
+            List<Guid> mostLikedCuisineTypeIds = new List<Guid>();
+
+            var reservationHistory = await (await _unitOfWork.GetQueryableAsync<Reservation>())
+                .Include(res => res.Restaurant)
+                .ThenInclude(rest => rest.RestaurantCuisineTypes)
+                .Where(res => res.UserId == _currentUserService.UserId)
+                .ToListAsync();
+
+            var cacheKey = "restaurants";
+            var restaurantQuery = (await _cacheService.GetOrCreateAsync(cacheKey, async () =>
+            {
+                var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
+
+                return await restaurantQuery
+                .Include(r => r.Location)
+                .ThenInclude(l => l.WardOrCommune)
+                .ThenInclude(w => w.District)
+                .ThenInclude(d => d.ProvinceOrCity)
+                .Include(r => r.RestaurantCuisineTypes)
+                .ThenInclude(r => r.CuisineType)
+                .Include(r => r.RestaurantServingTypes)
+                .ThenInclude(r => r.ServingType)
+                .Include(r => r.RestaurantCustomerTypes)
+                .ThenInclude(r => r.CustomerType)
+                .Include(r => r.Images)
+                .Include(r => r.PriceRangePerPerson)
+                .Where(r => r.Status == RestaurantStatus.Active)
+                .ToListAsync();
+            })).AsQueryable();
+
+            var combinedCuisineTypeIds = new List<Guid>();
+
+            var savedRestaurantCuisineTypeIds = await (await _unitOfWork.GetQueryableAsync<UserSavedRestaurant>())
+                    .Include(usr => usr.Restaurant)
+                    .ThenInclude(r => r.RestaurantCuisineTypes)
+                    .ThenInclude(rct => rct.CuisineType)
+                    .Where(usr => usr.UserId == _currentUserService.UserId)
+                    .SelectMany(usr => usr.Restaurant.RestaurantCuisineTypes.Select(rct => rct.CuisineTypeId))
+                    .ToListAsync();
+
+            if (reservationHistory.Any() || savedRestaurantCuisineTypeIds.Any())
+            {
+                combinedCuisineTypeIds = reservationHistory
+                .SelectMany(res => res.Restaurant.RestaurantCuisineTypes.Select(rct => rct.CuisineTypeId))
+                .Concat(savedRestaurantCuisineTypeIds)
+                .ToList();
+
+                mostLikedCuisineTypeIds = combinedCuisineTypeIds
+                    .GroupBy(id => id)
+                    .OrderByDescending(group => group.Count())
+                    .Take(2)
+                    .Select(group => group.Key)
+                    .ToList();
+            }
+            else
+            {
+                var restaurants = restaurantQuery
+                    .Include(r => r.RestaurantCuisineTypes)
+                    .ThenInclude(rct => rct.CuisineType)
+                    .Where(r => r.Status == RestaurantStatus.Active)
+                    .OrderByDescending(r => r.ReservationCount)
+                    .ToList();
+
+                var pagedRestaurants = restaurants
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                return new CustomResponse<List<RestaurantDto>>
+                {
+                    Data = pagedRestaurants.Select(r => _mapper.Map<RestaurantDto>(r)).ToList(),
+                    Meta = new MetaData
+                    {
+                        CurrentPage = pageNumber,
+                        PageSize = pageSize,
+                        TotalPages = (int)Math.Ceiling(restaurants.Count / (double)pageSize),
+                        TotalCount = restaurants.Count
+                    }
+                };
+
+            }
+
+            
+
+            var maxReservationCount = restaurantQuery.Max(res => res.ReservationCount);
+
+            var recommendedRestaurantsQuery = restaurantQuery
+                    .Include(r => r.RestaurantCuisineTypes)
+                        .ThenInclude(rct => rct.CuisineType)
+                    .Where(r => r.RestaurantCuisineTypes.Any(rct => mostLikedCuisineTypeIds.Contains(rct.CuisineTypeId)))
+                    .AsEnumerable()
+                    .Select(r => new
+                    {
+                        Restaurant = r,
+                        Priority = r.RestaurantCuisineTypes.Max(rct => mostLikedCuisineTypeIds.FindIndex(ctf => ctf == rct.CuisineTypeId)),
+                        HybridScore = (r.Rating * 0.7) + ((double)r.ReservationCount / maxReservationCount * 0.3)
+                    })
+                    .OrderBy(r => r.Priority)
+                    .ThenByDescending(r => r.HybridScore)
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+
+            return new CustomResponse<List<RestaurantDto>>
+            {
+                Data = recommendedRestaurantsQuery.Select(r => _mapper.Map<RestaurantDto>(r.Restaurant)).ToList(),
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(recommendedRestaurantsQuery.Count / (double)pageSize),
+                    TotalCount = recommendedRestaurantsQuery.Count
+                }
+            };
+        }
+
+        public async Task<CustomResponse<List<RestaurantDto>>> GetPublicRecommendedRestaurantsAsync(int pageSize, int pageNumber)
+        {
+            var cacheKey = "restaurants";
+            var restaurantQuery = (await _cacheService.GetOrCreateAsync(cacheKey, async () =>
+            {
+                var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
+
+                return await restaurantQuery
+                .Include(r => r.Location)
+                .ThenInclude(l => l.WardOrCommune)
+                .ThenInclude(w => w.District)
+                .ThenInclude(d => d.ProvinceOrCity)
+                .Include(r => r.RestaurantCuisineTypes)
+                .ThenInclude(r => r.CuisineType)
+                .Include(r => r.RestaurantServingTypes)
+                .ThenInclude(r => r.ServingType)
+                .Include(r => r.RestaurantCustomerTypes)
+                .ThenInclude(r => r.CustomerType)
+                .Include(r => r.Images)
+                .Include(r => r.PriceRangePerPerson)
+                .Where(r => r.Status == RestaurantStatus.Active)
+                .ToListAsync();
+            })).AsQueryable();
+
+            var restaurants = restaurantQuery
+                .Include(r => r.RestaurantCuisineTypes)
+                .ThenInclude(rct => rct.CuisineType)
+                .Where(r => r.Status == RestaurantStatus.Active)
+                .OrderByDescending(r => r.ReservationCount)
+                .ToList();
+
+            var pagedRestaurants = restaurants
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return new CustomResponse<List<RestaurantDto>>
+            {
+                Data = pagedRestaurants.Select(r => _mapper.Map<RestaurantDto>(r)).ToList(),
+                Meta = new MetaData
+                {
+                    CurrentPage = pageNumber,
+                    PageSize = pageSize,
+                    TotalPages = (int)Math.Ceiling(restaurants.Count / (double)pageSize),
+                    TotalCount = restaurants.Count
+                }
+            };
+        }
     }
 }
