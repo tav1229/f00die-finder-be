@@ -120,5 +120,20 @@ namespace f00die_finder_be.Controllers
             var result = await _restaurantService.GetRestaurantsAdminAsync(filterRestaurantAdminDto, pageSize, pageNumber);
             return Ok(result);
         }
+
+        [AuthorizeFilterAttribute([Role.Customer])]
+        [HttpGet("recommended")]
+        public async Task<IActionResult> GetRecommendedRestaurantsAsync([FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
+        {
+            var result = await _restaurantService.GetRecommendedRestaurantsAsync(pageSize, pageNumber);
+            return Ok(result);
+        }
+
+        [HttpGet("public-recommended")]
+        public async Task<IActionResult> GetPublicRecommendedRestaurantsAsync([FromQuery] int pageSize = 10, [FromQuery] int pageNumber = 1)
+        {
+            var result = await _restaurantService.GetPublicRecommendedRestaurantsAsync(pageSize, pageNumber);
+            return Ok(result);
+        }
     }
 }
