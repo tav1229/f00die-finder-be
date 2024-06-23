@@ -166,13 +166,13 @@ namespace f00die_finder_be.Services.AuthService
                 case OTPType.ForgotPassword:
                     await _mailService.SendEmailAsync(user.Email,
                                                       MailConsts.ForgotPassword.Subject,
-                                                      MailConsts.ForgotPassword.Template,
+                                                      MailConsts.ForgotPassword.Body,
                                                       new { OtpTimeOut = _otpTimeOut, Otp = OTP });
                     break;
                 case OTPType.VerifyEmail:
                     await _mailService.SendEmailAsync(user.Email,
                                                       MailConsts.VerifyEmail.Subject,
-                    MailConsts.VerifyEmail.Template,
+                                                      MailConsts.VerifyEmail.Body,
                                                       new { OtpTimeOut = _otpTimeOut, Otp = OTP });
                     break;
                 default:

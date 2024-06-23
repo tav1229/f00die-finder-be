@@ -285,14 +285,7 @@ namespace f00die_finder_be.Data.Seed
                     PriceRangePerPerson = allPriceRangePerPersons[random.Next(allPriceRangePerPersons.Count)],
                     Capacity = random.Next(10, 200),
                     SpecialDishes = specialDishes[random.Next(specialDishes.Count)],
-                    Description =  @"<div class=""summary"">
-    <h2>Tóm tắt</h2>
-    <div class=""summary-content"">
-<link href=""https://pastaxi-manager.onepas.vn/content/style-special.css"" rel=""""stylesheet"" type=""text/css""><div class=""row-app""><div class=""col-xs-app-12""><div class=""txt-title"">Phù hợp:</div><div class=""text-description"">Gặp mặt, bạn bè, gia đình, sinh nhật… </div><div class=""txt-title"">Món đặc sắc:</div><div class=""text-description"">Combo lẩu Hongkong số 2, Combo lẩu Hongkong số 3, Bánh bao kim sa, Há cảo tôm, Mỳ xíu,  Xíu mại, Há cảo rau, Hoành thánh chiên…</div><div class=""txt-title"">Không gian:</div><div class=""text-description""><p>- Hiện đại </p><p>- Sức chứa: 80 khách</p><p>- Không gian riêng (có vách ngăn): 10 khách</p></div><div class=""txt-title"">Chỗ để xe:</div><div class=""text-description""><p>- Xe ô tô: Trước cửa nhà hàng (Miễn phí)
-</p><p>- Xe máy: Trước cửa nhà hàng (Miễn phí)
-</p></div><div class=""txt-title"">Điểm đặc trưng:</div><div class=""text-description""><p>-	Nằm tại vị trí đắc địa trên con đường ven sông Hàn đẹp nhất TP. Đà Nẵng. </p><p>-	Bữa tiệc ẩm thực Hồng Kông đặc sắc và chất lượng. 
-</p></div></div>    </div>
-</div>                </div>",
+                    Description = @"<p><strong>Tóm tắt</strong></p><p>Phù hợp:</p><p>Gặp mặt, bạn bè, gia đình, sinh nhật…</p><p>Món đặc sắc:</p><p>Combo lẩu Hongkong số 2, Combo lẩu Hongkong số 3, Bánh bao kim sa, Há cảo tôm, Mỳ xíu, Xíu mại, Há cảo rau, Hoành thánh chiên…</p><p>Không gian:</p><p>- Hiện đại</p><p>- Sức chứa: 80 khách</p><p>- Không gian riêng (có vách ngăn): 10 khách</p><p>Chỗ để xe:</p><p>- Xe ô tô: Trước cửa nhà hàng (Miễn phí)</p><p>- Xe máy: Trước cửa nhà hàng (Miễn phí)</p><p>Điểm đặc trưng:</p><p>- Nằm tại vị trí đắc địa trên con đường ven sông Hàn đẹp nhất TP. Đà Nẵng.</p><p>- Bữa tiệc ẩm thực Hồng Kông đặc sắc và chất lượng.</p>",
                     Note = notes[random.Next(notes.Count)], 
                     Status = RestaurantStatus.Active,
                     ReservationCount = random.Next(0, 100),
@@ -366,14 +359,7 @@ namespace f00die_finder_be.Data.Seed
                     PriceRangePerPerson = allPriceRangePerPersons[random.Next(allPriceRangePerPersons.Count)],
                     Capacity = random.Next(10, 200),
                     SpecialDishes = specialDishes[random.Next(specialDishes.Count)],
-                    Description =  @"<div class=""summary"">
-    <h2>Tóm tắt</h2>
-    <div class=""summary-content"">
-<link href=""https://pastaxi-manager.onepas.vn/content/style-special.css"" rel=""""stylesheet"" type=""text/css""><div class=""row-app""><div class=""col-xs-app-12""><div class=""txt-title"">Phù hợp:</div><div class=""text-description"">Gặp mặt, bạn bè, gia đình, sinh nhật… </div><div class=""txt-title"">Món đặc sắc:</div><div class=""text-description"">Combo lẩu Hongkong số 2, Combo lẩu Hongkong số 3, Bánh bao kim sa, Há cảo tôm, Mỳ xíu,  Xíu mại, Há cảo rau, Hoành thánh chiên…</div><div class=""txt-title"">Không gian:</div><div class=""text-description""><p>- Hiện đại </p><p>- Sức chứa: 80 khách</p><p>- Không gian riêng (có vách ngăn): 10 khách</p></div><div class=""txt-title"">Chỗ để xe:</div><div class=""text-description""><p>- Xe ô tô: Trước cửa nhà hàng (Miễn phí)
-</p><p>- Xe máy: Trước cửa nhà hàng (Miễn phí)
-</p></div><div class=""txt-title"">Điểm đặc trưng:</div><div class=""text-description""><p>-	Nằm tại vị trí đắc địa trên con đường ven sông Hàn đẹp nhất TP. Đà Nẵng. </p><p>-	Bữa tiệc ẩm thực Hồng Kông đặc sắc và chất lượng. 
-</p></div></div>    </div>
-</div>                </div>",
+                    Description = @"<p><strong>Tóm tắt</strong></p><p>Phù hợp:</p><p>Gặp mặt, bạn bè, gia đình, sinh nhật…</p><p>Món đặc sắc:</p><p>Combo lẩu Hongkong số 2, Combo lẩu Hongkong số 3, Bánh bao kim sa, Há cảo tôm, Mỳ xíu, Xíu mại, Há cảo rau, Hoành thánh chiên…</p><p>Không gian:</p><p>- Hiện đại</p><p>- Sức chứa: 80 khách</p><p>- Không gian riêng (có vách ngăn): 10 khách</p><p>Chỗ để xe:</p><p>- Xe ô tô: Trước cửa nhà hàng (Miễn phí)</p><p>- Xe máy: Trước cửa nhà hàng (Miễn phí)</p><p>Điểm đặc trưng:</p><p>- Nằm tại vị trí đắc địa trên con đường ven sông Hàn đẹp nhất TP. Đà Nẵng.</p><p>- Bữa tiệc ẩm thực Hồng Kông đặc sắc và chất lượng.</p>",
                     Note = notes[random.Next(notes.Count)], 
                     Status = RestaurantStatus.Active,
                     ReservationCount = random.Next(0, 100),
@@ -473,7 +459,8 @@ namespace f00die_finder_be.Data.Seed
                     User = user,
                     Restaurant = restaurant,
                     ReservationStatus = random.Next(0, 2) == 0 ? ReservationStatus.Confirmed : ReservationStatus.Pending,
-                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100))
+                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
+                    CustomerEmail = user.Email
                 };
 
                 context.Reservations.Add(reservation);
@@ -495,7 +482,8 @@ namespace f00die_finder_be.Data.Seed
                     User = user1,
                     Restaurant = restaurants[random.Next(restaurants.Count)],
                     ReservationStatus = random.Next(0, 2) == 0 ? ReservationStatus.Confirmed : ReservationStatus.Pending,
-                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100))
+                    CreatedDate = random.Next(1, 100) % 2 == 0 ? DateTimeOffset.Now.AddMinutes(random.Next(1, 100)) : DateTimeOffset.Now.AddDays(-random.Next(1, 100)),
+                    CustomerEmail = user1.Email
                 };
 
                 context.Reservations.Add(reservation);

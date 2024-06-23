@@ -1,20 +1,24 @@
-﻿using f00die_finder_be.Common;
+﻿using AutoMapper.QueryableExtensions;
+using f00die_finder_be.Common;
 using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Reservation;
+using f00die_finder_be.Services.UserService;
 using Microsoft.EntityFrameworkCore;
 
 namespace f00die_finder_be.Services.ReservationService
 {
     public class ReservationService : BaseService, IReservationService
     {
-        public ReservationService(IServiceProvider serviceProvider) : base(serviceProvider)
+        private readonly IUserService _userService;
+        public ReservationService(IUserService userService, IServiceProvider serviceProvider) : base(serviceProvider)
         {
+            _userService = userService;
         }
 
         public async Task<CustomResponse<ReservationDetailDto>> AddAsync(ReservationAddDto reservationAddDto)
         {
-            var restaurantQuery = await _unitOfWork.GetQueryableAsync<Restaurant>();
+            var restaurantQuery = (await _unitOfWork.GetQueryableAsync<Restaurant>()).Include(r => r.Owner);
             var restaurant = await restaurantQuery.FirstOrDefaultAsync(r => r.Id == reservationAddDto.RestaurantId);
             if (restaurant == null)
             {
@@ -22,6 +26,12 @@ namespace f00die_finder_be.Services.ReservationService
             }
 
             var reservation = _mapper.Map<Reservation>(reservationAddDto);
+            if (reservation.CustomerEmail is null || String.IsNullOrEmpty(reservation.CustomerEmail))
+            {
+                var user = await _userService.InternalGetUserByIdAsync(_currentUserService.UserId);
+                reservation.CustomerEmail = user.Email;
+            }
+
             reservation.RestaurantId = reservationAddDto.RestaurantId;
             reservation.UserId = _currentUserService.UserId;
             reservation.ReservationStatus = ReservationStatus.Pending;
@@ -35,19 +45,21 @@ namespace f00die_finder_be.Services.ReservationService
 
             await _cacheService.RemoveAsync($"reservations-restaurant-owner-{restaurant.OwnerId}");
             await _cacheService.RemoveAsync($"reservations-customer-{_currentUserService.UserId}");
-            
-            reservation = await (await _unitOfWork.GetQueryableAsync<Reservation>())
-                .Include(r => r.Restaurant)
-                .ThenInclude(r => r.Images)
-                .Include(r => r.Restaurant)
-                .ThenInclude(r => r.Location)
-                .ThenInclude(l => l.WardOrCommune)
-                .ThenInclude(w => w.District)
-                .FirstOrDefaultAsync(r => r.Id == reservation.Id);
 
-            var data = _mapper.Map<ReservationDetailDto>(reservation);
+            var data = await (await _unitOfWork.GetQueryableAsync<Reservation>())
+                .Where(r => r.Id == reservation.Id)
+                .ProjectTo<ReservationDetailDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
 
             await _cacheService.SetAsync($"reservation-{reservation.Id}", data);
+
+            await _mailService.SendEmailAsync(restaurant.Owner.Email,
+                                            MailConsts.NewReservationNotification.Subject,
+                                            MailConsts.NewReservationNotification.Body,
+                                            new {
+                                                CustomerName = reservation.CustomerName,
+                                                ReservationTime = reservation.ReservationTime,
+                                            });
 
             return new CustomResponse<ReservationDetailDto>
             {
@@ -103,11 +115,11 @@ namespace f00die_finder_be.Services.ReservationService
             var data = await _cacheService.GetOrCreateAsync($"reservation-{reservationId}", async () =>
             {
                 var reservationQuery = await _unitOfWork.GetQueryableAsync<Reservation>();
-                var reservation = await reservationQuery
-                    .Include(r => r.Restaurant)
+                var reservationDetail = await reservationQuery
+                    .ProjectTo<ReservationDetailDto>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync(r => r.Id == reservationId);
 
-                return _mapper.Map<ReservationDetailDto>(reservation);
+                return reservationDetail;
             });
 
             return new CustomResponse<ReservationDetailDto>
@@ -185,18 +197,38 @@ namespace f00die_finder_be.Services.ReservationService
             await _cacheService.RemoveAsync($"reservation-{reservationId}");
             await _cacheService.RemoveAsync($"reservations-customer-{reservation.UserId}");
 
-            reservation = await (await _unitOfWork.GetQueryableAsync<Reservation>())
-               .Include(r => r.Restaurant)
-               .ThenInclude(r => r.Images)
-               .Include(r => r.Restaurant)
-               .ThenInclude(r => r.Location)
-               .ThenInclude(l => l.WardOrCommune)
-               .ThenInclude(w => w.District)
-               .FirstOrDefaultAsync(r => r.Id == reservation.Id);
-
-            var data = _mapper.Map<ReservationDetailDto>(reservation);
+            var data = await (await _unitOfWork.GetQueryableAsync<Reservation>())
+                .Where(r => r.Id == reservationId)
+                .ProjectTo<ReservationDetailDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
 
             await _cacheService.SetAsync($"reservation-{reservation.Id}", data);
+
+            switch (reservationStatus)
+            {
+                case ReservationStatus.Confirmed:
+                    await _mailService.SendEmailAsync(
+                        reservation.CustomerEmail,
+                        MailConsts.ReservationConfirmedNotification.Subject,
+                        MailConsts.ReservationConfirmedNotification.Body,
+                        new
+                        {
+                            RestaurantName = reservation.Restaurant.Name,
+                            ReservationTime = reservation.ReservationTime,
+                        });
+                    break;
+                case ReservationStatus.Denied:
+                    await _mailService.SendEmailAsync(
+                        reservation.CustomerEmail,
+                        MailConsts.ReservationDeniedNotification.Subject,
+                        MailConsts.ReservationDeniedNotification.Body,
+                        new
+                        {
+                            RestaurantName = reservation.Restaurant.Name,
+                            ReservationTime = reservation.ReservationTime,
+                        });
+                    break;
+            }
 
             return new CustomResponse<ReservationDetailDto>
             {

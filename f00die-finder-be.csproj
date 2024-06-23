@@ -9,10 +9,16 @@
 
   <ItemGroup>
     <None Remove="Templates\ForgotPassword.html" />
+    <None Remove="Templates\NewReservationNotification.html" />
+    <None Remove="Templates\ReservationConfirmedNotification.html" />
+    <None Remove="Templates\ReservationDeniedNotification.html" />
     <None Remove="Templates\VerifyEmail.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Templates\ReservationDeniedNotification.html" />
+    <Content Include="Templates\ReservationConfirmedNotification.html" />
+    <Content Include="Templates\NewReservationNotification.html" />
     <Content Include="Templates\VerifyEmail.html" />
     <Content Include="Templates\ForgotPassword.html" />
   </ItemGroup>
