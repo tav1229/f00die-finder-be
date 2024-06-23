@@ -9,6 +9,7 @@ namespace f00die_finder_be.Data.Entities
         public string CustomerName { get; set; }
 
         public string CustomerPhone { get; set; }
+        public string CustomerEmail { get; set; }
 
         public int NumberOfAdults { get; set; }
 

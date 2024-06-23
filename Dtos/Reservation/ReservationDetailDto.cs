@@ -11,7 +11,9 @@ namespace f00die_finder_be.Dtos.Reservation
         public string CustomerName { get; set; }
 
         public string CustomerPhone { get; set; }
-        
+        public string CustomerEmail { get; set; }
+
+
         public int NumberOfAdults { get; set; }
         
         public int NumberOfChildren { get; set; }

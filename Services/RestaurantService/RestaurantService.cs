@@ -1,4 +1,5 @@
-﻿using f00die_finder_be.Common;
+﻿using AutoMapper.QueryableExtensions;
+using f00die_finder_be.Common;
 using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.Restaurant;
@@ -669,28 +670,15 @@ namespace f00die_finder_be.Services.RestaurantService
 
         public async Task<CustomResponse<List<UserSavedRestaurantDto>>> GetMySavedRestaurantsAsync(int pageSize, int pageNumber)
         {
-            //var cacheKey = $"restaurants-user-{_currentUserService.UserId}";
-            //var items = await _cacheService.GetOrCreateAsync(cacheKey, async () =>
-            //{
             var userSavedRestaurantQuery = await _unitOfWork.GetQueryableAsync<UserSavedRestaurant>();
 
-            var userSavedRestaurants = userSavedRestaurantQuery
+            var items = await userSavedRestaurantQuery
                 .Where(u => u.UserId == _currentUserService.UserId)
-                .Include(u => u.Restaurant)
-                .ThenInclude(r => r.Location)
-                .ThenInclude(l => l.WardOrCommune)
-                .ThenInclude(w => w.District)
-                .ThenInclude(d => d.ProvinceOrCity)
-                .Include(u => u.Restaurant)
-                .ThenInclude(r => r.Images)
-                .Select(u => u.Restaurant);
-
-            var items = await userSavedRestaurants
+                .Select(u => u.Restaurant)
+                .ProjectTo<UserSavedRestaurantDto>(_mapper.ConfigurationProvider)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Select(r => _mapper.Map<UserSavedRestaurantDto>(r))
                 .ToListAsync();
-            //});
 
             return new CustomResponse<List<UserSavedRestaurantDto>>
             {
@@ -719,7 +707,7 @@ namespace f00die_finder_be.Services.RestaurantService
             return new CustomResponse<object>();
         }
 
-        public async Task<CustomResponse<object>> UnsaveRestaurantAsync(Guid restaurantId)
+        public async Task<CustomResponse<object>> UnSaveRestaurantAsync(Guid restaurantId)
         {
             var userSavedRestaurantQuery = await _unitOfWork.GetQueryableAsync<UserSavedRestaurant>();
             var userSavedRestaurant = await userSavedRestaurantQuery

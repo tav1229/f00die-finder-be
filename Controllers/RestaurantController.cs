@@ -100,7 +100,7 @@ namespace f00die_finder_be.Controllers
         [HttpPost("unsave")]
         public async Task<IActionResult> UnsaveRestaurantAsync([FromBody] Guid restaurantId)
         {
-            var result = await _restaurantService.UnsaveRestaurantAsync(restaurantId);
+            var result = await _restaurantService.UnSaveRestaurantAsync(restaurantId);
             return Ok(result);
         }
 

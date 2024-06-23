@@ -1,5 +1,4 @@
-﻿using f00die_finder_be.Common;
-using f00die_finder_be.Data.Entities;
+﻿using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos.Location;
 
 namespace f00die_finder_be.Dtos.Restaurant
@@ -14,13 +13,9 @@ namespace f00die_finder_be.Dtos.Restaurant
 
         public WardOrCommuneDto WardOrCommune { get; set; }
 
-        public DistrictDto District { get; set; }
+        public PriceRangePerPersonDto PriceRangePerPerson { get; set; }
 
-        public ProvinceOrCityDto ProvinceOrCity { get; set; }
-
-        public PriceRangePerPerson PriceRangePerPerson { get; set; }
-
-        public List<string> Images { get; set; }
+        public string Image { get; set; }
         public short Rating { get; set; }
     }
 }

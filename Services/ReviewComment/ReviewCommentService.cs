@@ -1,4 +1,5 @@
-﻿using f00die_finder_be.Data.Entities;
+﻿using AutoMapper.QueryableExtensions;
+using f00die_finder_be.Data.Entities;
 using f00die_finder_be.Dtos;
 using f00die_finder_be.Dtos.ReviewComment;
 using Microsoft.EntityFrameworkCore;
@@ -33,9 +34,10 @@ namespace f00die_finder_be.Services.ReviewComment
 
             await _cacheService.RemoveAsync($"reviewComments-restaurant-{review.RestaurantId}");
             
-            review = await reviewQuery
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.Id == review.Id);
+            var data = await reviewQuery
+                .Where(r => r.Id == review.Id)
+                .ProjectTo<ReviewCommentDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync();
 
             return new CustomResponse<ReviewCommentDto>
             {
