@@ -401,6 +401,10 @@ namespace f00die_finder_be.Services.RestaurantService
             {
                 throw new NotFoundException();
             }
+            if (restaurant.Status == RestaurantStatus.Inactive)
+            {
+                throw new BadRequestException("Restaurant is inactive.");
+            }
 
             if (restaurantDto.Name != null)
             {
@@ -553,6 +557,10 @@ namespace f00die_finder_be.Services.RestaurantService
             {
                 throw new NotFoundException();
             }
+            if (restaurant.Status == RestaurantStatus.Inactive)
+            {
+                throw new BadRequestException("Restaurant is inactive.");
+            }
 
             var restaurantImages = new List<RestaurantImage>();
             if (restaurantDto.RestaurantImages is not null)
@@ -627,6 +635,10 @@ namespace f00die_finder_be.Services.RestaurantService
             if (restaurant == null)
             {
                 throw new NotFoundException();
+            }
+            if (restaurant.Status == RestaurantStatus.Inactive)
+            {
+                throw new BadRequestException("Restaurant is inactive.");
             }
 
             var imageNamesToBeDeleted = restaurant.Images.Where(i => imageIds.Contains(i.Id)).Select(i => i.URL.Split('/').Last()).ToList();
