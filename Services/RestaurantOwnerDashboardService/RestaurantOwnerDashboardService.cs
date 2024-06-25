@@ -37,7 +37,7 @@ namespace f00die_finder_be.Services.RestaurantOwnerDashboardService
 
         public async Task<CustomResponse<Dictionary<int, int>>> GetReservationsByMonth()
         {
-            var reservationsByMonth = await (await _unitOfWork.GetQueryableAsync<Reservation>())
+            var reservationsByMonth = await (await _unitOfWork.GetQueryableAsync<Reservation>()).Where(x => x.Restaurant.OwnerId == _currentUserService.UserId)
                 .GroupBy(x => x.CreatedDate.Month)
                 .Select(x => new
                 {
@@ -60,7 +60,7 @@ namespace f00die_finder_be.Services.RestaurantOwnerDashboardService
 
         public async Task<CustomResponse<object>> GetTotalReservationsAsync()
         {
-            var totalReservations = await (await _unitOfWork.GetQueryableAsync<Reservation>()).CountAsync();
+            var totalReservations = await (await _unitOfWork.GetQueryableAsync<Reservation>()).Where(x => x.Restaurant.OwnerId == _currentUserService.UserId).CountAsync();
             return new CustomResponse<object>
             {
                 Data = new
