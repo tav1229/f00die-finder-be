@@ -5,5 +5,6 @@ namespace f00die_finder_be.Dtos.Restaurant
     public class FilterRestaurantAdminDto
     {
         public RestaurantStatus? Status { get; set; }
+        public string? SearchValue { get; set; }
     }
 }

@@ -6,5 +6,6 @@ namespace f00die_finder_be.Dtos.Reservation
     {
         public ReservationStatus? ReservationStatus { get; set; }
         public DateTimeOffset? ReservationTime { get; set; }
+        public string? SearchValue { get; set; }
     }
 }
