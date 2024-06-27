@@ -27,6 +27,16 @@ namespace f00die_finder_be.Services.AuthService
                 throw new InvalidCredentialsException();
             }
 
+            if (currentUser.Status == UserStatus.Unverified)
+            {
+                throw new UnverifiedEmailException();
+            }
+
+            if (currentUser.Status == UserStatus.Blocked)
+            {
+                throw new BlockedUserException();
+            }
+
             var hashedPassword = SecurityFunction.HashPassword(loginDto.Password, currentUser.PasswordSalt);
             if (currentUser.HashedPassword != hashedPassword)
             {

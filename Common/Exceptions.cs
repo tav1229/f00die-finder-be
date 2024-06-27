@@ -77,4 +77,10 @@ namespace f00die_finder_be.Common
         public BadRequestException(string message)
             : base(message, (int)HttpStatusCode.BadRequest) { }
     }
+
+    public class BlockedUserException : CustomException
+    {
+        public BlockedUserException()
+            : base($"User is blocked", (int)HttpStatusCode.Forbidden) { }
+    }
 }
