@@ -6,5 +6,6 @@ namespace f00die_finder_be.Dtos.User
     {
         public Role? Role { get; set; }
         public UserStatus? Status { get; set; }
+        public string? SearchValue { get; set; }
     }
 }

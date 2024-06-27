@@ -770,9 +770,17 @@ namespace f00die_finder_be.Services.RestaurantService
                 .ThenInclude(d => d.ProvinceOrCity)
                 .AsQueryable();
 
-            if (filter.Status != null)
+            if (filter is not null)
             {
-                restaurantsQuery = restaurantsQuery.Where(r => r.Status == filter.Status);
+                if (filter.Status != null)
+                {
+                    restaurantsQuery = restaurantsQuery.Where(r => r.Status == filter.Status);
+                }
+
+                if (filter.SearchValue is not null)
+                {
+                    restaurantsQuery = restaurantsQuery.Where(r => r.Name.Contains(filter.SearchValue));
+                }
             }
 
             var totalItems = restaurantsQuery.Count();

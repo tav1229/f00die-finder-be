@@ -136,6 +136,11 @@ namespace f00die_finder_be.Services.UserService
                 {
                     userQuery = userQuery.Where(u => u.Status == filter.Status);
                 }
+
+                if (filter.SearchValue is not null)
+                {
+                    userQuery = userQuery.Where(u => u.FullName.Contains(filter.SearchValue) || u.Email.Contains(filter.SearchValue) || u.PhoneNumber.Contains(filter.SearchValue));
+                }
             }
 
             var users = await userQuery

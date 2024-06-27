@@ -140,13 +140,20 @@ namespace f00die_finder_be.Services.ReservationService
                     .ToListAsync();
             });
             var restaurantReservationsQuery = restaurantReservations.AsQueryable();
-            if (filter.ReservationStatus != null)
+            if (filter is not null)
             {
-                restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.ReservationStatus == filter.ReservationStatus);
-            }
-            if (filter.ReservationTime != null)
-            {
-                restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.ReservationTime.Date == filter.ReservationTime.Value.Date);
+                if (filter.ReservationStatus != null)
+                {
+                    restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.ReservationStatus == filter.ReservationStatus);
+                }
+                if (filter.ReservationTime != null)
+                {
+                    restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.ReservationTime.Date == filter.ReservationTime.Value.Date);
+                }
+                if (filter.SearchValue != null)
+                {
+                    restaurantReservationsQuery = restaurantReservationsQuery.Where(r => r.CustomerName.Contains(filter.SearchValue) || r.CustomerEmail.Contains(filter.SearchValue) || r.CustomerPhone.Contains(filter.SearchValue));
+                }
             }
 
             int totalItems = restaurantReservationsQuery.Count();
