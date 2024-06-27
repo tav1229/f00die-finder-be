@@ -943,7 +943,6 @@ namespace f00die_finder_be.Services.RestaurantService
             var restaurants = restaurantQuery
                 .Include(r => r.RestaurantCuisineTypes)
                 .ThenInclude(rct => rct.CuisineType)
-                .Where(r => r.Status == RestaurantStatus.Active)
                 .OrderByDescending(r => r.ReservationCount)
                 .ToList();
 
