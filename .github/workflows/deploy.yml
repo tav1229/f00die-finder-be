@@ -53,4 +53,13 @@ jobs:
               -p 1111:8080 \
               -p 1112:8081 \
               ${{ env.DOCKER_IMAGE_NAME }}
+            docker run -d \
+              -e "Vault:EndPoint=${{ vars.VAULT_ENDPOINT }}" \
+              -e "Vault:RoleId=${{ secrets.VAULT_ROLEID }}" \
+              -e "Vault:SecretId=${{ secrets.VAULT_SECRETID }}" \
+              -e "Vault:SecretPath=${{ vars.VAULT_SECRETPATH }}" \
+              -e "Vault:EnginePath=${{ vars.VAULT_ENGINEPATH }}" \
+              -p 2222:8080 \
+              -p 2223:8081 \
+              ${{ env.DOCKER_IMAGE_NAME }}
             rm /home/${{ env.SSH_USER }}/${{ env.DOCKER_IMAGE_NAME }}.tar
